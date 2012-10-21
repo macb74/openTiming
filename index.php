@@ -13,27 +13,40 @@ $allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebn
 
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
-
 $html = "";
+
+if(isset($_GET['jqRequest'])) {
+	if($_GET['func'] == 'showStartList')      { $html = showStartResult($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showStartWithoutKl') { $html = showStartWithoutKl($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showResult') { $html = showResult($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showResultM') { $html = showResultM($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'getKlasse') { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
+	if($_GET['func'] == 'lockRace') { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
+	exit;
+}
+
+# Wenn keine Funktion übergeben wurde, dann wird die Veranstaltungsauswahl angezeigt
 if (!isset($_GET['func'])) {
-	$func[0] = 'index';
+	$func[0] = 'veranstaltungen';
 } else {
 	$func[0] = "";
 	$func[1] = "";
 	$func = explode(".", $_GET['func']);
-	
-	if(array_search($func[0], $allowedFunctions) !== false) {                #Prüfung ob eine erlaubte function übergeben wird.
-		if (!isset($func[1])) {
-			$func[1] = "";
-		}
-		if (isset($_SESSION['vID']) || $func[0] == 'veranstaltungen') {
-			$html = $func[0]();
-		}
-	} else {
-		echo "Use of disallowed function"; die;
+}	
+
+#Prüfung ob eine erlaubte function übergeben wird.
+if(array_search($func[0], $allowedFunctions) !== false) {
+	if (!isset($func[1])) {
+		$func[1] = "";
 	}
-	
+	if (isset($_SESSION['vID']) || $func[0] == 'veranstaltungen') {
+		$html = $func[0]();
+	}
+} else {
+	echo "Use of disallowed function"; die;
 }
+	
+
 
 if (!isset($_SESSION['vTitel'])) { $_SESSION['vTitel'] = ''; }
 if (!isset($_SESSION['vDatum'])) { $_SESSION['vDatum'] = ''; }
@@ -44,31 +57,31 @@ $testDiv = false;
 if(stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) {
 	$testDiv = true;
 }
-
+	
 ?>
 
 <html>
 <head>
 
-<meta http-equiv="pragma" content="no-cache" />
-<meta http-equiv="cache-control" content="no-cache; no-store; max-age=0" />
-<meta http-equiv="expires" content="0" />
-<meta http-equiv="description" content="openTiming SportsTiming" />
-<meta http-equiv="Content-Language" content="de" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-<meta name="decorator" content="main" />
-
-<title>openTiming</title>
-
-<link href="css/smart.css" rel="stylesheet" type="text/css" />
-<link href="css/smart-tables.css" rel="stylesheet" type="text/css" />
-<link href="css/menu.css" rel="stylesheet" type="text/css" />
-<link href="css/jquery.autocomplete.css" rel="stylesheet"
-	type="text/css" />
-
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="cache-control" content="no-cache; no-store; max-age=0" />
+	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="description" content="openTiming SportsTiming" />
+	<meta http-equiv="Content-Language" content="de" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<meta name="decorator" content="main" />
+	
+	<title>openTiming</title>
+	
+	<link href="css/smart.css" rel="stylesheet" type="text/css" />
+	<link href="css/smart-tables.css" rel="stylesheet" type="text/css" />
+	<link href="css/menu.css" rel="stylesheet" type="text/css" />
+	<link href="css/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+	
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="js/openTiming.js"></script>
 
 </head>
 
@@ -80,23 +93,19 @@ if ($testDiv == true) {
 }
 ?>
 
-<table class="portal" width="100%" height="95%" border="0"
-	cellspacing="0" cellpadding="0" align="center">
+<table class="portal" width="100%" height="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr>
 		<td height="118">
 
-		<table class="backgrd-top" border="0" cellspacing="0" cellpadding="0"
-			width="100%" height="118">
+		<table class="backgrd-top" border="0" cellspacing="0" cellpadding="0" width="100%" height="118">
 			<tr>
 				<td width="200" height="118">&nbsp;</td>
 				<td height="118">
-				<table border="0" cellspacing="0" cellpadding="0" width="100%"
-					height="100%">
+				<table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">
 					<tr>
 						<td align="right">
 
-						<table class="box" width="300" border="0" cellpadding="0"
-							cellspacing="0">
+						<table class="box" width="300" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td class="boxBody" align="right"><!-- username --></td>
 							</tr>
@@ -133,8 +142,7 @@ if ($testDiv == true) {
 					</tr>
 					<tr>
 						<td class="menuBody">
-						<table width="100%" height="100%" border="0" cellspacing="0"
-							cellpadding="0">
+						<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 							<tr>
 								<td valign="top"><?php menue(); ?></td>
 
@@ -177,11 +185,10 @@ if ($testDiv == true) {
 		</td>
 	</tr>
 </table>
-<table width="100%" border="0" cellspacing="0" cellpadding="0"
-	align="center">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr>
 		<td valign="bottom">
-		<div class="copy">&copy; 2011 open Timing by M. Bußmann</div>
+		<div class="copy">&copy; 2012 open Timing by M. Bußmann</div>
 		</td>
 	</tr>
 </table>
@@ -192,6 +199,7 @@ if ($testDiv == true) {
 </html>
 
 <?php
+
 if (isset($link)) {
 	mysql_close($link);
 }

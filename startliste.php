@@ -1,13 +1,6 @@
 <?php
 
 function startliste() {
-	$xajax = new xajax();
-	$xajax->register(XAJAX_FUNCTION, "showStartResult");
-	$xajax->register(XAJAX_FUNCTION, "showStartWithoutKl");
-	$xajax->register(XAJAX_FUNCTION, "clearDiv");
-	$xajax->processRequest();
-	$xajax->printJavascript();
-
 	global $func;
 	$html="";
 
@@ -49,9 +42,9 @@ function startlisteForm($html) {
 		//$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
 		$html2 .= "<td align\"left\">".$row['start']."</td>\n";
 		$html2 .= "<td align\"center\">" .
-				"<a href=\"#\" onClick=\"xajax_showStartResult(".$row['ID']."); return false;\">Startliste</a>" .
+				"<a id=\"showInDiv\" href=\"jqRequest&func=showStartList&lid=".$row['ID']."\" >Startliste</a>" .
 				"&nbsp;&nbsp; | &nbsp;&nbsp;" .
-				"<a href=\"#\" onClick=\"xajax_showStartWithoutKl(".$row['ID']."); return false;\">Teilnehmer ohne Klasse</a>" .
+				"<a id=\"showInDiv\" href=\"jqRequest&func=showStartWithoutKl&lid=".$row['ID']."\" >Teilnehmer ohne Klasse</a>" .
 				"&nbsp;&nbsp; | &nbsp;&nbsp;" .
 		//				"<a href=\"exportPDF.php?aktion=ergebnisKlasse&id=".$row['ID']."\">PDF nach Klassen</a>" .
 		//				"&nbsp;&nbsp; | &nbsp;&nbsp;" .
@@ -74,12 +67,11 @@ function startlisteForm($html) {
 }
 
 function showStartResult($rennen) {
-	$objResponse = new xajaxResponse();
 
 	$link = connectDB();
 
 	$html = "<br>";
-	$html = "<p><a href=\"#\" onClick=\"xajax_clearDiv()\">clear</a></p>";
+	$html = "<p><a href=\"#\" onClick=\"clearDiv(); return false;\">clear</a></p>";
 	$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 		"where t.vID = ".$_SESSION['vID']." ".
 			"and t.lid = $rennen and del= 0 and disq = 0 ".
@@ -109,18 +101,14 @@ function showStartResult($rennen) {
 	$html .= tableList($columns, $html2, "common");
 
 	mysql_close($link);
-
-	$objResponse->assign('data_div', 'innerHTML', $html);
-	return $objResponse;
+	return $html;
 }
 
 function showStartWithoutKl($rennen) {
-	$objResponse = new xajaxResponse();
-
 	$link = connectDB();
 
 	$html = "<br>";
-	$html = "<p><a href=\"#\" onClick=\"xajax_clearDiv()\">clear</a></p>";
+	$html = "<p><a href=\"#\" onClick=\"clearDiv(); return false;\">clear</a></p>";
 	$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 		"where t.vID = ".$_SESSION['vID']." ".
 			"and t.lid = $rennen and t.del= 0 and t.disq = 0 and t.klasse = '' ".
@@ -148,7 +136,5 @@ function showStartWithoutKl($rennen) {
 	$html .= tableList($columns, $html2, "common");
 
 	mysql_close($link);
-
-	$objResponse->assign('data_div', 'innerHTML', $html);
-	return $objResponse;
+	return $html;
 }

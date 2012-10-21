@@ -7,12 +7,6 @@
  */
 
 function rennen() {
-
-	$xajax = new xajax();
-	$xajax->register(XAJAX_FUNCTION, "lockRace");
-	$xajax->register(XAJAX_FUNCTION, "clearDiv");
-	$xajax->processRequest();
-	$xajax->printJavascript();
 	
 	global $func;	
 	$teamAnz = 0;
@@ -80,7 +74,6 @@ function rennen() {
 }
 
 function lockRace($rennen, $lock) {
-	$objResponse = new xajaxResponse();
 
 	$link = connectDB();
 	$sql = "update lauf set lockRace = $lock where ID = $rennen;";
@@ -91,16 +84,10 @@ function lockRace($rennen, $lock) {
 		}
 	mysql_close($link);
 
-	if($result) {
-		if ($lock == 0 ) {
-			$html = "<a href=\"#\" onClick=\"xajax_lockRace($rennen, 1); return false;\"><img src=\"img/offen.png\" alt=\"offen\" border=\"0\"></a>";
-		} else {	
-			$html = "<a href=\"#\" onClick=\"xajax_lockRace($rennen, 0); return false;\"><img src=\"img/geschlossen.png\" alt=\"geschlossen\" border=\"0\"></a>";
-		}
+	if(!$result) {
+		$lock = "-";
 	}
-	
-	$objResponse->assign('lock_div_'.$rennen, 'innerHTML', $html);
-	return $objResponse;
+	return $lock.";".$rennen;
 }
 
 function showRennen() {
@@ -138,7 +125,7 @@ function showRennen() {
 				$alt = "geschlossen";
 			}
 			
-			$html2 .=  "|&nbsp;&nbsp;<span id=\"lock_div_".$row['ID']."\"><a href=\"#\" onClick=\"xajax_lockRace(".$row['ID'].", $lock); return false;\"><img src=\"$img\" alt=\"$alt\" border=\"0\"></a></span>" .
+			$html2 .=  "|&nbsp;&nbsp;<span><a id=\"lock_href_".$row['ID']."\" href=\"jqRequest&func=lockRace&lid=".$row['ID']."&lock=".$lock."\"><img id=\"lock_img_".$row['ID']."\" src=\"$img\" alt=\"$alt\" border=\"0\"></a></span>" .
 					"&nbsp;&nbsp;";
 			
 			$html2 .= "</td>\n";

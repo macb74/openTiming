@@ -8,6 +8,28 @@ $(document).ready(function(){
 	});
 });
 
+
+
+function getKlasse(jg, sex, lid)
+{
+	var url = "index.php?jqRequest&func=getKlasse&jg=" + jg + "&sex=" + sex + "&lid=" + lid;
+	$.get( url, function(data){
+		setKlasse(data);
+	});
+}
+
+function setKlasse(data)
+{
+	var klasseArray;
+	klasseArray = data.split(";");
+ 
+	$("#klasse").val(klasseArray[0]);
+	$("#vklasse").val(klasseArray[1]);
+}
+
+
+
+
 $(document).ready(function(){
 	$("#calculator").click(function(){
 		if(document.getElementById('data_div').innerHTML == '') {
@@ -105,7 +127,7 @@ function calculateAge() {
 }
 
 // beim laden wird die Klasse neu berechnet und eingeblendet
-xajax_getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value, 1);
+getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value);
 
 // beim laden wird die Klasse und die Rundenzahl neu berechnet und eingeblendet
 updateSumRunden(document.getElementById('manRunden').value, document.getElementById('autRunden').value);

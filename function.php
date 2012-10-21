@@ -6,7 +6,6 @@
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 
-require_once("xajax_core/xajax.inc.php");
 include "config.php";
 include "veranstaltungen.php";
 include "teilnehmer.php";
@@ -89,13 +88,6 @@ function checkIfVeranstaltungIsSelected() {
 	} else {
 		return false;
 	}
-}
-
-function clearDiv() {
-		$objResponse = new xajaxResponse();
-		$html ="";
-		$objResponse->assign('data_div', 'innerHTML', $html);
-		return $objResponse;	
 }
 
 function getRennenData($rennen) {

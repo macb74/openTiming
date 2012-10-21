@@ -1,13 +1,6 @@
 <?php
 
 function ergebnis() {
-	$xajax = new xajax();
-	$xajax->register(XAJAX_FUNCTION, "showResult");
-	$xajax->register(XAJAX_FUNCTION, "showResultM");
-	$xajax->register(XAJAX_FUNCTION, "clearDiv");
-	$xajax->processRequest();
-	$xajax->printJavascript();
-	
 	global $func;
 	$html="";
 		
@@ -49,7 +42,10 @@ function ergebninsForm($html) {
 		$html2 .= "<td align\"left\">".$row['start']."</td>\n";
 		$html2 .= "<td align\"left\">".$row['aktualisierung']."</td>\n";
 		$html2 .= "<td align\"center\">" .
-				"<a href=\"#\" onClick=\"xajax_showResult(".$row['ID']."); return false;\">Ergebnins anzeigen</a>" .
+
+				
+				
+				"<a id=\"showInDiv\" href=\"jqRequest&func=showResult&lid=".$row['ID']."\">Ergebnins anzeigen</a>" .
 				"&nbsp;&nbsp; | &nbsp;&nbsp;" .
 				"<a href=\"exportPDF.php?action=ergebnisGesamt&id=".$row['ID']."\" target=\"_new\">PDF</a>" .
 				"&nbsp;&nbsp; | &nbsp;&nbsp;" .
@@ -58,7 +54,7 @@ function ergebninsForm($html) {
 				"<a href=\"exportXLS.php?action=ergebnis&id=".$row['ID']."\">Excel</a>";
 				if($row['team_anz'] > 0) {
 		$html2 .= "&nbsp;&nbsp; | &nbsp;&nbsp;" .
-				"<a href=\"#\" onClick=\"xajax_showResultM(".$row['ID']."); return false;\">Mannschaft</a>" .
+				"<a id=\"showInDiv\" href=\"jqRequest&func=showResultM&lid=".$row['ID']."\">Mannschaft</a>" .
 				"&nbsp;&nbsp; | &nbsp;&nbsp;" .
 				"<a href=\"exportPDF.php?action=ergebninsMannschaft&id=".$row['ID']."\" target=\"_new\">PDF Mannschaft</a>" ;
 				}
@@ -80,7 +76,6 @@ function ergebninsForm($html) {
 }
 
 function showResult($rennen) {
-	$objResponse = new xajaxResponse();
 
 	$link = connectDB();
 
@@ -131,12 +126,10 @@ function showResult($rennen) {
 	
 	mysql_close($link);
 	
-	$objResponse->assign('data_div', 'innerHTML', $html);
-	return $objResponse;
+	return $html;
 }
 
 function showResultM($rennen) {
-	$objResponse = new xajaxResponse();
 
 	$link = connectDB();
 	
@@ -183,6 +176,5 @@ function showResultM($rennen) {
 	
 	mysql_close($link);
 	
-	$objResponse->assign('data_div', 'innerHTML', $html);
-	return $objResponse;
+	return $html;
 }

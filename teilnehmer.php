@@ -99,11 +99,6 @@ function tDisplayEditForm($f) {
 	global $func;
 	$html = "";
 	
-	$xajax = new xajax();
-	$xajax->register(XAJAX_FUNCTION,"getKlasse");
-	$xajax->processRequest();
-	$xajax->printJavascript();
-
 	// wenn vorher kein Fehler war werden leere Felder angezeigt
 	if ($f[12] == "") {
 		$f[3] 	= '';
@@ -212,7 +207,7 @@ function tDisplayEditForm($f) {
 	$html .="				Jahrgang*:\n";
 	$html .="			</td>\n";
 	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" id=\"jg\" name=\"jg\" maxlength=\"4\" size=\"4\" value=\"$f[7]\" onChange=\"xajax_getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value, 1); return false;\">\n";
+	$html .="				<input type=\"text\" id=\"jg\" name=\"jg\" maxlength=\"4\" size=\"4\" value=\"$f[7]\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
 	$html .="				&nbsp;&nbsp;\n";
 	$html .="				<input type=\"text\" readonly id=\"klasse\" name=\"klasse\" maxlength=\"5\" size=\"5\" value=\"$f[15]\">\n";
 	$html .="				&nbsp;&nbsp;\n";
@@ -225,7 +220,7 @@ function tDisplayEditForm($f) {
 	$html .="				Geschlecht*:\n";
 	$html .="			</td>\n";
 	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<select id=\"geschlecht\" name=\"geschlecht\" onChange=\"xajax_getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value, 1); return false;\">\n";
+	$html .="				<select id=\"geschlecht\" name=\"geschlecht\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
 	$m = ""; $w = ""; $x= "";
 	if($f[5] == "X") { $x="selected"; }
 	elseif ($f[5] == "W") { $w="selected"; }
@@ -304,7 +299,7 @@ function tDisplayEditForm($f) {
 	if (!$result2) { die('Invalid query: ' . mysql_error()); }
 
 	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<select id=\"rID\" name=\"rID\" onChange=\"xajax_getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value, 1); return false;\">\n";
+	$html .="				<select id=\"rID\" name=\"rID\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
 	$html .="					<option value=\"X\">bitte wählen</option>\n";
 
 	while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)) {
@@ -413,21 +408,9 @@ function getKlasse($jg, $sex, $rennen, $ajax) {
 	$k[0] = getKlasseData($alter, $sex, $rennen, 0);
 	$k[1] = getKlasseData($alter, $sex, $rennen, 1);
 	
-	if($ajax == 1) { mysql_close($link); }
-
 	if($ajax == 1) {
-		// Instantiate the xajaxResponse object
-		$objResponse = new xajaxResponse();
-	  
-		// add a command to the response to assign the innerHTML attribute of
-		// the element with id="SomeElementId" to whatever the new content is
-
-		$objResponse->assign("klasse","value", $k[0]);
-		$objResponse->assign("vklasse","value", $k[1]);
-		//$objResponse->assign("test","innerHTML", $newContent);
-
-		//return the  xajaxResponse object
-		return $objResponse;
+		mysql_close($link);
+		return $k[0].";".$k[1];
 	} else {
 		return $k;
 	}

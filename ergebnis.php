@@ -84,7 +84,7 @@ function showResult($rennen) {
 	if ($rd['rundenrennen'] == 1) { $sqlAddOn = "runden desc, "; }
 	
 	$html = "<br>";
-	$html = "<p><a href=\"#\" onClick=\"xajax_clearDiv()\">clear</a></p>";
+	$html = "<p><a href=\"#\" onClick=\"clearDiv()\">clear</a></p>";
 	$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 		"where t.vID = ".$_SESSION['vID']." ".
 			"and t.lid = $rennen and del= 0 and disq = 0 and platz > 0 ".
@@ -134,7 +134,7 @@ function showResultM($rennen) {
 	$link = connectDB();
 	
 	$html = "<br>";
-	$html = "<p><a href=\"#\" onClick=\"xajax_clearDiv()\">clear</a></p>";
+	$html = "<p><a href=\"#\" onClick=\"clearDiv()\">clear</a></p>";
 	$sql = "SELECT t.verein, t.vnummer, t.vtime, t.vplatz, t.vklasse FROM `teilnehmer` as t ".
 		"where t.vID = ".$_SESSION['vID']." ".
 			"and t.lid = $rennen and del= 0 and disq = 0 and vplatz > 0 ".

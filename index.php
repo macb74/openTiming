@@ -55,10 +55,10 @@ if (!isset($_SESSION['vUntertitel'])) { $_SESSION['vUntertitel'] = ''; }
 if (!isset($_SESSION['rID'])) { $_SESSION['rID'] = 0; }
 
 $testDiv = false;
-if(stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) {
+if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbname'], 'test'))){
 	$testDiv = true;
 }
-	
+
 ?>
 
 <html>

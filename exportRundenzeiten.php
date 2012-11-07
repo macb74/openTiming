@@ -11,10 +11,10 @@ class PDF extends FPDF
 		$numBefore = 0;
 		$fill = false;
 		$linesPerPage = 45;
-		$header = $this->getHeader($_SESSION['vID'], $id);
+		$pageheader = $this->getHeader($_SESSION['vID'], $id);
 
 		$rd = getRennenData($id);
-		$this->setHeader($header);
+		$this->setHeader($pageheader);
 		$this->setMyFont();
 
 		if($rd['use_lID'] == 1) {
@@ -29,23 +29,25 @@ class PDF extends FPDF
 			die('Invalid query: ' . mysql_error());
 		}
 
-		
 		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			if($row['nachname'] != "") { $team = "  |  ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES)." - ".htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES); }
+			// Fuer Folgeseiten neue Seite samt Header anfangen, auf erster nicht
+			if(isset($r)){
+				$this->AddPage();
+				$this->setHeader($pageheader);
+				$this->setMyFont();
+			}
+			if($row['nachname'].$row['vorname'] != "") { $team = "  |  ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES)." - ".htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES); }
 			$header = "StNr: ".$row['stnr']." ".$team;
 			$this->setGroupHeader($header);
 			$r = 1;
 			$fill=false;
 			$zeitBefore = $rd['startZeit'];
 
-			$sql2 = "select zeit from zeit where zeit > '".$rd['startZeit']."' and vID = ".$_SESSION['vID']." $sql_lID and nummer = '".$row['stnr']."' order by zeit asc";
+			$sql2 = "select zeit from zeit z where zeit > '".$rd['startZeit']."' and vID = ".$_SESSION['vID']." $sql_lID and nummer = '".$row['stnr']."' order by zeit asc";
 			$result2 = mysql_query($sql2);
 			if (!$result) {
 				die('Invalid query: ' . mysql_error());
 			}
-
-			$zeitBefore = $rd['startZeit'];
-			$r = 1;
 			
 			while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)) {
 
@@ -145,13 +147,18 @@ class PDF extends FPDF
 
 }
 
+$_GET = filterParameters($_GET);
+
 $link = connectDB();
 //$filename = $_GET['action'].'.pdf';
+$filename = 'rundenzeiten.pdf';
 
 $pdf=new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage('Portrait', 'A4');
 $pdf->exportRundenzeiten($_GET['id']);
+
+$pdf->Output($filename,"I");
 
 $pdf->Output();
 

@@ -20,6 +20,7 @@ if(isset($_GET['jqRequest'])) {
 	if($_GET['func'] == 'showStartWithoutKl') { $html = showStartWithoutKl($_GET['lid']); echo $html;}
 	if($_GET['func'] == 'showResult') { $html = showResult($_GET['lid']); echo $html;}
 	if($_GET['func'] == 'showResultM') { $html = showResultM($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showWithowtTime') { $html = showWithowtTime($_GET['lid']); echo $html;}
 	if($_GET['func'] == 'getKlasse') { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
 	if($_GET['func'] == 'lockRace') { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
 	exit;

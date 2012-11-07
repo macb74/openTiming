@@ -2,11 +2,6 @@
 
 function auswertung() {
 	$result = "";
-	$xajax = new xajax();
-	$xajax->register(XAJAX_FUNCTION, "showWithowtTime");
-	$xajax->register(XAJAX_FUNCTION, "clearDiv");
-	$xajax->processRequest();
-	$xajax->printJavascript();
 	
 	global $func;
 	$html="";
@@ -327,7 +322,7 @@ function auswertungForm($html) {
 						"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
 						"| ";
 			}
-		$html2 .= "<a href=\"#\" onClick=\"xajax_showWithowtTime(".$row['ID']."); return false;\">Teilnehmer ohne Zeit</a>" .
+		$html2 .= "<a id=\"showInDiv\" href=\"jqRequest&func=showWithowtTime&lid=".$row['ID']."\">Teilnehmer ohne Zeit</a>" .
 				"&nbsp;&nbsp;" .
 //				"| " .
 //				"&nbsp;&nbsp;" .
@@ -346,7 +341,6 @@ function auswertungForm($html) {
 }
 
 function showWithowtTime($rennen) {
-	$objResponse = new xajaxResponse();
 
 	$link = connectDB();
 	
@@ -382,8 +376,7 @@ function showWithowtTime($rennen) {
 	
 	mysql_close($link);
 	
-	$objResponse->assign('data_div', 'innerHTML', $html);
-	return $objResponse;
+	return $html;
 }
 
 

@@ -5,9 +5,16 @@ require_once('fpdi/fpdi.php');
 include("function.php");
 session_start();
 
+$stnr=0;
+
+$_GET = filterParameters($_GET);
+$_POST = filterParameters($_POST);
+
 class PDF extends FPDI
 {
 	function urkunde($action, $num, $id, $tid, $template, $uDefinition) {
+
+                global $stnr;   # etwas haesslich, rausgabe der StNr per globaler Variable
 
 		#$header = $this->getHeader($_SESSION['vID'], $id, $stnr);
 		#$this->setHeader($header);
@@ -50,6 +57,8 @@ class PDF extends FPDI
 				} else {
 					$platz = $row['akplatz'];
 				}
+
+                                $stnr=$row['stnr'];
 	
 				include($uDefinition);
 	
@@ -142,6 +151,7 @@ class PDF extends FPDI
 $link = connectDB();
 //$filename = $_GET['action'].'.pdf';
 
+
 #$pdf=new PDF();
 $pdf=new PDF();
 $pdf->AliasNbPages();
@@ -159,7 +169,24 @@ if(isset($_GET['action'])) {
 	$pdf->urkunde($_GET['action'], $_GET['num'],  $_GET['id'], $_GET['tid'], $templates['template'], $templates['definition']);
 }
 
-$pdf->Output();
+if(isset($_GET['id'])) { 
+ $rData = getRennenData($_GET['id']);
+ $filename = $rData['titel']."_".$rData['untertitel'].".pdf";
+}
+
+if($_GET['num']<10000) { $anzahl=$_GET['num']; } else { $anzahl="alle"; }
+
+if($_GET['action'] == "gesamt") {
+        $filename = "Urkunden_Gesamt_$anzahl-".$filename;       
+} elseif($_GET['action'] == "klasse") {
+        $filename = "Urkunden_Klasse_$anzahl-".$filename;       
+} elseif($_GET['action'] == "einzel") {
+        $filename = "Urkunde_Einzel-$stnr.pdf";       
+} elseif($_GET['action'] == "team") {
+        $filename = "Urkunden_Team_$anzahl-".$filename;       
+}
+
+$pdf->Output($filename,"I");
 
 function getTemplate($action, $id, $tid) {
 	$u['template'] = "";

@@ -5,6 +5,9 @@ require_once 'PHPExcel/Classes/PHPExcel.php';
 #require_once 'Spreadsheet/Excel/Writer.php';
 include("function.php");
 
+$_GET = filterParameters($_GET);
+$_POST = filterParameters($_POST);
+
 $link = connectDB();
 $filename = $_GET['action'].'.xlsx';
 

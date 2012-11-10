@@ -5,7 +5,7 @@ function auswertung() {
 	
 	global $func;
 	$html="";
-	
+ 	
 	if(isset($_GET['ID'])) {
 		$result = doAuswertung($_GET['ID']);
 	}
@@ -23,7 +23,7 @@ function doAuswertung($rennen) {
 	$rInfo = getRennenData($rennen);
 	cleanAll($veranstaltung, $rennen);
 	
-	//$startZeit = $rInfo['startZeit'];
+	// $startZeit = $rInfo['startZeit'];
 	if($rInfo['rundenrennen'] == 0 || $rInfo['rundenrennen'] == 2) {
 		setKlasse($veranstaltung,$rennen);
 		updateZeit($veranstaltung, $rennen, $rInfo);
@@ -87,13 +87,24 @@ function cleanAll($veranstaltung, $rennen) {
 }
 
 function updateZeit($veranstaltung, $rennen, $rInfo) {
+        global $config;
 
 	if($rInfo['use_lID'] == 1) { $sql_lID = "and z.lid = $rennen "; } else { $sql_lID = ""; }
-	if($rInfo["rundenrennen"] == 1) { $zeit = "max(z.zeit)"; } else { $zeit = "min(z.zeit)"; }
 
-	// ohne Rundenvorgabe
+	switch($rInfo["rundenrennen"]) {
+		case 1:  $zeit = "max(z.zeit)"; break;   # Bei Rennen auf Zeit: Ende letzte Runde
+		case 2:  $zeit = "z.zeit"; break;        # Bei Renden auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
+                default: $zeit = "min(z.zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
+	} 
+
+        # Test auf Zeitumstellungslauf - rennen IDs muessen in Config gesetzt sein
+        if(isset($config['zeitsprungLIDs'])) {
+          if(array_search($rennen, $config['zeitsprungLIDs']) !== false) define('ZEITSPRUNG',true);
+        }
+        if(defined('ZEITSPRUNG')) $zeit="if(HOUR($zeit)>2 AND HOUR($zeit)<12,timediff($zeit,'01:00:00'),$zeit)";
+
 	if($rInfo["rundenrennen"] != 2) {
-
+	# ohne Rundenvorgabe oder kein Rundenrennen:
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit ".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
@@ -110,9 +121,9 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 			$res = mysql_query($sql);
 			if (!$res) { die('Invalid query: ' . mysql_error()); }
 		}
-	
 	} else {
-		$sql = "select t.id, t.stnr as stnr, z.zeit as zeit ".
+        # Rennen auf x Runden:
+		$sql = "select t.id, t.stnr as stnr, $zeit as zeit ".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
 			"and z.zeit > '".$rInfo['startZeit']."' order by stnr, zeit asc";

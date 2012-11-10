@@ -4,6 +4,10 @@ require('fpdf/fpdf.php');
 include("function.php");
 session_start();
 
+$_GET = filterParameters($_GET);
+$_POST = filterParameters($_POST);
+
+
 class PDF extends FPDF
 {
 	function ergebnisGesamt($id) {

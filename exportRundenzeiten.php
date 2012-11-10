@@ -4,6 +4,9 @@ require('fpdf/fpdf.php');
 include("function.php");
 session_start();
 
+$_GET = filterParameters($_GET);
+$_POST = filterParameters($_POST);
+
 class PDF extends FPDF
 {
 	function exportRundenzeiten($id) {
@@ -147,11 +150,10 @@ class PDF extends FPDF
 
 }
 
-$_GET = filterParameters($_GET);
 
 $link = connectDB();
 //$filename = $_GET['action'].'.pdf';
-$filename = 'rundenzeiten.pdf';
+$filename = 'Rundenzeiten.pdf';
 
 $pdf=new PDF();
 $pdf->AliasNbPages();

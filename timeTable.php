@@ -9,6 +9,9 @@
 session_start();
 include "function.php";
 
+$_GET = filterParameters($_GET);
+$_POST = filterParameters($_POST);
+
 ?>
 
 <html>

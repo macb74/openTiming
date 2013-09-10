@@ -419,6 +419,8 @@ function getKlasse($jg, $sex, $rennen, $ajax) {
 function getKlasseData($alter, $sex, $rennen, $mannschaft) {
 
 	$k = "";
+	if($rennen == "X") { return $k;}
+	
 	if($mannschaft == 0) { $klasse = 'klasse'; } else { $klasse = 'vklasse'; }
 	
 	$sql = "SELECT l.*, kd.* FROM `lauf` as l " .

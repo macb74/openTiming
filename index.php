@@ -6,6 +6,10 @@
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 
+if (stristr($_SERVER["REQUEST_URI"], '/index.php') === false) {
+	header('Location: '.$_SERVER["SCRIPT_NAME"]);
+}
+
 session_start();
 include "function.php";
 //$link = connectDB();
@@ -205,5 +209,5 @@ if (isset($link)) {
 	mysql_close($link);
 }
 //$link = connectDB();
-#phpinfo();
+phpinfo();
 ?>

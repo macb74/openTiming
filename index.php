@@ -7,7 +7,7 @@
  */
 
 if (stristr($_SERVER["REQUEST_URI"], '/index.php') === false) {
-	header('Location: '.$_SERVER["SCRIPT_NAME"]);
+	header('Location: '.$_SERVER["SCRIPT_NAME"].'?func=veranstaltungen');
 }
 
 session_start();
@@ -209,5 +209,5 @@ if (isset($link)) {
 	mysql_close($link);
 }
 //$link = connectDB();
-phpinfo();
+#phpinfo();
 ?>

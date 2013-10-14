@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `teilnehmer` (
   `att` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
   `chip` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `zeit` time NOT NULL DEFAULT '00:00:00',
-  `tausenstel` int(3) NOT NULL DEFAULT '0',
+  `millisecond` int(3) NOT NULL DEFAULT '0',
   `manzeit` time NOT NULL DEFAULT '00:00:00',
   `useManTime` int(1) NOT NULL DEFAULT '0',
   `platz` int(11) NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `zeit` (
   `lID` int(11) NOT NULL DEFAULT '0',
   `nummer` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `zeit` time NOT NULL,
-  `tausenstel` int(3) NOT NULL DEFAULT '0',
+  `millisecond` int(3) NOT NULL DEFAULT '0',
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Reader` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`ID`)

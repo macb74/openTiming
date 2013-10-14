@@ -111,14 +111,14 @@ function tUpdateDB($lines) {
 				if(isset($_POST['update']) == 1 && $_POST['update'] == 1 && $num != 0) {
 					$sql1 = "update teilnehmer set " .
 					"vID = $line[0], lID = $line[1], stnr = $line[2], nachname = '".$line[3]."', vorname = '".$line[4]."', " .
-					"geschlecht = '$line[5]', jahrgang = $line[6], verein = '".$line[7]."', att = '$line[8]', klasse = '$klasse[0]', vklasse = '$klasse[1]' " .
+					"geschlecht = '$line[5]', jahrgang = $line[6], verein = '".trim($line[7])."', att = '".trim($line[8])."', klasse = '$klasse[0]', vklasse = '$klasse[1]' " .
 					"where ID = $tID";
 					$go = 1;
 				}
 				if($num == 0) {
 					$sql1 = "insert into teilnehmer " .
 					"(vID, lID, stnr, nachname, vorname, geschlecht, jahrgang, verein, att, klasse, vklasse) " .
-					"values ( $line[0], $line[1], $line[2], '".$line[3]."', '".$line[4]."', '$line[5]', '$line[6]', '".$line[7]."', '".$line[8]."', '$klasse[0]', '$klasse[1]')";			
+					"values ( $line[0], $line[1], $line[2], '".$line[3]."', '".$line[4]."', '$line[5]', '$line[6]', '".trim($line[7])."', '".trim($line[8])."', '$klasse[0]', '$klasse[1]')";			
 					$go = 1;
 				}
 					

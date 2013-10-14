@@ -94,7 +94,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	switch($rInfo["rundenrennen"]) {
 		case 1:  $zeit = "max(z.zeit)"; break;   # Bei Rennen auf Zeit: Ende letzte Runde
 		case 2:  $zeit = "z.zeit"; break;        # Bei Renden auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
-                default: $zeit = "min(z.zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
+        default: $zeit = "min(z.zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
 	} 
 
         # Test auf Zeitumstellungslauf - rennen IDs muessen in Config gesetzt sein
@@ -105,7 +105,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 
 	if($rInfo["rundenrennen"] != 2) {
 	# ohne Rundenvorgabe oder kein Rundenrennen:
-		$sql = "select t.id, t.stnr as stnr, $zeit as zeit ".
+		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.tausenstel ".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
 			"and z.zeit > '".$rInfo['startZeit']."' ".
@@ -117,13 +117,13 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 			
 		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 			$realTime = getRealTime($rInfo['startZeit'], $row['zeit']);
-			$sql = "update teilnehmer set Zeit = '$realTime' where id = ".$row['id'];
+			$sql = "update teilnehmer set Zeit = '$realTime', tausenstel = ".$row['tausenstel']." where id = ".$row['id'];
 			$res = mysql_query($sql);
 			if (!$res) { die('Invalid query: ' . mysql_error()); }
 		}
 	} else {
         # Rennen auf x Runden:
-		$sql = "select t.id, t.stnr as stnr, $zeit as zeit ".
+		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.tausenstel".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
 			"and z.zeit > '".$rInfo['startZeit']."' order by stnr, zeit asc";
@@ -139,7 +139,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 			if($i == $rInfo['rdVorgabe']) {
 				//echo $i."-";
 				$realTime = getRealTime($rInfo['startZeit'], $row['zeit']);
-				$sql = "update teilnehmer set Zeit = '$realTime' where id = ".$row['id'];
+				$sql = "update teilnehmer set Zeit = '$realTime', tausenstel = ".$row['tausenstel']." where id = ".$row['id'];
 				$res = mysql_query($sql);
 				if (!$res) { die('Invalid query: ' . mysql_error()); }			
 			}
@@ -154,7 +154,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 
 function updatePlatzierung($veranstaltung, $rennen, $rInfo) {
 
-	if($rInfo["rundenrennen"] == 1) { $orderBy = "order by runden desc, zeit asc"; } else { $orderBy = "order by zeit asc"; }
+	if($rInfo["rundenrennen"] == 1) { $orderBy = "order by runden desc, zeit asc, tausenstel asc"; } else { $orderBy = "order by zeit asc, tausenstel asc"; }
 	
 	$sql = "select id, klasse, geschlecht from teilnehmer ".
 	"where vid = $veranstaltung and lid = $rennen and zeit <> '00:00:00' ".
@@ -389,7 +389,6 @@ function showWithowtTime($rennen) {
 	
 	return $html;
 }
-
 
 function updateAnzRunden($veranstaltung, $rennen, $rInfo) {
 	$numbers = array();

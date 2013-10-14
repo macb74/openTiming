@@ -39,3 +39,7 @@ ALTER TABLE `lauf` ADD `mainReaderIp` VARCHAR( 16 ) NOT NULL AFTER `showLogo`;
 
 -- 17.05.2012
 ALTER TABLE `teilnehmer` ADD `att` VARCHAR( 2 ) NOT NULL AFTER `verein` 
+
+-- 14.10.2013
+ALTER TABLE `zeit` ADD `tausenstel` INT( 3 ) NOT NULL DEFAULT '0' AFTER `zeit` 
+ALTER TABLE `teilnehmer` ADD `tausenstel` INT( 3 ) NOT NULL DEFAULT '0' AFTER `zeit` 

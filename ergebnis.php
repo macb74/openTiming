@@ -95,6 +95,11 @@ function showResult($rennen) {
 		}	
 	$html2 = "";
 	$i=1;
+	$dataSetBefore['zeit'] = 'none';
+	$dataSetBefore['klasse'] = 'none';
+	
+	$sameTimeAsBefore ='';
+
 	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 		if($row['useManTime'] == 1 ) { $umt = '*'; } else { $umt = ''; }
 		if($row['man_runden'] != 0 ) { $mr = '*'; } else { $mr = ''; }
@@ -108,10 +113,14 @@ function showResult($rennen) {
 		$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
 		$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
 		if ($rd['rundenrennen'] != 0) { $html2 .= "<td align\"left\">".$row['runden'].$mr."</td>\n"; }
-		$html2 .= "<td align\"left\">".$row['zeit'].$umt."</td>\n";
+		if (($dataSetBefore['zeit'] == $row['zeit']) && ($dataSetBefore['klasse'] == $row['klasse'])) { $sameTimeAsBefore = 'style="font-weight:bold"'; } else { $sameTimeAsBefore = ''; }
+		$html2 .= "<td align\"left\" $sameTimeAsBefore >".$row['zeit'].$umt."</td>\n";
 		$html2 .= "<td align\"left\">".$row['platz']."</td>\n";
 		$html2 .= "<td align\"left\">".$row['akplatz']."</td>\n";
 		$html2 .= "<td align\"left\"><a href=\"urkundenPDF.php?action=einzel&tid=".$row['ID']."\" target=\"_new\">Urkunde</a></td>\n";
+		
+		$dataSetBefore['zeit'] = $row['zeit'];		
+		$dataSetBefore['klasse'] = $row['klasse'];
 		
 		$html2 .= "</tr>\n";
 		$i++;

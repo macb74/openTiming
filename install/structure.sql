@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 05. Okt 2012 um 19:46
+-- Erstellungszeit: 14. Okt 2013 um 18:51
 -- Server Version: 5.5.16
 -- PHP-Version: 5.3.8
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `lauf` (
   `mainReaderIp` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `aktualisierung` datetime NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=68 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=71 ;
 
 -- --------------------------------------------------------
 
@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS `teilnehmer` (
   `att` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
   `chip` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `zeit` time NOT NULL DEFAULT '00:00:00',
+  `tausenstel` int(3) NOT NULL DEFAULT '0',
   `manzeit` time NOT NULL DEFAULT '00:00:00',
   `useManTime` int(1) NOT NULL DEFAULT '0',
   `platz` int(11) NOT NULL,
@@ -121,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `teilnehmer` (
   `ma_akplatz` int(11) NOT NULL COMMENT 'Klassenplatzierung in der Meisterschaftswertung',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `teilnehmer` (`vID`,`lID`,`stnr`,`del`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5191 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5899 ;
 
 -- --------------------------------------------------------
 
@@ -135,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `veranstaltung` (
   `untertitel` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `datum` date NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=15 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=16 ;
 
 -- --------------------------------------------------------
 
@@ -149,10 +150,11 @@ CREATE TABLE IF NOT EXISTS `zeit` (
   `lID` int(11) NOT NULL DEFAULT '0',
   `nummer` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `zeit` time NOT NULL,
+  `tausenstel` int(3) NOT NULL DEFAULT '0',
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Reader` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1996 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2709 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

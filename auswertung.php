@@ -43,8 +43,10 @@ function doAuswertung($rennen) {
 }
 
 function getSeconds($s) {
-	$s = explode(":", $s);
-	$sec = $s[0] * 3600 + $s[1] * 60 + $s[2];
+	$sec = strtotime($s);
+	
+// 	$s = explode(":", $s);
+// 	$sec = $s[0] * 3600 + $s[1] * 60 + $s[2];
 	return $sec;
 }
 	
@@ -87,7 +89,7 @@ function cleanAll($veranstaltung, $rennen) {
 }
 
 function updateZeit($veranstaltung, $rennen, $rInfo) {
-        global $config;
+    global $config;
 
 	if($rInfo['use_lID'] == 1) { $sql_lID = "and z.lid = $rennen "; } else { $sql_lID = ""; }
 
@@ -103,21 +105,21 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
         }
         if(defined('ZEITSPRUNG')) $zeit="if(HOUR($zeit)>2 AND HOUR($zeit)<12,timediff($zeit,'01:00:00'),$zeit)";
 
+    $startZeit = $_SESSION['vDatum']." ".$rInfo['startZeit'];
 	if($rInfo["rundenrennen"] != 2) {
 	# ohne Rundenvorgabe oder kein Rundenrennen:
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
-			"and z.zeit > '".$rInfo['startZeit']."' ".
+			"and z.zeit > '".$startZeit."' ".
 			"group by t.stnr";
 
 		$result = mysql_query($sql);
 		if (!$result) { die('Invalid query: ' . mysql_error()); }
-		//echo $sql;
-			
+
 		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$realTime = getRealTime($rInfo['startZeit'], $row['zeit']);
-			$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];
+			$realTime = getRealTime($startZeit, $row['zeit']);			
+			$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];		
 			$res = mysql_query($sql);
 			if (!$res) { die('Invalid query: ' . mysql_error()); }
 		}
@@ -126,7 +128,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
-			"and z.zeit > '".$rInfo['startZeit']."' order by stnr, zeit asc";
+			"and z.zeit > '".$startZeit."' order by stnr, zeit asc";
 		//echo $sql;
 	
 		$result = mysql_query($sql);
@@ -138,7 +140,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 			if($oldStnr == $row['stnr']) { $i++; } else { $i=1; }
 			if($i == $rInfo['rdVorgabe']) {
 				//echo $i."-";
-				$realTime = getRealTime($rInfo['startZeit'], $row['zeit']);
+				$realTime = getRealTime($startZeit, $row['zeit']);
 				$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];
 				$res = mysql_query($sql);
 				if (!$res) { die('Invalid query: ' . mysql_error()); }			

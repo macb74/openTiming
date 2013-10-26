@@ -42,4 +42,10 @@ ALTER TABLE `teilnehmer` ADD `att` VARCHAR( 2 ) NOT NULL AFTER `verein`
 
 -- 14.10.2013
 ALTER TABLE `zeit` ADD `millisecond` INT( 3 ) NOT NULL DEFAULT '0' AFTER `zeit` 
-ALTER TABLE `teilnehmer` ADD `millisecond` INT( 3 ) NOT NULL DEFAULT '0' AFTER `zeit` 
+ALTER TABLE `teilnehmer` ADD `millisecond` INT( 3 ) NOT NULL DEFAULT '0' AFTER `zeit`
+
+-- 24.10.2013
+ALTER TABLE `zeit` ADD `zeit_tmp` DATETIME NOT NULL AFTER `nummer`;
+update zeit set zeit_tmp = concat(DATE(timestamp), ' ',zeit);
+ALTER TABLE `zeit` DROP `zeit`;
+ALTER TABLE `zeit` CHANGE `zeit_tmp` `zeit` DATETIME NOT NULL;

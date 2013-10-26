@@ -22,11 +22,11 @@ $html = "";
 if(isset($_GET['jqRequest'])) {
 	if($_GET['func'] == 'showStartList')      { $html = showStartResult($_GET['lid']); echo $html;}
 	if($_GET['func'] == 'showStartWithoutKl') { $html = showStartWithoutKl($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showResult') { $html = showResult($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showResultM') { $html = showResultM($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showWithowtTime') { $html = showWithowtTime($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'getKlasse') { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
-	if($_GET['func'] == 'lockRace') { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
+	if($_GET['func'] == 'showResult')         { $html = showResult($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showResultM')        { $html = showResultM($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showWithowtTime')    { $html = showWithowtTime($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'getKlasse')          { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
+	if($_GET['func'] == 'lockRace')           { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
 	exit;
 }
 
@@ -50,13 +50,11 @@ if(array_search($func[0], $allowedFunctions) !== false) {
 } else {
 	echo "Use of disallowed function"; die;
 }
-	
 
-
-if (!isset($_SESSION['vTitel'])) { $_SESSION['vTitel'] = ''; }
-if (!isset($_SESSION['vDatum'])) { $_SESSION['vDatum'] = ''; }
+if (!isset($_SESSION['vTitel']))      { $_SESSION['vTitel'] = ''; }
+if (!isset($_SESSION['vDatum']))      { $_SESSION['vDatum'] = ''; }
 if (!isset($_SESSION['vUntertitel'])) { $_SESSION['vUntertitel'] = ''; }
-if (!isset($_SESSION['rID'])) { $_SESSION['rID'] = 0; }
+if (!isset($_SESSION['rID']))         { $_SESSION['rID'] = 0; }
 
 $testDiv = false;
 if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbname'], 'test'))){
@@ -193,7 +191,7 @@ if ($testDiv == true) {
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr>
 		<td valign="bottom">
-		<div class="copy">&copy; 2012 open Timing by M. Bußmann</div>
+		<div class="copy">&copy; 2013 open Timing by M. Bußmann</div>
 		</td>
 	</tr>
 </table>

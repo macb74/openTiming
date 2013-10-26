@@ -17,6 +17,9 @@ class PDF extends FPDF
 		$pageheader = $this->getHeader($_SESSION['vID'], $id);
 
 		$rd = getRennenData($id);
+		$startZeit = $_SESSION['vDatum']." ".$rd['startZeit'];
+		
+		
 		$this->setHeader($pageheader);
 		$this->setMyFont();
 
@@ -44,9 +47,9 @@ class PDF extends FPDF
 			$this->setGroupHeader($header);
 			$r = 1;
 			$fill=false;
-			$zeitBefore = $rd['startZeit'];
+			$zeitBefore = $startZeit;
 
-			$sql2 = "select zeit from zeit z where zeit > '".$rd['startZeit']."' and vID = ".$_SESSION['vID']." $sql_lID and nummer = '".$row['stnr']."' order by zeit asc";
+			$sql2 = "select zeit from zeit z where zeit > '".$startZeit."' and vID = ".$_SESSION['vID']." $sql_lID and nummer = '".$row['stnr']."' order by zeit asc";
 			$result2 = mysql_query($sql2);
 			if (!$result) {
 				die('Invalid query: ' . mysql_error());
@@ -57,7 +60,7 @@ class PDF extends FPDF
 				$rundenzeit = getRealTime($zeitBefore, $row2['zeit']);
 					
 				$this->Cell(15,5,$r,0,0,'R',$fill);
-				$this->Cell(20,5,$row2['zeit'],0,0,'R',$fill);
+				$this->Cell(20,5,substr($row2['zeit'],10),0,0,'R',$fill);
 				$this->Cell(25,5,$rundenzeit,0,0,'R',$fill);
 				$this->Ln();
 				$fill=!$fill;

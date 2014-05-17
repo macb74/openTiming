@@ -21,14 +21,12 @@ function import() {
 function tImport() {
 	if(isset($_POST['submit'])) {
 
-		$link = connectDB();
 		$filename = uploadFile();
 		$lines = parseFile($filename);
 		//		echo "<pre>";
 		//		print_r($lines);
 		//		echo "</pre>";
 		$html = tUpdateDB($lines);
-		mysql_close($link);
 
 	} else {
 		$html = uploadForm();
@@ -39,14 +37,12 @@ function tImport() {
 function zImport() {
 	if(isset($_POST['submit'])) {
 
-		$link = connectDB();
 		$filename = uploadFile();
 		$lines = parseFile($filename);
 		//		echo "<pre>";
 		//		print_r($lines);
 		//		echo "</pre>";
 		$html = zUpdateDB($lines);
-		mysql_close($link);
 
 	} else {
 		$html = uploadForm();
@@ -71,7 +67,7 @@ function parseFile($file) {
 		$num = count($data);
 		for ($c=0; $c < $num; $c++) {
 			if ($row != 0) {					// erste Zeile enthält die Ueberschriften
-				$lines[$row][$c] = htmlspecialchars($data[$c], ENT_QUOTES, 'UTF-8');
+				$lines[$row][$c] = $data[$c];
 			}
 		}
 		$row++;
@@ -93,19 +89,19 @@ function tUpdateDB($lines) {
 			if(!isset($line[8])) { $line[8] = ""; }	
 		
 			$sql = "select ID from teilnehmer where vID = $line[0] and lID = $line[1] and stnr = $line[2] and del = 0";
-			$res = mysql_query($sql);
-	
-			if (!$res) { die('Invalid query: ' . mysql_error()); }
-			if ($res) {
+			$res = dbRequest($sql, 'SELECT');
+			
+			if ($res[1] >= 0) {
 				$line[5] = strtoupper($line[5]);
 				$go = 0;
-				$num = mysql_num_rows($res);
+				$num = $res[1];
 				if($num != 0) {
-					while ($row = mysql_fetch_array($res, MYSQL_ASSOC)) {
+					foreach ($res[0] as $row) {
 						$tID = $row['ID'];
 					}
 				}
 	
+				$line = filterParameters($line);
 				$klasse = getKlasse($line[6], $line[5], $line[1], 0);
 					
 				if(isset($_POST['update']) == 1 && $_POST['update'] == 1 && $num != 0) {
@@ -122,34 +118,16 @@ function tUpdateDB($lines) {
 					$go = 1;
 				}
 					
-				/*
-				 if($_POST['update'] == 1 && $num != 0) {
-					$sql1 = "update teilnehmer set " .
-					"vID = $line[0], lID = $line[1], stnr = $line[2], nachname = '".utf8_encode($line[3])."', vorname = '".utf8_encode($line[4])."', " .
-					"geschlecht = '$line[5]', jahrgang = $line[6], verein = '".utf8_encode($line[7])."', klasse = '$klasse' " .
-					"where ID = $tID";
-					$go = 1;
-					}
-					if($num == 0) {
-					$sql1 = "insert into teilnehmer " .
-					"(vID, lID, stnr, nachname, vorname, geschlecht, jahrgang, verein, klasse) " .
-					"values ( $line[0], $line[1], $line[2], '".utf8_encode($line[3])."', '".utf8_encode($line[4])."', '$line[5]', '$line[6]', '".utf8_encode($line[7])."', '$klasse')";
-					$go = 1;
-					}
-					*/
 				if($go == 1) {
-					$link = connectDB();
-					$result1 = mysql_query($sql1);
-					if (!$result1) { die('Invalid query: ' . mysql_error()); }
-					if (!$result1) {
-						$errMsg .= "Fehler in Zeile $i - Fehlermeldung: " . mysql_error() . "<br>\n";
+					$result1 = dbRequest($sql1, 'INSERT');
+					if (!$result1[0]) {
+						$errMsg .= "Fehler in Zeile $i - Fehlermeldung: " . $result1[2] . "<br>\n";
 					} else {
 						$didIt++;
 					}
 				}
 	
 			} else {
-				echo mysql_error();
 				$errMsg .= "Fehler in Zeile $i<br>\n";
 			}
 			$i++;
@@ -169,11 +147,11 @@ function zUpdateDB($lines) {
 		$errMsg = "";
 		$sql = "select ID from teilnehmer where vID = $line[0] and lID = $line[1] and stnr = $line[2] and del = 0";
 		//echo $sql;
-		$result = mysql_query($sql);
+		$result = dbRequest($sql, 'SELECT');
 		if ($result) {
-			$num = mysql_num_rows($result);
+			$num = $result[1];
 			if($num != 0) {
-				while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+				foreach ($result[0] as $row) {
 					$tID = $row['ID'];
 				}
 			}
@@ -184,9 +162,9 @@ function zUpdateDB($lines) {
 				"where ID = $tID";
 
 				//echo $sql1."<br>";
-				$res1 = mysql_query($sql1);
-				if (!$res1) {
-					$errMsg .= "Fehler in Zeile $i - Fehlermeldung: " . mysql_error() . "<br>\n";
+				$res1 = dbRequest($sql1, 'INSERT');
+				if (!$res1[0]) {
+					$errMsg .= "Fehler in Zeile $i - Fehlermeldung: " . $res1[2] . "<br>\n";
 				} else {
 					$didIt++;
 				}

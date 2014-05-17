@@ -12,7 +12,7 @@ if (stristr($_SERVER["REQUEST_URI"], '/index.php') === false) {
 
 session_start();
 include "function.php";
-//$link = connectDB();
+$link = connectDB();
 $allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebnis', 'klasse', 'rennen', 'startliste', 'urkunden', 'import');
 
 $_GET = filterParameters($_GET);
@@ -202,10 +202,6 @@ if ($testDiv == true) {
 </html>
 
 <?php
-
-if (isset($link)) {
-	mysql_close($link);
-}
-//$link = connectDB();
+$link->close();
 #phpinfo();
 ?>

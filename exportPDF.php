@@ -26,8 +26,7 @@ class PDF extends FPDF
 			"and lid = $id and del= 0 and disq = 0 and platz > 0 ".
 		"order by $sqlAddOn zeit, platz";
 
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
+		$result = dbRequest($sql, 'SELECT');
 
 		$this->setMyFont();
 
@@ -36,67 +35,69 @@ class PDF extends FPDF
 		$fill=false;
 		$i = 1;
 		$ii = 1;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
 
-			if($rd['teamrennen'] == 0) {
-				$this->Cell(10,5,$i,0,0,'R',$fill);
-				$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
-				$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(60,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
-				if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
-				$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
-				$this->Cell(10,5,$row['akplatz'],0,0,'R',$fill);
-				if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,$row['platz'],0,0,'R',$fill); }
-				$this->Cell(8,5,$row['att'],0,0,'R',$fill);
-	
-				$this->Ln();
-				$fill=!$fill;
-				$i++;
-	
-				if($i%$linesPerPage == 0) {
-					$this->AddPage('Portrait', 'A4');
-					$this->setHeader($header);
-					$this->setMyFont();
-					$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], false);
+				if($rd['teamrennen'] == 0) {
+					$this->Cell(10,5,$i,0,0,'R',$fill);
+					$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
+					$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(60,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
+					$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
+					$this->Cell(10,5,$row['akplatz'],0,0,'R',$fill);
+					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,$row['platz'],0,0,'R',$fill); }
+					$this->Cell(8,5,$row['att'],0,0,'R',$fill);
+		
+					$this->Ln();
+					$fill=!$fill;
+					$i++;
+		
+					if($i%$linesPerPage == 0) {
+						$this->AddPage('Portrait', 'A4');
+						$this->setHeader($header);
+						$this->setMyFont();
+						$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], false);
+					}
+					
+				} else {
+					
+					$this->Cell(10,5,$i,0,0,'R',$fill);
+					$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
+					$this->SetFont('Arial','B',10);
+					$this->Cell(100,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+					$this->SetFont('Arial','',10);
+					$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
+					$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
+					$this->Cell(10,5,$row['akplatz'],0,0,'R',$fill);
+					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,$row['platz'],0,0,'R',$fill); }
+					
+					$this->Ln();
+					$this->Cell(10,5,'',0,0,'R',$fill);
+					$this->Cell(11,5,'',0,0,'R',$fill);
+					$this->Cell(100,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(12,5,'',0,0,'R',$fill);
+					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,'',0,0,'R',$fill); }
+					$this->Cell(18,5,'',0,0,'R',$fill);
+					$this->Cell(10,5,'',0,0,'R',$fill);
+					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,'',0,0,'R',$fill); }
+					
+					
+					$this->Ln();
+					$fill=!$fill;
+					$i++;
+					$ii=$ii+2;
+		
+					if($ii%$linesPerPage == 0 || $ii%$linesPerPage == 1) {
+						$this->AddPage('Portrait', 'A4');
+						$this->setHeader($header);
+						$this->setMyFont();
+						$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen']);
+					}				
+									
 				}
-				
-			} else {
-				
-				$this->Cell(10,5,$i,0,0,'R',$fill);
-				$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
-				$this->SetFont('Arial','B',10);
-				$this->Cell(100,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-				$this->SetFont('Arial','',10);
-				$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
-				if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
-				$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
-				$this->Cell(10,5,$row['akplatz'],0,0,'R',$fill);
-				if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,$row['platz'],0,0,'R',$fill); }
-				
-				$this->Ln();
-				$this->Cell(10,5,'',0,0,'R',$fill);
-				$this->Cell(11,5,'',0,0,'R',$fill);
-				$this->Cell(100,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(12,5,'',0,0,'R',$fill);
-				if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,'',0,0,'R',$fill); }
-				$this->Cell(18,5,'',0,0,'R',$fill);
-				$this->Cell(10,5,'',0,0,'R',$fill);
-				if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,'',0,0,'R',$fill); }
-				
-				
-				$this->Ln();
-				$fill=!$fill;
-				$i++;
-				$ii=$ii+2;
-	
-				if($ii%$linesPerPage == 0 || $ii%$linesPerPage == 1) {
-					$this->AddPage('Portrait', 'A4');
-					$this->setHeader($header);
-					$this->setMyFont();
-					$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen']);
-				}				
-								
 			}
 		}
 
@@ -116,61 +117,61 @@ class PDF extends FPDF
 				"and lid = $id and del= 0 and disq = 0 ".
 			"order by $sort";
 
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
+		$result = dbRequest($sql, 'SELECT');
 
 		$this->setMyFont();
 		$this->setStartHeader($rd['teamrennen']);
 
 		$fill=false;
 		$i = 1;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-
-			if($rd['teamrennen'] == 0) {
-				$this->Cell(15,5,$row['stnr'],0,0,'R',$fill);
-				$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(70,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(15,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
-				$this->Cell(10,5,htmlspecialchars_decode(utf8_decode($row['att']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(20,5,htmlspecialchars_decode(utf8_decode($row['titel']), ENT_QUOTES),0,0,'L',$fill);
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
 	
-				$this->Ln();
-				$fill=!$fill;
-				$i++;
+				if($rd['teamrennen'] == 0) {
+					$this->Cell(15,5,$row['stnr'],0,0,'R',$fill);
+					$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(70,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(15,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					$this->Cell(10,5,htmlspecialchars_decode(utf8_decode($row['att']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(20,5,htmlspecialchars_decode(utf8_decode($row['titel']), ENT_QUOTES),0,0,'L',$fill);
+		
+					$this->Ln();
+					$fill=!$fill;
+					$i++;
+		
+					if($i%$linesPerPage == 0) {
+						$this->AddPage('Portrait', 'A4');
+						$this->setHeader($header);
+						$this->setMyFont();
+						$this->setStartHeader($rd['teamrennen']);
+					}
 	
-				if($i%$linesPerPage == 0) {
-					$this->AddPage('Portrait', 'A4');
-					$this->setHeader($header);
-					$this->setMyFont();
-					$this->setStartHeader($rd['teamrennen']);
-				}
-
-			} else {
-
-				$this->Cell(15,5,$row['stnr'],0,0,'R',$fill);
-				$this->SetFont('Arial','B',10);
-				$this->Cell(100,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-				$this->SetFont('Arial','',10);
-				$this->Cell(15,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
-				$this->Cell(20,5,htmlspecialchars_decode(utf8_decode($row['titel']), ENT_QUOTES),0,0,'L',$fill);
+				} else {
 	
-				$this->Ln();
-				$this->Cell(15,5,'',0,0,'R',$fill);
-				$this->Cell(100,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(15,5,'',0,0,'R',$fill);
-				$this->Cell(20,5,'',0,0,'L',$fill);
-				
-				$this->Ln();				
-				$fill=!$fill;
-				$i=$i+2;
-	
-				if($i%$linesPerPage == 0 || $i%$linesPerPage == 1) {
-					$this->AddPage('Portrait', 'A4');
-					$this->setHeader($header);
-					$this->setMyFont();
-					$this->setStartHeader($rd['teamrennen']);
-				}
-				
+					$this->Cell(15,5,$row['stnr'],0,0,'R',$fill);
+					$this->SetFont('Arial','B',10);
+					$this->Cell(100,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+					$this->SetFont('Arial','',10);
+					$this->Cell(15,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					$this->Cell(20,5,htmlspecialchars_decode(utf8_decode($row['titel']), ENT_QUOTES),0,0,'L',$fill);
+		
+					$this->Ln();
+					$this->Cell(15,5,'',0,0,'R',$fill);
+					$this->Cell(100,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
+					$this->Cell(15,5,'',0,0,'R',$fill);
+					$this->Cell(20,5,'',0,0,'L',$fill);
+					
+					$this->Ln();				
+					$fill=!$fill;
+					$i=$i+2;
+		
+					if($i%$linesPerPage == 0 || $i%$linesPerPage == 1) {
+						$this->AddPage('Portrait', 'A4');
+						$this->setHeader($header);
+						$this->setMyFont();
+						$this->setStartHeader($rd['teamrennen']);
+					}
+				}	
 			}
 		}
 
@@ -189,8 +190,7 @@ class PDF extends FPDF
 			"and t.lid = $id and del= 0 and disq = 0 and vplatz > 0 ".
 			"group by vnummer order by vtime asc, vnummer";
 			
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
+		$result = dbRequest($sql, 'SELECT');
 
 		$this->setMyFont();
 
@@ -198,54 +198,55 @@ class PDF extends FPDF
 
 		$fill=false;
 		$i = 1;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
 				
-			$vnummer = $row['vnummer'];
-			$this->Cell(15,5,$i,0,0,'R',$fill);
-			$this->Cell(60,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-			$this->Cell(20,5,$row['vtime'],0,0,'R',$fill);
-			$this->Cell(5,5,'',0,0,'R',$fill);
-			
-			$sql2 = "SELECT nachname, vorname, zeit from teilnehmer " .
-					"where lid = $id and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
-			$res2 = mysql_query($sql2);
-			if (!$res2) { die('Invalid query: ' . mysql_error()); }
+				$vnummer = $row['vnummer'];
+				$this->Cell(15,5,$i,0,0,'R',$fill);
+				$this->Cell(60,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+				$this->Cell(20,5,$row['vtime'],0,0,'R',$fill);
+				$this->Cell(5,5,'',0,0,'R',$fill);
 				
-			$ii = 1;
-			while ($row2 = mysql_fetch_array($res2, MYSQL_ASSOC)) {
-				if($ii != 1) {
-					$this->Cell(15,5,'',0,0,'R',$fill);
-					$this->Cell(60,5,'',0,0,'L',$fill);
-					$this->Cell(20,5,'',0,0,'R',$fill);
-					$this->Cell(5,5,'',0,0,'R',$fill);
+				$sql2 = "SELECT nachname, vorname, zeit from teilnehmer " .
+						"where lid = $id and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
+				$res2 = dbRequest($sql2, 'SELECT');
+					
+				$ii = 1;
+				if($result[1] > 0) {
+					foreach ($res2[0] as $row2) {
+						if($ii != 1) {
+							$this->Cell(15,5,'',0,0,'R',$fill);
+							$this->Cell(60,5,'',0,0,'L',$fill);
+							$this->Cell(20,5,'',0,0,'R',$fill);
+							$this->Cell(5,5,'',0,0,'R',$fill);
+						}
+						$this->Cell(40,5," ".htmlspecialchars_decode(utf8_decode($row2['nachname']), ENT_QUOTES).",\n ".htmlspecialchars_decode(utf8_decode($row2['vorname']), ENT_QUOTES),0,0,'L',$fill);
+						$this->Cell(20,5,$row2['zeit'],0,0,'R',$fill);
+						if($ii == 1) {
+							$this->Cell(5,5,'',0,0,'R',$fill);
+							$this->Cell(10,5,$row['vklasse'],0,0,'R',$fill);
+							$this->Cell(10,5,$row['vplatz'],0,0,'R',$fill);
+						} else {
+							$this->Cell(5,5,'',0,0,'R',$fill);
+							$this->Cell(10,5,'',0,0,'R',$fill);
+							$this->Cell(10,5,'',0,0,'R',$fill);				
+						}
+						$this->Ln();
+						$ii++;
+					}
+				}				
+				//$this->Ln();
+				$fill=!$fill;
+				$i++;
+	
+				if($i%$linesPerPage == 0) {
+					$this->AddPage('Portrait', 'A4');
+					$this->setHeader($header);
+					$this->setMyFont();
+					$this->setErgebninsHeader();
 				}
-				$this->Cell(40,5," ".htmlspecialchars_decode(utf8_decode($row2['nachname']), ENT_QUOTES).",\n ".htmlspecialchars_decode(utf8_decode($row2['vorname']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(20,5,$row2['zeit'],0,0,'R',$fill);
-				if($ii == 1) {
-					$this->Cell(5,5,'',0,0,'R',$fill);
-					$this->Cell(10,5,$row['vklasse'],0,0,'R',$fill);
-					$this->Cell(10,5,$row['vplatz'],0,0,'R',$fill);
-				} else {
-					$this->Cell(5,5,'',0,0,'R',$fill);
-					$this->Cell(10,5,'',0,0,'R',$fill);
-					$this->Cell(10,5,'',0,0,'R',$fill);				
-				}
-				$this->Ln();
-				$ii++;
-			}
-			
-			//$this->Ln();
-			$fill=!$fill;
-			$i++;
-
-			if($i%$linesPerPage == 0) {
-				$this->AddPage('Portrait', 'A4');
-				$this->setHeader($header);
-				$this->setMyFont();
-				$this->setErgebninsHeader();
 			}
 		}
-
 	}
 
 	function ergebnisKlasse($id) {
@@ -258,15 +259,19 @@ class PDF extends FPDF
 		if ($rd['rundenrennen'] == 1) { $sqlAddOn = "runden desc, "; }
 
 		// Alle vorhandenen Klassen ermittlen
-		$sql = "SELECT klasse from teilnehmer as t where t.vID = ".$_SESSION['vID']." and t.lid = $id and platz > 0 group by klasse order by klasse";
-		$rKlassen = mysql_query($sql);
-		if (!$rKlassen) { die('Invalid query: ' . mysql_error()); }
+		//Da ein GROUP BY keine Umlaute beachtet, wird nach den MD5 Summen der Klassennamen gruppiert
 
+		$sql = "SELECT MD5(klasse) as k, klasse from teilnehmer as t where t.vID = ".$_SESSION['vID']." and t.lid = $id and platz > 0 group by k order by klasse";
+		$rKlassen = dbRequest($sql, 'SELECT');
+		
 		$i = 0;
 		$kl = array();
-		while ($row = mysql_fetch_array($rKlassen, MYSQL_ASSOC)) {
-			$kl[$i] = $row['klasse'];
-			$i++;
+		
+		if($rKlassen[1] > 0) {
+			foreach ($rKlassen[0] as $row) {
+				$kl[$i] = $row['klasse'];
+				$i++;
+			}
 		}
 
 		$fill=false;
@@ -281,73 +286,72 @@ class PDF extends FPDF
 			$this->setMyFont();
 			$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
 			
-			
 			$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 				"where t.vID = ".$_SESSION['vID']." ".
-				"and lid = $id and del= 0 and disq = 0 and platz > 0 and t.klasse = '$k' ".
+				"and lid = $id and del= 0 and disq = 0 and platz > 0 and MD5(t.klasse) = '".md5($k)."' ".
 				"order by $sqlAddOn zeit, platz";
 
-			$result = mysql_query($sql);
-			if (!$result) { die('Invalid query: ' . mysql_error()); }
+			$result = dbRequest($sql, 'SELECT');
 			
 			$i = 1;
-			while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+			if($result[1] > 0) {
+				foreach ($result[0] as $row) {
 			
-				if($rd['teamrennen'] == 0) {
-					$this->Cell(10,5,$row['akplatz'],0,0,'R',$fill);
-					$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
-					$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
-					$this->Cell(60,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-					$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
-					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
-					$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
-					$this->Cell(8,5,$row['att'],0,0,'R',$fill);
-
-					$this->Ln();
-					$fill=!$fill;
-					$i++;
-		
-					if($i%$linesPerPage == 0) {
-						$this->AddPage('Portrait', 'A4');
-						$this->setHeader($header);
-						$this->setMyFont();
-						$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
-					}
-					
-				} else {
-					
-					$this->Cell(10,5,$i,0,0,'R',$fill);
-					$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
-					$this->SetFont('Arial','B',10);
-					$this->Cell(100,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-					$this->SetFont('Arial','',10);
-					$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
-					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
-					$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
-					//if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,$row['platz'],0,0,'R',$fill); }
-					
-					$this->Ln();
-					$this->Cell(10,5,'',0,0,'R',$fill);
-					$this->Cell(11,5,'',0,0,'R',$fill);
-					$this->Cell(100,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
-					$this->Cell(12,5,'',0,0,'R',$fill);
-					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,'',0,0,'R',$fill); }
-					$this->Cell(18,5,'',0,0,'R',$fill);
-					//if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,'',0,0,'R',$fill); }
-					
-					
-					$this->Ln();
-					$fill=!$fill;
-					$i++;
-					$ii=$ii+2;
-		
-					if($ii%$linesPerPage == 0 || $ii%$linesPerPage == 1) {
-						$this->AddPage('Portrait', 'A4');
-						$this->setHeader($header);
-						$this->setMyFont();
-						$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
+					if($rd['teamrennen'] == 0) {
+						$this->Cell(10,5,$row['akplatz'],0,0,'R',$fill);
+						$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
+						$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
+						$this->Cell(60,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+						$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+						if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
+						$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
+						$this->Cell(8,5,$row['att'],0,0,'R',$fill);
+	
+						$this->Ln();
+						$fill=!$fill;
+						$i++;
+			
+						if($i%$linesPerPage == 0) {
+							$this->AddPage('Portrait', 'A4');
+							$this->setHeader($header);
+							$this->setMyFont();
+							$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
+						}
+						
+					} else {
+						
+						$this->Cell(10,5,$i,0,0,'R',$fill);
+						$this->Cell(11,5,$row['stnr'],0,0,'R',$fill);
+						$this->SetFont('Arial','B',10);
+						$this->Cell(100,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
+						$this->SetFont('Arial','',10);
+						$this->Cell(12,5,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+						if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,$row['runden'],0,0,'R',$fill); }
+						$this->Cell(18,5,$row['zeit'],0,0,'R',$fill);
+						//if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,$row['platz'],0,0,'R',$fill); }
+						
+						$this->Ln();
+						$this->Cell(10,5,'',0,0,'R',$fill);
+						$this->Cell(11,5,'',0,0,'R',$fill);
+						$this->Cell(100,5," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
+						$this->Cell(12,5,'',0,0,'R',$fill);
+						if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,5,'',0,0,'R',$fill); }
+						$this->Cell(18,5,'',0,0,'R',$fill);
+						//if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,5,'',0,0,'R',$fill); }
+						
+						
+						$this->Ln();
+						$fill=!$fill;
+						$i++;
+						$ii=$ii+2;
+			
+						if($ii%$linesPerPage == 0 || $ii%$linesPerPage == 1) {
+							$this->AddPage('Portrait', 'A4');
+							$this->setHeader($header);
+							$this->setMyFont();
+							$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
+						}				
 					}				
-									
 				}
 			}				
 						
@@ -411,13 +415,14 @@ class PDF extends FPDF
 	function getHeader($veranstaltung, $rennen) {
 		global $rData;
 		$sql = "select titel, untertitel, datum from veranstaltung where id = $veranstaltung";
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
+		$result = dbRequest($sql, 'SELECT');
 
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$header['titel'] 		= htmlspecialchars_decode($row['titel'], ENT_QUOTES);
-			$header['untertitel'] 	= htmlspecialchars_decode($row['untertitel'], ENT_QUOTES);
-			$header['datum'] 		= htmlspecialchars_decode($row['datum'], ENT_QUOTES);
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$header['titel'] 		= htmlspecialchars_decode($row['titel'], ENT_QUOTES);
+				$header['untertitel'] 	= htmlspecialchars_decode($row['untertitel'], ENT_QUOTES);
+				$header['datum'] 		= htmlspecialchars_decode($row['datum'], ENT_QUOTES);
+			}
 		}
 
 		$header['lauf'] 		= htmlspecialchars_decode($rData['titel'], ENT_QUOTES);
@@ -477,12 +482,11 @@ class PDF extends FPDF
 
 }
 
-$link = connectDB();
-
 $pdf=new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage('Portrait', 'A4');
 
+$link = connectDB();
 $rData = getRennenData($_GET['id']);
 $filename = $rData['titel']."_".$rData['untertitel'].".pdf";
 
@@ -499,9 +503,7 @@ if($_GET['action'] == "ergebnisGesamt") {
 	$pdf->ergebninsMannschaft($_GET['id']);
 	$filename = "Ergebnis_Mannschaft".$filename;	
 }
-
+$link->close();
 $pdf->Output($filename, "I");
-
-mysql_close($link);
 
 ?>

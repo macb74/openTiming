@@ -14,7 +14,7 @@ class PDF extends FPDI
 {
 	function urkunde($action, $num, $id, $tid, $template, $uDefinition) {
 
-                global $stnr;   # etwas haesslich, rausgabe der StNr per globaler Variable
+        global $stnr;   # etwas haesslich, rausgabe der StNr per globaler Variable
 
 		#$header = $this->getHeader($_SESSION['vID'], $id, $stnr);
 		#$this->setHeader($header);
@@ -33,56 +33,58 @@ class PDF extends FPDI
 			die;
 		}
 			
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
-
+		$result = dbRequest($sql, 'SELECT');
+		
 		$this->setMyFont();
 
 		$i = 1;
 		if ($action != 'team') {
-			while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+			if($result[1] > 0) {
+				foreach ($result[0] as $row) {
+									
+					$this->AddPage('Portrait', 'A4');
 					
-				$this->AddPage('Portrait', 'A4');
-				
-				if($template != '') {
-					$this->setSourceFile($template);
-					// import page 1
-					$tplIdx = $this->importPage(1);
-					// use the imported page and place it at point 10,10 with a width of 100 mm
-					$this->useTemplate($tplIdx, 0, 0, 0);
+					if($template != '') {
+						$this->setSourceFile($template);
+						// import page 1
+						$tplIdx = $this->importPage(1);
+						// use the imported page and place it at point 10,10 with a width of 100 mm
+						$this->useTemplate($tplIdx, 0, 0, 0);
+					}
+		
+					if ($action == 'gesamt') {
+						$platz = $row['platz'];
+					} else {
+						$platz = $row['akplatz'];
+					}
+	
+	                                $stnr=$row['stnr'];
+		
+					include($uDefinition);
+		
+					$i++;
+		
 				}
-	
-				if ($action == 'gesamt') {
-					$platz = $row['platz'];
-				} else {
-					$platz = $row['akplatz'];
-				}
-
-                                $stnr=$row['stnr'];
-	
-				include($uDefinition);
-	
-				$i++;
-	
 			}
-			
 		} else {
 			$i = -1;
-			while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-				if ($row['vnummer'] != $oldVnummer) {
-					$i++;
-					$ii = 1;
-					$teamRow[$i]['verein'] = $row['verein'];
-					$teamRow[$i]['vplatz'] = $row['vplatz'];
-					$teamRow[$i]['vtime']  = $row['vtime'];
-					$teamRow[$i]['Name'][$ii] = $row['nachname'].", ".$row['vorname'];
-					$ii++;
-				} 
-				if ($row['vnummer'] == $oldVnummer) {
-					$teamRow[$i]['Name'][$ii] = $row['nachname'].", ".$row['vorname'];
-					$ii++;
+			if($result[1] > 0) {
+				foreach ($result[0] as $row) {
+					if ($row['vnummer'] != $oldVnummer) {
+						$i++;
+						$ii = 1;
+						$teamRow[$i]['verein'] = $row['verein'];
+						$teamRow[$i]['vplatz'] = $row['vplatz'];
+						$teamRow[$i]['vtime']  = $row['vtime'];
+						$teamRow[$i]['Name'][$ii] = $row['nachname'].", ".$row['vorname'];
+						$ii++;
+					} 
+					if ($row['vnummer'] == $oldVnummer) {
+						$teamRow[$i]['Name'][$ii] = $row['nachname'].", ".$row['vorname'];
+						$ii++;
+					}
+					$oldVnummer = $row['vnummer'];
 				}
-				$oldVnummer = $row['vnummer'];
 			}
 			
 			foreach ($teamRow as $row) {
@@ -118,22 +120,24 @@ class PDF extends FPDI
 
 	function getHeader($veranstaltung, $rennen) {
 		$sql = "select titel, untertitel, datum from veranstaltung where id = $veranstaltung";
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
-
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$header['titel'] 		= $row['titel'];
-			$header['untertitel'] 	= $row['untertitel'];
-			$header['datum'] 		= $row['datum'];
+		$result = dbRequest($sql, 'SELECT');
+		
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$header['titel'] 		= $row['titel'];
+				$header['untertitel'] 	= $row['untertitel'];
+				$header['datum'] 		= $row['datum'];
+			}
 		}
 
 		$sql = "select titel, untertitel from lauf where id = $rennen";
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
-
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$header['lauf'] 		= $row['titel'];
-			$header['lauf2'] 		= $row['untertitel'];
+		$result = dbRequest($sql, 'SELECT');
+		
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$header['lauf'] 		= $row['titel'];
+				$header['lauf2'] 		= $row['untertitel'];
+			}
 		}
 
 		return $header;
@@ -149,8 +153,6 @@ class PDF extends FPDI
 }
 
 $link = connectDB();
-//$filename = $_GET['action'].'.pdf';
-
 
 #$pdf=new PDF();
 $pdf=new PDF();
@@ -169,7 +171,7 @@ if(isset($_GET['action'])) {
 	$pdf->urkunde($_GET['action'], $_GET['num'],  $_GET['id'], $_GET['tid'], $templates['template'], $templates['definition']);
 }
 
-if(isset($_GET['id'])) { 
+if($_GET['id'] != 0) { 
  $rData = getRennenData($_GET['id']);
  $filename = $rData['titel']."_".$rData['untertitel'].".pdf";
 }
@@ -199,15 +201,16 @@ function getTemplate($action, $id, $tid) {
 		$sql = "SELECT l.uDefinition, l.uTemplate FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 		" where l.id = $id";
 	}
-	$result = mysql_query($sql);
-	if (!$result) { die('Invalid query: ' . mysql_error()); }
-	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-		$u['template'] = $row['uTemplate'];
-		$u['definition'] = $row['uDefinition'];
+	$result = dbRequest($sql, 'SELECT');
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			$u['template'] = $row['uTemplate'];
+			$u['definition'] = $row['uDefinition'];
+		}
 	}
 	return $u;
 }
 
-mysql_close($link);
+$link->close();
 
 ?>

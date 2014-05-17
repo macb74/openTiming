@@ -13,24 +13,23 @@ function rennen() {
 	
 	# insert / edit Veranstaltung
 	if (isset($_POST['submit'])) {
-		$link = connectDB();
 		$zeit = $_POST['hour'].$_POST['min'].$_POST['sec'];
 		if($_POST['func'] == "edit") {
 			$sql = "update lauf set vID = '".$_SESSION['vID']."', 
-							 titel = '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', 
-							 untertitel = '".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', 
-							 start = ".htmlspecialchars($zeit, ENT_QUOTES, 'UTF-8').", 
-							 klasse = '".htmlspecialchars($_POST['klasse'], ENT_QUOTES, 'UTF-8')."', 
-							 team_anz = ".htmlspecialchars($_POST['teamAnz'], ENT_QUOTES, 'UTF-8').", 
-							 uTemplate = '".htmlspecialchars($_POST['uTemplate'], ENT_QUOTES, 'UTF-8')."', 
-							 uDefinition = '".htmlspecialchars($_POST['uDefinition'], ENT_QUOTES, 'UTF-8')."', 
-							 rundenrennen = ".htmlspecialchars($_POST['rr'], ENT_QUOTES, 'UTF-8')." , 
-							 use_lID = ".htmlspecialchars($_POST['use_lID'], ENT_QUOTES, 'UTF-8').", 
-							 teamrennen = ".htmlspecialchars($_POST['teamrennen'], ENT_QUOTES, 'UTF-8').", 
-							 rdVorgabe = ".htmlspecialchars($_POST['rdVorgabe'], ENT_QUOTES, 'UTF-8').", 
-							 vklasse = ".htmlspecialchars($_POST['vklasse'], ENT_QUOTES, 'UTF-8').", 
-							 showLogo = ".htmlspecialchars($_POST['showLogo'], ENT_QUOTES, 'UTF-8').", 
-							 mainReaderIp = '".htmlspecialchars($_POST['reader'], ENT_QUOTES, 'UTF-8')."' 
+							 titel = '".$_POST['title']."', 
+							 untertitel = '".$_POST['subTitle']."', 
+							 start = ".$zeit.", 
+							 klasse = '".$_POST['klasse']."', 
+							 team_anz = ".$_POST['teamAnz'].", 
+							 uTemplate = '".$_POST['uTemplate']."', 
+							 uDefinition = '".$_POST['uDefinition']."', 
+							 rundenrennen = ".$_POST['rr']." , 
+							 use_lID = ".$_POST['use_lID'].", 
+							 teamrennen = ".$_POST['teamrennen'].", 
+							 rdVorgabe = ".$_POST['rdVorgabe'].", 
+							 vklasse = ".$_POST['vklasse'].", 
+							 showLogo = ".$_POST['showLogo'].", 
+							 mainReaderIp = '".$_POST['reader']."' 
 						where ID = ".$_POST['ID'].";";
 		} else {
 			$sql = "insert into lauf (vID, titel, untertitel, start, 
@@ -38,27 +37,23 @@ function rennen() {
 										rundenrennen, use_lID, teamrennen, rdVorgabe, 
 										vklasse, showLogo, mainReaderIp) values 
 										( '".$_SESSION['vID']."', 
-										'".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', 
-										'".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', 
-										".htmlspecialchars($zeit, ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['klasse'], ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['teamAnz'], ENT_QUOTES, 'UTF-8').", 
-										'".htmlspecialchars($_POST['uDefinition'], ENT_QUOTES, 'UTF-8')."', 
-										'".htmlspecialchars($_POST['uTemplate'], ENT_QUOTES, 'UTF-8')."', 
-										".htmlspecialchars($_POST['rr'], ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['use_lID'], ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['teamrennen'], ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['rdVorgabe'], ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['vklasse'], ENT_QUOTES, 'UTF-8').", 
-										".htmlspecialchars($_POST['showLogo'], ENT_QUOTES, 'UTF-8').", 
-										'".htmlspecialchars($_POST['reader'], ENT_QUOTES, 'UTF-8')."')";
+										'".$_POST['title']."', 
+										'".$_POST['subTitle']."', 
+										".$zeit.", 
+										".$_POST['klasse'].", 
+										".$_POST['teamAnz'].", 
+										'".$_POST['uDefinition']."', 
+										'".$_POST['uTemplate']."', 
+										".$_POST['rr'].", 
+										".$_POST['use_lID'].", 
+										".$_POST['teamrennen'].", 
+										".$_POST['rdVorgabe'].", 
+										".$_POST['vklasse'].", 
+										".$_POST['showLogo'].", 
+										'".$_POST['reader']."')";
 		}
 		//echo $sql;
-		$result = mysql_query($sql);
-			if (!$result) {
-    			die('Invalid query: ' . mysql_error());
-			}
-		mysql_close($link);
+		$result = dbRequest($sql, 'INSERT');
 	}
 	
 	# display Form
@@ -75,16 +70,11 @@ function rennen() {
 
 function lockRace($rennen, $lock) {
 
-	$link = connectDB();
 	$sql = "update lauf set lockRace = $lock where ID = $rennen;";
 	//echo $sql;
-	$result = mysql_query($sql);
-		if (!$result) {
-   			die('Invalid query: ' . mysql_error());
-		}
-	mysql_close($link);
+	$result = dbRequest($sql, 'insert');
 
-	if(!$result) {
+	if(!$result[0]) {
 		$lock = "-";
 	}
 	return $lock.";".$rennen;
@@ -94,49 +84,44 @@ function showRennen() {
 	
 		# Display Rennen
 		$html = "";
-		$link = connectDB();
 		$veranstaltung = $_SESSION['vID'];
 		$sql = "select * from lauf where vID = $veranstaltung order by start asc, titel;";
-		$result = mysql_query($sql);
-			if (!$result) {
-    			die('Invalid query: ' . mysql_error());
-			}
+		$result = dbRequest($sql, 'SELECT');
 
 		$html2 = "";
 		$i=1;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-
-			$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['start']."</td>\n";
-			$html2 .= "<td align\"center\">" .
-					"<a href=\"".$_SERVER["REQUEST_URI"].".edit&ID=".$row['ID']."\">edit</a>" .
-					"&nbsp;&nbsp;";
-
-			if($row['lockRace'] == 0) { 
-				$lock = 1; 
-				$img = "img/offen.png";
-				$alt = "offen";
-			} else { 
-				$lock = 0; 
-				$img = "img/geschlossen.png";
-				$alt = "geschlossen";
-			}
-			
-			$html2 .=  "|&nbsp;&nbsp;<span><a id=\"lock_href_".$row['ID']."\" href=\"jqRequest&func=lockRace&lid=".$row['ID']."&lock=".$lock."\"><img id=\"lock_img_".$row['ID']."\" src=\"$img\" alt=\"$alt\" border=\"0\"></a></span>" .
-					"&nbsp;&nbsp;";
-			
-			$html2 .= "</td>\n";
-			$html2 .= "</tr>\n";
-			$i++;
-		}
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
 	
+				$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
+				$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
+				$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
+				$html2 .= "<td align\"left\">".$row['start']."</td>\n";
+				$html2 .= "<td align\"center\">" .
+						"<a href=\"".$_SERVER["REQUEST_URI"].".edit&ID=".$row['ID']."\">edit</a>" .
+						"&nbsp;&nbsp;";
+	
+				if($row['lockRace'] == 0) { 
+					$lock = 1; 
+					$img = "img/offen.png";
+					$alt = "offen";
+				} else { 
+					$lock = 0; 
+					$img = "img/geschlossen.png";
+					$alt = "geschlossen";
+				}
+				
+				$html2 .=  "|&nbsp;&nbsp;<span><a id=\"lock_href_".$row['ID']."\" href=\"jqRequest&func=lockRace&lid=".$row['ID']."&lock=".$lock."\"><img id=\"lock_img_".$row['ID']."\" src=\"$img\" alt=\"$alt\" border=\"0\"></a></span>" .
+						"&nbsp;&nbsp;";
+				
+				$html2 .= "</td>\n";
+				$html2 .= "</tr>\n";
+				$i++;
+			}
+		}
 		$columns = array('ID', 'Titel', 'Bemerkung', 'Start', 'Aktion');
 		$html .= tableList($columns, $html2, "common meetings");
-		
-		mysql_close($link);
 		
 		$html .="<br><div class=\"vboxitem\" >\n";
 		$html .="	<div class=\"navigation-buttons\" >\n";
@@ -155,17 +140,12 @@ function showRaceEditForm($func) {
 		$dat[0] = ""; $dat[1] = ""; $dat[2] = "";
 		$kl = 0; $vkl = 0; $use_lID = 0; $tr = 0; $sl = 1; $rr = 0;
 		$rdVorgabe = 0; $readerIp = "0.0.0.0"; $uTemplate = ""; $uDefinition = "";
-		
-		$link = connectDB();
-		
+				
 		if($func[1] == "edit") {
 			$sql = "select * from lauf where ID = ".$_GET['ID'];
-			$result = mysql_query($sql);
-				if (!$result) {
-	    			die('Invalid query: ' . mysql_error());
-				}
+			$result = dbRequest($sql, 'SELECT');
 	
-			while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+			foreach ($result[0] as $row) {
 				$titel = $row['titel'];
 				$untertitel = $row['untertitel'];
 				$zeit = $row['start'];
@@ -187,17 +167,15 @@ function showRaceEditForm($func) {
 		}
 		
 		$sql = "select * from klasse order by name";
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error());}
+		$result = dbRequest($sql, 'SELECT');
 		$kID = 0;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$kArray[$kID]['ID'] = $row['ID'];
-			$kArray[$kID]['name'] = $row['name'];
-			$kID++;
-		}				
-		
-		mysql_close($link);
-		
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$kArray[$kID]['ID'] = $row['ID'];
+				$kArray[$kID]['name'] = $row['name'];
+				$kID++;
+			}				
+		}
 		
 		$html  ="<form name=\"editVeranstaltungen\" method=\"POST\" action=\"?func=rennen\">\n";
 		$html .="<input name=\"func\" type=\"hidden\" value=\"$func[1]\">\n";

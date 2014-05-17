@@ -11,27 +11,22 @@ function klasse() {
 	$newKlass = false;
 	if(!isset($func[1])) { $func[1] = ""; }
 
-	# insert / edit Veranstaltung
 	if (isset($_POST['submit']) || $func[1] == "insert" || $func[1] == "delete") {
-		$link = connectDB();
 
 		// Neuanlage einer Klasse
 		if ($func[1] == "insert") {
 			$sql = "insert into klasse (name) value ('neue Klasse')";
-			$result = mysql_query($sql);
-			if (!$result) { die('insert klasse - Invalid query: ' . mysql_error()); }
-			$kID = mysql_insert_id();
-			//echo $kID;
-				
+			$result = dbRequest($sql, 'INSERT');
+			$kID = $result[3];
+			//echo "KID: ".$kID;			
 			$newKlass = true;
 		}
 
 		// update einer bestehenden Klasse
-		if ( $_POST['submit'] == "Speichern" || $_POST['submit'] == "neue Zeile") {
+		if ( isset($_POST['submit']) && ($_POST['submit'] == "Speichern" || $_POST['submit'] == "neue Zeile")) {
 
 			$sql = "update klasse set name = '".htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8')."' where ID = ".$_POST['kID'];
-			$result = mysql_query($sql);
-			if (!$result) { die('update klasse - Invalid query: ' . mysql_error()); }
+			$result = dbRequest($sql, 'UPDATE');
 
 			// update der klasse_data
 			$i = 0;
@@ -40,20 +35,20 @@ function klasse() {
 				$kdID = 0; $n = 0; $g = ""; $v = 0; $b = 0;
 				
 				$kdID = $_POST['kdID'.$i];
-				$n = htmlspecialchars($_POST['name'.$i], ENT_QUOTES, 'UTF-8');
-				$g = htmlspecialchars(strtoupper($_POST['gender'.$i]), ENT_QUOTES, 'UTF-8');
-				$v = htmlspecialchars($_POST['altervon'.$i], ENT_QUOTES, 'UTF-8');
-				$b = htmlspecialchars($_POST['alterbis'.$i], ENT_QUOTES, 'UTF-8');
+				$n = $_POST['name'.$i];
+				$g = strtoupper($_POST['gender'.$i]);
+				$v = $_POST['altervon'.$i];
+				$b = $_POST['alterbis'.$i];
 				$sql = "update klasse_data set name = '$n', geschlecht = '$g', altervon = $v, alterbis = $b where ID = $kdID";
-				$result = mysql_query($sql);
-				if (!$result) { die('update klasse_data - Invalid query: ' . mysql_error()); }
+				$result = dbRequest($sql, 'UPDATE');
+				if (!$result[0]) { die('update klasse_data - Invalid query: ' . $result[2]); }
 				$i++;
 			}
 				
 		}
 
 		// einfügen einer neuen Zeile
-		if($_POST['submit'] == "neue Zeile" || $newKlass == true) {
+		if( isset($_POST['submit']) && ($_POST['submit'] == "neue Zeile" || $newKlass == true)) {
 			if( $newKlass == true ) { $kID = $kID; } else { $kID = $_POST['kID']; }
 
 			$name = "Name";
@@ -64,12 +59,12 @@ function klasse() {
 			$sql = "insert into klasse_data " .
 					"(kID, name, geschlecht, altervon, alterbis) " .
 					"values ( $kID, '$name', '$geschlecht', $altervon, $alterbis)";
-			$result = mysql_query($sql);
-			if (!$result) { echo $sql; die('Invalid query: ' . mysql_error()); }
+			$result = dbRequest($sql, 'INSERT');
+			if (!$result[0]) { echo $sql; die('Invalid query: ' . $result[2]); }
 		}
 
 		// Rücksprung bei neuer Zeile
-		if($_POST['submit'] == "neue Zeile") {
+		if(isset($_POST['submit']) && $_POST['submit'] == "neue Zeile") {
 			$script = $_POST['nextUrl'];
 			header('Location: '.$script);
 			die;
@@ -85,15 +80,13 @@ function klasse() {
 		// delete klasse_data
 		if(($func[1] == "delete") && ($func[2] == "kldata")) {
 			$sql = "delete from klasse_data where ID = ".$_GET['ID'];
-			$result = mysql_query($sql);
-			if (!$result) { echo $sql; die('Invalid query: ' . mysql_error()); }
+			$result = dbRequest($sql, 'DELETE');
+			if (!$result[0]) { echo $sql; die('Invalid query: ' . $result[2]); }
 
 			$script = base64_decode($_GET['nextUrl']);
 			header('Location: '.$script);
 			die;
 		}
-
-		mysql_close($link);
 
 	}
 
@@ -101,18 +94,15 @@ function klasse() {
 	if ($func[1] == "edit" || $func[1] == "insert") {
 
 		if($func[1] == "edit") {
-			$link = connectDB();
 			$sql = "select * from klasse where ID = ".$_GET['ID'];
-			$result = mysql_query($sql);
-			if (!$result) {
-				die('Invalid query: ' . mysql_error());
+			$result = dbRequest($sql, 'SELECT');
+			
+			if($result[1] > 0) {
+				foreach ($result[0] as $row) {
+					$name = $row['name'];
+					$kID = $row['ID'];
+				}
 			}
-
-			while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-				$name = $row['name'];
-				$kID = $row['ID'];
-			}
-			mysql_close($link);
 		}
 
 		$nextUrl = $_SERVER['REQUEST_URI'];
@@ -151,14 +141,6 @@ function klasse() {
 
 		$html .="	<table class=\"grey-bg\" width=\"50%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" >\n";
 
-		$link = connectDB();
-
-		$sql = "select * from klasse_data where kID = $kID order by geschlecht, name";
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Invalid query: ' . mysql_error());
-		}
-
 		$html .="		<tr class=\"top-row\" >\n";
 		$html .="			<td class=\"leftcolumn\" nowrap >\n";
 		$html .="				Name*:\n";
@@ -177,29 +159,33 @@ function klasse() {
 		$html .="			</td>\n";
 		$html .="		</tr>\n";
 
+		$sql = "select * from klasse_data where kID = $kID order by geschlecht, name";
+		$result = dbRequest($sql, 'SELECT');
+		
 		$i= 0;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$html .="		<tr class=\"top-row\" >\n";
-			$html .="			<td class=\"leftcolumn\" nowrap >\n";
-			$html .="				<input type=\"hidden\" name=\"kdID$i\" value=\"".$row['ID']."\"></input>\n";
-			$html .="				<input type=\"text\" name=\"name$i\" value=\"".$row['name']."\"></input>\n";
-			$html .="			</td>\n";
-			$html .="			<td class=\"leftcolumn\" nowrap >\n";
-			$html .="				<input type=\"text\" name=\"gender$i\" value=\"".$row['geschlecht']."\"></input>\n";
-			$html .="			</td>\n";
-			$html .="			<td class=\"leftcolumn\" nowrap >\n";
-			$html .="				<input type=\"text\" name=\"altervon$i\" value=\"".$row['altervon']."\"></input>\n";
-			$html .="			</td>\n";
-			$html .="			<td class=\"leftcolumn\" nowrap >\n";
-			$html .="				<input type=\"text\" name=\"alterbis$i\" value=\"".$row['alterbis']."\"></input>\n";
-			$html .="			</td>\n";
-			$html .="			<td class=\"leftcolumn\" nowrap >\n";
-			$html .="				<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=klasse.delete.kldata&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["REQUEST_URI"])."\">delete</a>";
-			$html .="			</td>\n";
-			$html .="		</tr>\n";
-			$i++;
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$html .="		<tr class=\"top-row\" >\n";
+				$html .="			<td class=\"leftcolumn\" nowrap >\n";
+				$html .="				<input type=\"hidden\" name=\"kdID$i\" value=\"".$row['ID']."\"></input>\n";
+				$html .="				<input type=\"text\" name=\"name$i\" value=\"".$row['name']."\"></input>\n";
+				$html .="			</td>\n";
+				$html .="			<td class=\"leftcolumn\" nowrap >\n";
+				$html .="				<input type=\"text\" name=\"gender$i\" value=\"".$row['geschlecht']."\"></input>\n";
+				$html .="			</td>\n";
+				$html .="			<td class=\"leftcolumn\" nowrap >\n";
+				$html .="				<input type=\"text\" name=\"altervon$i\" value=\"".$row['altervon']."\"></input>\n";
+				$html .="			</td>\n";
+				$html .="			<td class=\"leftcolumn\" nowrap >\n";
+				$html .="				<input type=\"text\" name=\"alterbis$i\" value=\"".$row['alterbis']."\"></input>\n";
+				$html .="			</td>\n";
+				$html .="			<td class=\"leftcolumn\" nowrap >\n";
+				$html .="				<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=klasse.delete.kldata&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["REQUEST_URI"])."\">delete</a>";
+				$html .="			</td>\n";
+				$html .="		</tr>\n";
+				$i++;
+			}
 		}
-		mysql_close($link);
 
 		$html .="	</table>\n";
 		$html .="</div>\n";
@@ -220,31 +206,27 @@ function klasse() {
 	} else {
 		# Display Rennen
 		$html = "";
-		$link = connectDB();
 		$sql = "select * from klasse order by name asc;";
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Invalid query: ' . mysql_error());
-		}
+		$result = dbRequest($sql, 'SELECT');
 
 		$html2 = "";
 		$i=1;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-
-			$html2 .= "<td align\"left\">".$row['name']."</td>\n";
-			$html2 .= "<td align\"center\">" .
-					"<a href=\"".$_SERVER["REQUEST_URI"].".edit&ID=".$row['ID']."\">edit</a>" .
-					"&nbsp;&nbsp;" .
-					"</td>\n";
-			$html2 .= "</tr>\n";
-			$i++;
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
+	
+				$html2 .= "<td align\"left\">".$row['name']."</td>\n";
+				$html2 .= "<td align\"center\">" .
+						"<a href=\"".$_SERVER["REQUEST_URI"].".edit&ID=".$row['ID']."\">edit</a>" .
+						"&nbsp;&nbsp;" .
+						"</td>\n";
+				$html2 .= "</tr>\n";
+				$i++;
+			}
 		}
 
 		$columns = array('Name', 'Aktion');
 		$html .= tableList($columns, $html2, "common meetings");
-
-		mysql_close($link);
 
 		$html .="<br><div class=\"vboxitem\" >\n";
 		$html .="	<div class=\"navigation-buttons\" >\n";

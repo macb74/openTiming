@@ -15,20 +15,15 @@ function veranstaltungen() {
 	
 	# insert / edit Veranstaltung
 	if (isset($_POST['submit'])) {
-		$link = connectDB();
 
 		$datum = $_POST['year'].$_POST['month'].$_POST['day'];
 		if($_POST['func'] == "edit") {
-			$sql = "update veranstaltung set titel = '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', untertitel = '".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', datum = ".htmlspecialchars($datum, ENT_QUOTES, 'UTF-8')." where ID = ".$_POST['ID'].";";
+			$sql = "update veranstaltung set titel = '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', untertitel = '".$_POST['subTitle']."', datum = ".htmlspecialchars($datum, ENT_QUOTES, 'UTF-8')." where ID = ".$_POST['ID'].";";
 		} else {
 			$sql = "insert into veranstaltung (titel, untertitel, datum) values ( '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', '".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', ".htmlspecialchars($datum, ENT_QUOTES, 'UTF-8').")";
 		}
 		#echo $sql;
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Invalid query: ' . mysql_error());
-		}
-		mysql_close($link);
+		$result = dbRequest($sql, 'INSERT');
 	}
 
 	# select Veranstaltung
@@ -43,21 +38,16 @@ function veranstaltungen() {
 	if ((isset($func[1]) && $func[1] == "edit") || (isset($func[1]) && $func[1] == "insert")) {
 
 		if($func[1] == "edit") {
-			$link = connectDB();
 			$sql = "select * from veranstaltung where ID = ".$_GET['ID'];
-			$result = mysql_query($sql);
-			if (!$result) {
-				die('Invalid query: ' . mysql_error());
-			}
+			$result = dbRequest($sql, 'SELECT');
 			
-			while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+			foreach ($result[0] as $row) {
 				$titel = $row['titel'];
 				$untertitel = $row['untertitel'];
 				$datum = $row['datum'];
 				$ID = $row['ID'];
 			}
 			$dat = explode('-', $datum);
-			mysql_close($link);
 		}
 
 		$html  ="<form name=\"editVeranstaltungen\" method=\"POST\" action=\"?func=veranstaltungen\">\n";
@@ -157,23 +147,20 @@ function veranstaltungen() {
 
 		# Display Veranstaltungen
 		$html = "";
-		$link = connectDB();
 		$sql = "select * from veranstaltung order by datum desc;";
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Invalid query: ' . mysql_error());
-		}
-
+		
+		$result = dbRequest($sql, 'SELECT');
+		
 		$html2 = "";
 		$i=1;
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		foreach ($result[0] as $row) {
 			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
 
 			if(isset($_SESSION['vID']) && $_SESSION['vID'] == $row['ID']) {
 				$b1 = "<b>"; $b2 = "</b>";
-				$_SESSION['vTitel'] = $row['titel'];
+				$_SESSION['vTitel']      = $row['titel'];
 				$_SESSION['vUntertitel'] = $row['untertitel'];
-				$_SESSION['vDatum'] = $row['datum'];
+				$_SESSION['vDatum']      = $row['datum'];
 			} else {
 				$b1 = ""; $b2 = "";
 			}
@@ -191,8 +178,6 @@ function veranstaltungen() {
 
 		$columns = array('ID','Titel', 'Untertitel', 'Datum', 'Aktion');
 		$html .= tableList($columns, $html2, "common meetings");
-
-		mysql_close($link);
 
 		$html .="<br><div class=\"vboxitem\" >\n";
 		$html .="	<div class=\"navigation-buttons\" >\n";

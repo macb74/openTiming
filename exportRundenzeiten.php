@@ -154,7 +154,6 @@ class PDF extends FPDF
 }
 
 
-$link = connectDB();
 //$filename = $_GET['action'].'.pdf';
 $filename = 'Rundenzeiten.pdf';
 
@@ -166,7 +165,5 @@ $pdf->exportRundenzeiten($_GET['id']);
 $pdf->Output($filename,"I");
 
 $pdf->Output();
-
-mysql_close($link);
 
 ?>

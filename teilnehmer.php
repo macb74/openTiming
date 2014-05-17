@@ -12,7 +12,7 @@ function teilnehmer() {
 	$editError 	= 0;
 	$f = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	
-	# insert / edit Veranstaltung
+	# insert / edit Teilnehmer
 	if (isset($_POST['submit']) || $func[1] == 'delete') {
 		$f = tInsertUpdate();
 		$editError = $f[13];
@@ -33,29 +33,28 @@ function teilnehmer() {
 function tInsertUpdate( ) {
 	global $func;
 
-	$link = connectDB();
 	$_SESSION['rID'] = $_POST['rID'];
 
 	$f[0] 		= $_SESSION['vID'];
 	$f[1] 		= $_POST['rID'];
 	$f[2]		= $_POST['tID'];
-	$f[3]	 	= htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8');
-	$f[4] 		= htmlspecialchars($_POST['vorname'], ENT_QUOTES, 'UTF-8');
-	$f[5]		= htmlspecialchars($_POST['geschlecht'], ENT_QUOTES, 'UTF-8');
-	$f[6] 		= htmlspecialchars($_POST['ort'], ENT_QUOTES, 'UTF-8');
-	$f[7] 		= htmlspecialchars($_POST['jg'], ENT_QUOTES, 'UTF-8');
-	$f[8] 		= htmlspecialchars($_POST['stnr'], ENT_QUOTES, 'UTF-8');
-	$f[9] 		= htmlspecialchars($_POST['verein'], ENT_QUOTES, 'UTF-8');
-	$f[10]		= htmlspecialchars($_POST['zeit'], ENT_QUOTES, 'UTF-8');
+	$f[3]	 	= $_POST['name'];
+	$f[4] 		= $_POST['vorname'];
+	$f[5]		= $_POST['geschlecht'];
+	$f[6] 		= $_POST['ort'];
+	$f[7] 		= $_POST['jg'];
+	$f[8] 		= $_POST['stnr'];
+	$f[9] 		= $_POST['verein'];
+	$f[10]		= $_POST['zeit'];
 	if (isset($_POST['disq'])) { $f[11] = 1; } else { $f[11] = 0; }
 	if (isset($_POST['useManTime'])) { $f[16] = 1; } else { $f[16] = 0; }
 	$f[12]		= "";
 	$f[13]		= 0;
-	$f[15]		= htmlspecialchars($_POST['klasse'], ENT_QUOTES, 'UTF-8');
+	$f[15]		= $_POST['klasse'];
 	$f[17]		= "";
-	$f[18]		= htmlspecialchars($_POST['manRunden'], ENT_QUOTES, 'UTF-8');
-	$f[19]		= htmlspecialchars($_POST['vklasse'], ENT_QUOTES, 'UTF-8');
-	$f[20]		= htmlspecialchars($_POST['att'], ENT_QUOTES, 'UTF-8');
+	$f[18]		= $_POST['manRunden'];
+	$f[19]		= $_POST['vklasse'];
+	$f[20]		= $_POST['att'];
 	
 	if($_POST['func'] == "edit") {
 		$sql = "update teilnehmer set " .
@@ -71,14 +70,11 @@ function tInsertUpdate( ) {
 				"values ( $f[0], $f[1], '$f[3]', '$f[4]', $f[7], '$f[5]', '$f[6]', '$f[8]', '$f[9]', '$f[10]','$f[10]', $f[16], $f[11], '$f[15]', $f[18], '$f[19]', '$f[20]')";			
 	}
 	//echo $sql;
-	$result = mysql_query($sql);
-	if (!$result) {
-		$f[12] = mysql_error();
-		//echo $f[12];
-		// zeigt das Formular bei einem uptate Error
+	$result = dbRequest($sql, 'INSERT');
+	if (!$result[0]) {
+		$f[12] = $result[2];
 		if (!isset($func[1])) { $f[13] = 1; }
 	}
-	mysql_close($link);
 
 	if ($func[0] == 'teilnehmer' && $func[1] == 'delete') {
 		$script = 'index.php?func=teilnehmer';
@@ -114,14 +110,10 @@ function tDisplayEditForm($f) {
 	}
 
 	if($func[1] == "edit") {
-		$link = connectDB();
 		$sql = "select * from teilnehmer where ID = ".$_GET['ID'];
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Invalid query: ' . mysql_error());
-		}
+		$result = dbRequest($sql, 'SELECT');
 
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		foreach ($result[0] as $row) {
 			$f[8]	= $row['stnr'];
 			$f[1]	= $row['lID'];
 			$f[3] 	= $row['nachname'];
@@ -141,8 +133,7 @@ function tDisplayEditForm($f) {
 			$f[20]	= $row['att'];
 			
 		}
-		$rInfo = getRennenData($_SESSION['vID'], $f[1]);
-		mysql_close($link);
+		$rInfo = getRennenData($f[1]);
 	}
 
 	$nextUrl = '';
@@ -293,20 +284,18 @@ function tDisplayEditForm($f) {
 	$html .="			</td>\n";
 
 	// Lauf auswählen
-	$link = connectDB();
 	$sql = "select * from lauf where vID = ".$_SESSION['vID']." order by start";
-	$result2 = mysql_query($sql);
-	if (!$result2) { die('Invalid query: ' . mysql_error()); }
+	$result2 = dbRequest($sql, 'SELECT');
 
 	$html .="			<td class=\"rightcolumn\" >\n";
 	$html .="				<select id=\"rID\" name=\"rID\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
 	$html .="					<option value=\"X\">bitte wählen</option>\n";
 
-	while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)) {
+	foreach ($result2[0] as $row2) {
 		$rID 		= $row2['ID'];
 		$kID 		= $row2['klasse'];
 		$titel 		= $row2['titel'];
-		$utitel 		= $row2['untertitel'];
+		$utitel 	= $row2['untertitel'];
 
 		if($func[1] == "edit") {
 			if($rID == $f[1]) { $s="selected"; } else { $s=""; }
@@ -316,7 +305,6 @@ function tDisplayEditForm($f) {
 
 		$html .="					<option value=\"$rID\" $s>$titel - $utitel</option>\n";
 	}
-	mysql_close($link);
 	// ende - Lauf auswählen
 
 	$html .="				</select>\n";
@@ -356,51 +344,45 @@ function tDisplayEditForm($f) {
 }
 
 function tDisplayList ($f)  {
-	# Display Veranstaltungen
 	$html = "";
 	if ($f[12] != "") {
 		$html .="	<div class=\"errorbox\" >\n";
-		$html .="		$errmsg\n";
+		$html .="		$f[12]\n";
 		$html .="	</div>\n";
 	}
 
-	$link = connectDB();
 	$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID where t.vID = '".$_SESSION['vID']."' and del=0 order by nachname asc;";
-	$result = mysql_query($sql);
-	if (!$result) {
-		die('Invalid query: ' . mysql_error());
-	}
+	$result = dbRequest($sql, 'SELECT');
 
 	$html2 = "";
 	$i=1;
-	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-		if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-		$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
-		$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-		$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['zeit']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['platz']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['akplatz']."</td>\n";
-
-		$html2 .= "</tr>\n";
-		$i++;
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
+			$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
+			$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
+			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['zeit']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['platz']."</td>\n";
+			$html2 .= "<td align\"left\">".$row['akplatz']."</td>\n";
+	
+			$html2 .= "</tr>\n";
+			$i++;
+		}
 	}
 
 	$columns = array('Stnr', 'Name', 'Verein', 'JG', 'G', 'Klasse', 'Rennen', 'Zeit', 'Platz', 'AK Platz');
 	$html .= tableList($columns, $html2, "common");
 
-	mysql_close($link);
 	$f[14] = $html;
 	return $f;
 }
 
 function getKlasse($jg, $sex, $rennen, $ajax) {
-
-	if($ajax == 1) { $link = connectDB(); }
 
 	$jahr = substr($_SESSION['vDatum'], 0, 4);
 	$alter = $jahr - $jg;
@@ -409,7 +391,6 @@ function getKlasse($jg, $sex, $rennen, $ajax) {
 	$k[1] = getKlasseData($alter, $sex, $rennen, 1);
 	
 	if($ajax == 1) {
-		mysql_close($link);
 		return $k[0].";".$k[1];
 	} else {
 		return $k;
@@ -429,16 +410,12 @@ function getKlasseData($alter, $sex, $rennen, $mannschaft) {
 		"and kd.alterbis >= $alter " .
 		"and kd.geschlecht = '$sex' " .
 		"and l.ID = $rennen";
-
-	//echo $sql;
 			
-	$result = mysql_query($sql);
-	if (!$result) {
-		die('Invalid query: ' . mysql_error());
-	}
-
-	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-		$k = $row['name'];
+	$result = dbRequest($sql, 'SELECT');
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			$k = $row['name'];
+		} 
 	}
 	
 	return $k;

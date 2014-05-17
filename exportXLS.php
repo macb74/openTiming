@@ -2,13 +2,12 @@
 session_start();
 
 require_once 'PHPExcel/Classes/PHPExcel.php';
-#require_once 'Spreadsheet/Excel/Writer.php';
 include("function.php");
 
+$link = connectDB();
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
 
-$link = connectDB();
 $filename = $_GET['action'].'.xlsx';
 
 if($_GET['action'] == "startliste") {
@@ -16,8 +15,8 @@ if($_GET['action'] == "startliste") {
 } else {
 	exportErgebnins($_GET['id'], $filename);
 }
-mysql_close($link);
 
+$link->close();
 
 function exportStartliste($filename) {
 	// Create new PHPExcel object
@@ -38,24 +37,21 @@ function exportStartliste($filename) {
 			"where t.vID = ".$_SESSION['vID']." ".
 			"and del= 0 and disq = 0 ".
 			"order by stnr";
-	$result = mysql_query($sql);
-	if (!$result) {
-		die('Invalid query: ' . mysql_error());
-	}
+	$result = dbRequest($sql, 'SELECT');
 	
 	$i = 2;
-	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+	foreach ($result[0] as $row) {
 	
 		// The actual data
 		$objPHPExcel->setActiveSheetIndex(0)
-					->setCellValue('A'.$i, htmlspecialchars_decode($row['stnr'], ENT_QUOTES))
+					->setCellValue('A'.$i, $row['stnr'])
 					->setCellValue('B'.$i, htmlspecialchars_decode($row['nachname'], ENT_QUOTES))
 					->setCellValue('C'.$i, htmlspecialchars_decode($row['vorname'], ENT_QUOTES))
 					->setCellValue('D'.$i, htmlspecialchars_decode($row['verein'], ENT_QUOTES))
-					->setCellValue('E'.$i, htmlspecialchars_decode($row['jahrgang'], ENT_QUOTES))
-					->setCellValue('F'.$i, htmlspecialchars_decode($row['geschlecht'], ENT_QUOTES))
-					->setCellValue('G'.$i, htmlspecialchars_decode($row['klasse'], ENT_QUOTES))
-					->setCellValue('H'.$i, htmlspecialchars_decode($row['att'], ENT_QUOTES))
+					->setCellValue('E'.$i, $row['jahrgang'])
+					->setCellValue('F'.$i, $row['geschlecht'])
+					->setCellValue('G'.$i, $row['klasse'])
+					->setCellValue('H'.$i, $row['att'])
 					->setCellValue('I'.$i, htmlspecialchars_decode($row['titel'].' - '.$row['untertitel'], ENT_QUOTES));
 		$i++;
 	}
@@ -98,11 +94,10 @@ function exportErgebnins($id, $filename) {
 			"and lid = $id and del= 0 and disq = 0 and platz > 0 ".
 		"order by runden desc, zeit asc";
 
-	$result = mysql_query($sql);
-	if (!$result) { die('Invalid query: ' . mysql_error()); }
+	$result = dbRequest($sql, 'SELECT');
 
 	$i = 2;
-	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+	foreach ($result[0] as $row) {
 
 		// The actual data
 		$objPHPExcel->setActiveSheetIndex(0)

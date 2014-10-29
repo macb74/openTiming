@@ -30,42 +30,40 @@ class PDF extends FPDF
 		
 		
 		$sql = "SELECT stnr, nachname, vorname, verein from teilnehmer where vID = ".$_SESSION['vID']." and lID = $id and platz <> 0";
-		$result = mysql_query($sql);
-		if (!$result) {
-			die('Invalid query: ' . mysql_error());
-		}
+		$result = dbRequest($sql, 'SELECT');
 
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			// Fuer Folgeseiten neue Seite samt Header anfangen, auf erster nicht
-			if(isset($r)){
-				$this->AddPage();
-				$this->setHeader($pageheader);
-				$this->setMyFont();
-			}
-			if($row['nachname'].$row['vorname'] != "") { $team = "  |  ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES)." - ".htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES); }
-			$header = "StNr: ".$row['stnr']." ".$team;
-			$this->setGroupHeader($header);
-			$r = 1;
-			$fill=false;
-			$zeitBefore = $startZeit;
-
-			$sql2 = "select zeit from zeit z where zeit > '".$startZeit."' and vID = ".$_SESSION['vID']." $sql_lID and nummer = '".$row['stnr']."' order by zeit asc";
-			$result2 = mysql_query($sql2);
-			if (!$result) {
-				die('Invalid query: ' . mysql_error());
-			}
-			
-			while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)) {
-
-				$rundenzeit = getRealTime($zeitBefore, $row2['zeit']);
-					
-				$this->Cell(15,5,$r,0,0,'R',$fill);
-				$this->Cell(20,5,substr($row2['zeit'],10),0,0,'R',$fill);
-				$this->Cell(25,5,$rundenzeit,0,0,'R',$fill);
-				$this->Ln();
-				$fill=!$fill;
-				$zeitBefore = $row2['zeit'];
-				$r++;
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				// Fuer Folgeseiten neue Seite samt Header anfangen, auf erster nicht
+				if(isset($r)){
+					$this->AddPage();
+					$this->setHeader($pageheader);
+					$this->setMyFont();
+				}
+				if($row['nachname'].$row['vorname'] != "") { $team = "  |  ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES)." - ".htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES); }
+				$header = "StNr: ".$row['stnr']." ".$team;
+				$this->setGroupHeader($header);
+				$r = 1;
+				$fill=false;
+				$zeitBefore = $startZeit;
+	
+				$sql2 = "select zeit from zeit z where zeit > '".$startZeit."' and vID = ".$_SESSION['vID']." $sql_lID and nummer = '".$row['stnr']."' order by zeit asc";
+				$result2 = dbRequest($sql2, 'SELECT');
+				
+				if($result2[1] > 0) {
+					foreach ($result2[0] as $row2) {
+		
+						$rundenzeit = getRealTime($zeitBefore, $row2['zeit']);
+							
+						$this->Cell(15,5,$r,0,0,'R',$fill);
+						$this->Cell(20,5,substr($row2['zeit'],10),0,0,'R',$fill);
+						$this->Cell(25,5,$rundenzeit,0,0,'R',$fill);
+						$this->Ln();
+						$fill=!$fill;
+						$zeitBefore = $row2['zeit'];
+						$r++;
+					}
+				}
 			}
 		}
 		
@@ -94,22 +92,24 @@ class PDF extends FPDF
 
 	function getHeader($veranstaltung, $rennen) {
 		$sql = "select titel, untertitel, datum from veranstaltung where id = $veranstaltung";
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
+		$result = dbRequest($sql, 'SELECT');
 
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$header['titel'] 		= htmlspecialchars_decode($row['titel'], ENT_QUOTES);
-			$header['untertitel'] 	= htmlspecialchars_decode($row['untertitel'], ENT_QUOTES);
-			$header['datum'] 		= htmlspecialchars_decode($row['datum'], ENT_QUOTES);
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$header['titel'] 		= htmlspecialchars_decode($row['titel'], ENT_QUOTES);
+				$header['untertitel'] 	= htmlspecialchars_decode($row['untertitel'], ENT_QUOTES);
+				$header['datum'] 		= htmlspecialchars_decode($row['datum'], ENT_QUOTES);
+			}
 		}
 
 		$sql = "select titel, untertitel from lauf where id = $rennen";
-		$result = mysql_query($sql);
-		if (!$result) { die('Invalid query: ' . mysql_error()); }
+		$result = dbRequest($sql, 'SELECT');
 
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			$header['lauf'] 		= htmlspecialchars_decode($row['titel'], ENT_QUOTES);
-			$header['lauf2'] 		= htmlspecialchars_decode($row['untertitel'], ENT_QUOTES);
+		if($result[1] > 0) {
+			foreach ($result[0] as $row) {
+				$header['lauf'] 		= htmlspecialchars_decode($row['titel'], ENT_QUOTES);
+				$header['lauf2'] 		= htmlspecialchars_decode($row['untertitel'], ENT_QUOTES);
+			}
 		}
 
 		return $header;
@@ -157,6 +157,7 @@ class PDF extends FPDF
 //$filename = $_GET['action'].'.pdf';
 $filename = 'Rundenzeiten.pdf';
 
+$link = connectDB();
 $pdf=new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage('Portrait', 'A4');
@@ -165,5 +166,5 @@ $pdf->exportRundenzeiten($_GET['id']);
 $pdf->Output($filename,"I");
 
 $pdf->Output();
-
+$link->close();
 ?>

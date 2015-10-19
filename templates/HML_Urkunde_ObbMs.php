@@ -4,13 +4,22 @@
 		    $this->SetY(175);
 		    $this->SetFont('Verdana','B',15);
 		    //Calculate width of title and position
-		    $titel = utf8_decode("10. Holzkirchner Marktlauf");
+		    $titel = utf8_decode("Oberbayerische Meisterschaft");
 		    $w=$this->GetStringWidth($titel);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
 		    $this->Cell($w,20,$titel,0,0,'C',false);
 		    $this->Ln(5);
 
+		    $this->SetFont('Verdana','',10);
+		    //Calculate width of title and position
+		    $datum = utf8_decode("im Rahmen das 10. Holzkirchner Marktlauf");
+		    $w=$this->GetStringWidth($datum);
+		    $this->SetX((210-$w)/2); // Mitte
+		    $this->SetTextColor(0);
+		    $this->Cell($w,20,$datum,0,0,'C',false);
+		    $this->Ln(5);
+		    
 		    $this->SetFont('Verdana','',10);
 		    //Calculate width of title and position
 		    $datum = utf8_decode("am 11. Oktober 2015");
@@ -27,7 +36,7 @@
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
 		    $this->Cell($w,20,$datum,0,0,'C',false);
-		    $this->Ln(15);
+		    $this->Ln(10);
 		    
 		    $this->SetFont('Verdana','B',22);
 		    //Calculate width of title and position
@@ -91,15 +100,6 @@
 		    $this->SetTextColor(0);
 		    $this->Cell($w,20,$titel,0,0,'C',false);
 		    $this->Ln(5);
-		    
-		    $this->SetFont('Verdana','',10);
-		    //Calculate width of title and position
-		    $datum = utf8_decode("über 10 km");
-		    $w=$this->GetStringWidth($datum);
-		    $this->SetX((210-$w)/2); // Mitte
-		    $this->SetTextColor(0);
-		    $this->Cell($w,20,$datum,0,0,'C',false);
-		    $this->Ln(5);
 
 		    $this->SetFont('Verdana','',10);
 		    //Calculate width of title and position
@@ -108,7 +108,7 @@
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
 		    $this->Cell($w,20,$datum,0,0,'C',false);
-		    $this->Ln(17);
+		    $this->Ln(22);
 		    
 		    $this->SetFont('Verdana','B',22);
 		    $verein = htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES);

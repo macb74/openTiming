@@ -164,11 +164,11 @@ function veranstaltungen() {
 			} else {
 				$b1 = ""; $b2 = "";
 			}
-			$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
-			$html2 .= "<td align\"left\">$b1<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=veranstaltungen.select&ID=".$row['ID']."\">".$row['titel']."</a>$b2</td>\n";
-			$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['datum']."</td>\n";
-			$html2 .= "<td align\"center\">" .
+			$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
+			$html2 .= "<td align=\"left\">$b1<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=veranstaltungen.select&ID=".$row['ID']."\">".$row['titel']."</a>$b2</td>\n";
+			$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['datum']."</td>\n";
+			$html2 .= "<td align=\"left\">" .
 					"<a href=\"".$_SERVER["REQUEST_URI"].".edit&ID=".$row['ID']."\">edit</a>" .
 					"&nbsp;&nbsp;" .
 					"</td>\n";

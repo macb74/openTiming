@@ -359,16 +359,16 @@ function tDisplayList ($f)  {
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-			$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
-			$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['zeit']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['platz']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['akplatz']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
+			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
+			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['jahrgang']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['geschlecht']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['zeit']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['platz']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['akplatz']."</td>\n";
 	
 			$html2 .= "</tr>\n";
 			$i++;

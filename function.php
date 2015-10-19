@@ -17,6 +17,7 @@ include "auswertung.php";
 include "ergebnis.php";
 include "urkunden.php";
 include "import.php";
+include "einlaufListe.php";
 
 function table($title, $content) {
 	$html  = "<table class=\"deco-box\" width=\"100%\" cellspacing=\"0\" >\n";

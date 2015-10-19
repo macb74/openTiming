@@ -39,12 +39,6 @@ a:hover {
 	text-decoration: underline;
 }
 
-a .fa {
-	color: #000000;
-	text-decoration: none;
-}
-
-
 /*/------------------------------------------------------------------\*/
 	/*|                                                                  |*/
 	/*|                      Portal Settings                             |*/
@@ -357,16 +351,8 @@ span.acknowledgement {
 	display: block;
 }
 
-.chkboxtable {
-	margin: 0;
-}
-
 .timeTable {
 	border: 1px solid #00407e;
 	background-repeat: no-repeat;
 	background-position: left top;
-}
-
-.inputZielzeit {
-  width: 70px;
 }

@@ -1,5 +1,4 @@
 $(document).ready(function(){
-	// show content div
     $('a#showInDiv').click(function(){
 		// das link-ziel jeweils auslesen & zwischenspeichern
 		var pageToLoad = 'index.php?' + $(this).attr("href");
@@ -10,30 +9,15 @@ $(document).ready(function(){
 		// wichtig! sonst wird der a-link im browser aufgerufen!
 		return false;
     });
-    
-    
-    // on checkbox
-    $('.chkboxtable').change(
-    	    function(){
-    	        if (this.checked) {
-    	            ///alert('checked');
-    	            var pageToLoad = 'index.php?' + $(this).attr("value") + '&action=add';
-    	        } else {
-    	            var pageToLoad = 'index.php?' + $(this).attr("value") + '&action=remove';   	        	
-    	        }
-    	        $("#data_div").load(pageToLoad);
-    });
-    
-    
-    $(".manzeit").click(function(){
-    	alert('checked');
-//    	var pageToLoad = 'index.php?' + $(this).attr("href");
-//    	$("#data_div").load(pageToLoad);       
-    	return false;
-    });
-    
-    
-    // Lock Race Button
+});
+
+function clearDiv() {
+	document.getElementById('data_div').innerHTML = '';
+}
+
+
+
+$(document).ready(function(){
     $('[id^=lock_href]').click(function(){
 		var url = 'index.php?' + $(this).attr("href");
 		$.get( url, function(data){
@@ -41,13 +25,7 @@ $(document).ready(function(){
 		});
 		return false;
     });
-    
 });
-
-function clearDiv() {
-	document.getElementById('data_div').innerHTML = '';
-}
-
 
 function setLock(data) {
 	var lockArray;
@@ -63,4 +41,3 @@ function setLock(data) {
 		jQuery("#lock_href_" + lockArray[1]).attr("href", "jqRequest&func=lockRace&lid=" + lockArray[1] + "&lock=0");
 	}	
 }
-

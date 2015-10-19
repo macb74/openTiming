@@ -90,8 +90,8 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	if($rInfo['use_lID'] == 1) { $sql_lID = "and z.lid = $rennen "; } else { $sql_lID = ""; }
 
 	switch($rInfo["rundenrennen"]) {
-		case 1:  $zeit = "max(z.zeit)"; break;   # Bei Rennen auf Zeit: Ende letzte Runde
-		case 2:  $zeit = "z.zeit"; break;        # Bei Renden auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
+		case 1:  $zeit = "max(z.zeit)"; break;   # Bei Rennen auf Zeit: Ende = letzte Runde
+		case 2:  $zeit = "z.zeit"; break;        # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
         default: $zeit = "min(z.zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
 	} 
 
@@ -145,7 +145,25 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 		}
 	}	
 
-	$query = "update teilnehmer set zeit=manzeit where manzeit <> '00:00:00' and useManTime = 1 and vid = $veranstaltung and lid = $rennen";
+	// manuell eingetragene Zeiten in der Einlaufliste
+	$sql = "select t.id, t.stnr as stnr, t.manzeit ".
+			"from teilnehmer as t ".
+			"where usemantime = 2 and t.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
+			"group by t.stnr";
+
+	$result = dbRequest($sql, 'SELECT');
+	
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			$zielzeit = $_SESSION['vDatum']." ".$row['manzeit'];
+			$realTime = getRealTime($startZeit, $zielzeit);
+			$sql = "update teilnehmer set Zeit = '$realTime', millisecond = 0 where id = ".$row['id'];
+			$res = dbRequest($sql, 'UPDATE');
+		}
+	}
+	
+	// manuell eingetragene Laufzeiten
+	$query = "update teilnehmer set zeit=manzeit, millisecond = 0 where manzeit <> '00:00:00' and useManTime = 1 and vid = $veranstaltung and lid = $rennen";
 	$result = dbRequest($query, 'UPDATE');
 	
 }
@@ -314,12 +332,12 @@ function auswertungForm($html) {
 	
 			$subtitle = "";
 			if ($row['untertitel'] != "") { $subtitle = "<i>- ".$row['untertitel']."</i>"; }
-			$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']." $subtitle</td>\n";
-			//$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['start']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['aktualisierung']."</td>\n";
-			$html2 .= "<td align\"center\">";
+			$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']." $subtitle</td>\n";
+			//$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['start']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['aktualisierung']."</td>\n";
+			$html2 .= "<td align=\"left\">";
 				if($row['lockRace'] == 0) {	
 				$html2 .= 	"<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=".$func[0]."&ID=".$row['ID']."\">Laufwertung starten</a>" .
 							"&nbsp;&nbsp;" .
@@ -361,14 +379,14 @@ function showWithowtTime($rennen) {
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-			$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
-			$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=auswertung")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";		
-			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['zeit']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
+			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=auswertung")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";		
+			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['jahrgang']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['geschlecht']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['zeit']."</td>\n";
 	
 			$html2 .= "</tr>\n";
 			$i++;

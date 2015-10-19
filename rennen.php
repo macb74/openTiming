@@ -94,11 +94,11 @@ function showRennen() {
 			foreach ($result[0] as $row) {
 				if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
 	
-				$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
-				$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
-				$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
-				$html2 .= "<td align\"left\">".$row['start']."</td>\n";
-				$html2 .= "<td align\"center\">" .
+				$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
+				$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
+				$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
+				$html2 .= "<td align=\"left\">".$row['start']."</td>\n";
+				$html2 .= "<td align=\"left\">" .
 						"<a href=\"".$_SERVER["REQUEST_URI"].".edit&ID=".$row['ID']."\">edit</a>" .
 						"&nbsp;&nbsp;";
 	

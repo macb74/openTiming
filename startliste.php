@@ -33,11 +33,11 @@ function startlisteForm($html) {
 	
 			$subtitle = "";
 			if ($row['untertitel'] != "") { $subtitle = "<i>- ".$row['untertitel']."</i>"; }
-			$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']." $subtitle ($anzTeilnehmer)</td>\n";
-			//$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['start']."</td>\n";
-			$html2 .= "<td align\"center\">" .
+			$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']." $subtitle ($anzTeilnehmer)</td>\n";
+			//$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['start']."</td>\n";
+			$html2 .= "<td align=\"left\">" .
 					"<a id=\"showInDiv\" href=\"jqRequest&func=showStartList&lid=".$row['ID']."\" >Startliste</a>" .
 					"&nbsp;&nbsp; | &nbsp;&nbsp;" .
 					"<a id=\"showInDiv\" href=\"jqRequest&func=showStartWithoutKl&lid=".$row['ID']."\" >Teilnehmer ohne Klasse</a>" .
@@ -76,14 +76,14 @@ function showStartResult($rennen) {
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-			$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
-			$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=startliste")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['att']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
+			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=startliste")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
+			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['jahrgang']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['geschlecht']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['att']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
 			$html2 .= "</tr>\n";
 			$i++;
 		}
@@ -110,13 +110,13 @@ function showStartWithoutKl($rennen) {
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-			$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
-			$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=startliste")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
+			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=startliste")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
+			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['jahrgang']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['geschlecht']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
 			$html2 .= "</tr>\n";
 			$i++;
 		}

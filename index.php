@@ -13,7 +13,7 @@ if (stristr($_SERVER["REQUEST_URI"], '/index.php') === false) {
 session_start();
 include "function.php";
 $link = connectDB();
-$allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebnis', 'klasse', 'rennen', 'startliste', 'urkunden', 'import');
+$allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebnis', 'einlaufListe', 'klasse', 'rennen', 'startliste', 'urkunden', 'import');
 
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
@@ -25,6 +25,8 @@ if(isset($_GET['jqRequest'])) {
 	if($_GET['func'] == 'showResult')         { $html = showResult($_GET['lid']); echo $html;}
 	if($_GET['func'] == 'showResultM')        { $html = showResultM($_GET['lid']); echo $html;}
 	if($_GET['func'] == 'showWithowtTime')    { $html = showWithowtTime($_GET['lid']); echo $html;}
+	if($_GET['func'] == 'showEinlaufListe')   { $html = showEinlaufListe($_GET['lid'], $_GET['action']); echo $html;}
+	if($_GET['func'] == 'saveManZielzeit')    { $html = saveManZielzeit($_GET['id'], $_GET['action'], $_GET['time']); echo $html;}
 	if($_GET['func'] == 'getKlasse')          { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
 	if($_GET['func'] == 'lockRace')           { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
 	exit;
@@ -60,7 +62,6 @@ $testDiv = false;
 if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbname'], 'test'))){
 	$testDiv = true;
 }
-
 ?>
 
 <html>
@@ -81,10 +82,13 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 	<link href="css/smart-tables.css" rel="stylesheet" type="text/css" />
 	<link href="css/menu.css" rel="stylesheet" type="text/css" />
 	<link href="css/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+	<link href="css/font-awesome.min.css" rel="stylesheet">
+	
 	
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
 	<script type="text/javascript" src="js/openTiming.js"></script>
+	<script type="text/javascript" src="js/base64.js"></script>
 
 </head>
 
@@ -198,6 +202,14 @@ if ($testDiv == true) {
 <?php if($func[0] == 'teilnehmer' && ($func[1] == 'edit' || $func[1] == 'insert')) {?>
 <script type="text/javascript" src="js/teilnehmer.js"></script>
 <?php }?>
+
+<?php if($func[0] == 'einlaufListe') { ?>
+	<script>
+	var pageToLoad = 'index.php?jqRequest&func=showEinlaufListe&lid=0&action=none';
+	$("#data_div").load(pageToLoad);
+	</script>
+<?php }?>
+
 </body>
 </html>
 

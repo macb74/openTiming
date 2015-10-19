@@ -48,6 +48,7 @@ function menue() {
 		echo "	<table cellpadding=\"0\" cellspacing=\"1\">\n";
 		echo "		<tr><td class=\"smd-menu-top\">Auswertung</td></tr>\n";
 		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=startliste\" class=\"smd-menu\" target=\"_self\" title=\"Startliste.\">&nbsp;&nbsp;Startliste</a></td></tr>\n";
+		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=einlaufListe\" class=\"smd-menu\" target=\"_self\" title=\"Einlaufliste.\">&nbsp;&nbsp;Einlaufliste</a></td></tr>\n";
 		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=auswertung\" class=\"smd-menu\" target=\"_self\" title=\"Auswertung.\">&nbsp;&nbsp;Auswertung</a></td></tr>\n";
 		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=ergebnis\" class=\"smd-menu\" target=\"_self\" title=\"Ergebnisse\">&nbsp;&nbsp;Ergebnisse</a></td></tr>\n";
 		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=urkunden\" class=\"smd-menu\" target=\"_self\" title=\"Urkunden\">&nbsp;&nbsp;Urkunden</a></td></tr>\n";

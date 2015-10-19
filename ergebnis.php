@@ -33,12 +33,12 @@ function ergebninsForm($html) {
 		
 		$subtitle = "";
 		if ($row['untertitel'] != "") { $subtitle = "<i>- ".$row['untertitel']."</i>"; }
-		$html2 .= "<td width=\"30\" align\"left\">".$row['ID']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['titel']." $subtitle ($anzTeilnehmer)</td>\n";
-		//$html2 .= "<td align\"left\">".$row['untertitel']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['start']."</td>\n";
-		$html2 .= "<td align\"left\">".$row['aktualisierung']."</td>\n";
-		$html2 .= "<td align\"center\">" .
+		$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
+		$html2 .= "<td align=\"left\">".$row['titel']." $subtitle ($anzTeilnehmer)</td>\n";
+		//$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
+		$html2 .= "<td align=\"left\">".$row['start']."</td>\n";
+		$html2 .= "<td align=\"left\">".$row['aktualisierung']."</td>\n";
+		$html2 .= "<td align=\"left\">" .
 
 				
 				
@@ -96,20 +96,20 @@ function showResult($rennen) {
 			if($row['useManTime'] == 1 ) { $umt = '*'; } else { $umt = ''; }
 			if($row['man_runden'] != 0 ) { $mr = '*'; } else { $mr = ''; }
 			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-			$html2 .= "<td align\"left\">".$i."</td>\n";
-			$html2 .= "<td align\"left\">".$row['stnr']."</td>\n";
-			$html2 .= "<td align\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=ergebnis")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-			if ($rd['rundenrennen'] == 0) { $html2 .= "<td align\"left\">".$row['jahrgang']."</td>\n"; }
-			if ($rd['rundenrennen'] == 0) { $html2 .= "<td align\"left\">".$row['geschlecht']."</td>\n"; }
-			$html2 .= "<td align\"left\">".$row['klasse']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['titel']."</td>\n";
-			if ($rd['rundenrennen'] != 0) { $html2 .= "<td align\"left\">".$row['runden'].$mr."</td>\n"; }
+			$html2 .= "<td align=\"left\">".$i."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
+			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=ergebnis")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
+			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
+			if ($rd['rundenrennen'] == 0) { $html2 .= "<td align=\"left\">".$row['jahrgang']."</td>\n"; }
+			if ($rd['rundenrennen'] == 0) { $html2 .= "<td align=\"left\">".$row['geschlecht']."</td>\n"; }
+			$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
+			if ($rd['rundenrennen'] != 0) { $html2 .= "<td align=\"left\">".$row['runden'].$mr."</td>\n"; }
 			if (($dataSetBefore['zeit'] == $row['zeit']) && ($dataSetBefore['klasse'] == $row['klasse'])) { $sameTimeAsBefore = 'style="font-weight:bold"'; } else { $sameTimeAsBefore = ''; }
-			$html2 .= "<td align\"left\" $sameTimeAsBefore >".$row['zeit'].$umt."</td>\n";
-			$html2 .= "<td align\"left\">".$row['platz']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['akplatz']."</td>\n";
-			$html2 .= "<td align\"left\"><a href=\"urkundenPDF.php?action=einzel&tid=".$row['ID']."\" target=\"_new\">Urkunde</a></td>\n";
+			$html2 .= "<td align=\"left\" $sameTimeAsBefore >".$row['zeit'].$umt."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['platz']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['akplatz']."</td>\n";
+			$html2 .= "<td align=\"left\"><a href=\"urkundenPDF.php?action=einzel&tid=".$row['ID']."\" target=\"_new\">Urkunde</a></td>\n";
 			
 			$dataSetBefore['zeit'] = $row['zeit'];		
 			$dataSetBefore['klasse'] = $row['klasse'];
@@ -153,16 +153,16 @@ function showResultM($rennen) {
 					"where lid = $rennen and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
 			$res2 = dbRequest($sql2, 'SELECT');
 			
-			$html2 .= "<td align\"left\">".$i."</td>\n";
-			$html2 .= "<td align\"left\">".$row['verein']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['vtime']."</td>\n";
-			$html2 .= "<td align\"left\"><table border='0' cellspacing='0' >";
+			$html2 .= "<td align=\"left\">".$i."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['vtime']."</td>\n";
+			$html2 .= "<td align=\"left\"><table border='0' cellspacing='0' >";
 			foreach ($res2[0] as $row2) {
 				$html2 .= "<tr><td width='200'>".$row2['nachname'].", ".$row2['vorname']."</td><td>".$row2['zeit']."</td></tr>";
 			}
 			$html2 .= "</table></td>\n";
-			$html2 .= "<td align\"left\">".$row['vklasse']."</td>\n";
-			$html2 .= "<td align\"left\">".$row['vplatz']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['vklasse']."</td>\n";
+			$html2 .= "<td align=\"left\">".$row['vplatz']."</td>\n";
 			$html2 .= "</tr>\n";
 	
 			$i++;

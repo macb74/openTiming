@@ -13,12 +13,12 @@ function rennen() {
 	
 	# insert / edit Veranstaltung
 	if (isset($_POST['submit'])) {
-		$zeit = $_POST['hour'].$_POST['min'].$_POST['sec'];
+		$zeit = $_SESSION['vDatum']." ".$_POST['hour'].":".$_POST['min'].":".$_POST['sec'];
 		if($_POST['func'] == "edit") {
 			$sql = "update lauf set vID = '".$_SESSION['vID']."', 
 							 titel = '".$_POST['title']."', 
 							 untertitel = '".$_POST['subTitle']."', 
-							 start = ".$zeit.", 
+							 start = '".$zeit."', 
 							 klasse = '".$_POST['klasse']."', 
 							 team_anz = ".$_POST['teamAnz'].", 
 							 uTemplate = '".$_POST['uTemplate']."', 
@@ -39,7 +39,7 @@ function rennen() {
 										( '".$_SESSION['vID']."', 
 										'".$_POST['title']."', 
 										'".$_POST['subTitle']."', 
-										".$zeit.", 
+										'".$zeit."', 
 										".$_POST['klasse'].", 
 										".$_POST['teamAnz'].", 
 										'".$_POST['uDefinition']."', 
@@ -148,7 +148,7 @@ function showRaceEditForm($func) {
 			foreach ($result[0] as $row) {
 				$titel = $row['titel'];
 				$untertitel = $row['untertitel'];
-				$zeit = $row['start'];
+				$datetime = $row['start'];
 				$ID = $row['ID'];
 				$kl = $row['klasse'];
 				$vkl = $row['vklasse'];
@@ -162,7 +162,8 @@ function showRaceEditForm($func) {
 				$rdVorgabe = $row['rdVorgabe'];
 				$readerIp = $row['mainReaderIp'];
 			}
-			$dat = explode(':', $zeit);
+			$d = explode(' ', $datetime);
+			$dat = explode(':', $d[1]);
 						
 		}
 		

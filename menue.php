@@ -13,7 +13,7 @@ function menue() {
 	echo "<script type=\"text/javascript\">\n";
 	echo "<!--\n";
 	echo "function openWindow(url) {\n";
-	echo " fenster = window.open(url, \"fenster1\", \"width=300,height=600,status=no,scrollbars=yes,locationbar=no,resizable=yes\");\n";
+	echo " fenster = window.open(url, \"fenster1\", \"width=600,height=600,status=no,scrollbars=yes,locationbar=no,resizable=yes\");\n";
    	echo " fenster.focus();\n";
 	echo "}\n";
 	echo "//-->\n";
@@ -41,7 +41,9 @@ function menue() {
 		echo "	<table cellpadding=\"0\" cellspacing=\"1\">\n";
 		echo "		<tr><td class=\"smd-menu-top\">Zeit</td></tr>\n";
 		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=import.zeit\" class=\"smd-menu\" target=\"_self\" title=\"Zeit einlesen\">&nbsp;&nbsp;Zeitliste einlesen</a></td></tr>\n";
-		echo "		<tr><td class=\"smd-menu-item\"><a href=\"#\" onclick=\"openWindow('timeTable.php'); return false\" class=\"smd-menu\" target=\"_self\" title=\"Zeit einlesen\">&nbsp;&nbsp;Einlaufliste</a></td></tr>\n";
+		echo "		<tr><td class=\"smd-menu-item\"><a href=\"#\" onclick=\"openWindow('realtime/'); return false\" class=\"smd-menu\" target=\"_self\" title=\"realtime\">&nbsp;&nbsp;Realtime View</a></td></tr>\n";
+		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=ziel.analyse\" class=\"smd-menu\" target=\"_self\" title=\"Analyse Zieleinlauf\">&nbsp;&nbsp;Analyse Zieleinlauf</a></td></tr>\n";
+		echo "		<tr><td class=\"smd-menu-item\"><a href=\"?func=ziel.edit\" class=\"smd-menu\" target=\"_self\" title=\"Readerzeit bearbeiten\">&nbsp;&nbsp;Readerzeit bearbeiten</a></td></tr>\n";
 		echo "	</table>\n";
 
 

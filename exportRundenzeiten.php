@@ -2,6 +2,7 @@
 
 require('fpdf/fpdf.php');
 include("function.php");
+$link = connectDB();
 session_start();
 
 $_GET = filterParameters($_GET);
@@ -157,7 +158,6 @@ class PDF extends FPDF
 //$filename = $_GET['action'].'.pdf';
 $filename = 'Rundenzeiten.pdf';
 
-$link = connectDB();
 $pdf=new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage('Portrait', 'A4');

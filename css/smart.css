@@ -6,36 +6,39 @@
 body {
 	background-color: #FFFFFF;
 	margin: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif !important;
 }
 
 td {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 12px;
 }
 
 tr {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 12px;
 }
 
 input {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	padding-left: 2px;
+	font-size: 12px;
+	padding: 3px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
 }
 
 select,option {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 12px;
 }
 
 a {
-	color: #224F83;
-	text-decoration: underline;
+	color: #224F83 !important;
+	text-decoration: underline !important;
 }
 
 a:hover {
-	color: #003F7E;
+	color: #003F7E !important;
 	text-decoration: underline;
 }
 
@@ -44,6 +47,22 @@ a .fa {
 	text-decoration: none;
 }
 
+/*/------------------------------------------------------------------\*/
+	/*|                                                                  |*/
+	/*|                      overwrite jquery-ui                         |*/
+	/*|                                                                  |*/
+	/*\------------------------------------------------------------------/*/
+.ui-widget {
+	font-family: Verdana, Arial, Helvetica, sans-serif  !important;
+	font-size: 12px  !important;
+}
+
+.ui-autocomplete {
+	max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
 
 /*/------------------------------------------------------------------\*/
 	/*|                                                                  |*/
@@ -52,9 +71,8 @@ a .fa {
 	/*\------------------------------------------------------------------/*/
 .portal {
 	border: 1px solid #00407e;
-	background-image: url(../img/logo.png);
-	background-repeat: no-repeat;
-	background-position: left top;
+	margin: 5px;
+	min-height: 500px;
 }
 
 /*/------------------------------------------------------------------\*/
@@ -63,7 +81,18 @@ a .fa {
 	/*|                                                                  |*/
 	/*\------------------------------------------------------------------/*/
 .header {
-	background-color: #FFFFFF;
+	margin-top: -132px;
+	margin-left: 201px;
+	height: 132px;
+}
+
+.otlogo {
+	background-image: url(../img/logo.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	height: 132px;
+	width: 347px;
+	/* float: left; */
 }
 
 /*.backgrd-top {
@@ -81,14 +110,22 @@ a .fa {
 	font-weight: bold;
 	font-style: italic;
 	color: #1f3252;
-	height: 100%;
+	vertical-align: center;
+	text-align: center;
+	height: 75px;
+}
+
+.toptitle {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	height: 21px;
 	vertical-align: center;
 	text-align: center;
 }
 
-.toptitle { /*	background-color	: #e94c07;*/
-	font-size: 14px;
-	font-weight: bold;
+.subtitle {
+	font-size: 12px;
 	color: #000000;
 	height: 21px;
 	vertical-align: center;
@@ -100,9 +137,17 @@ a .fa {
 	/*|                        Main Body                                 |*/
 	/*|                                                                  |*/
 	/*\------------------------------------------------------------------/*/
-.mainBody {
+.main {
+	margin-bottom: 20px;
+}
+
+.main-right {
+	/* margin-left: 204px; */
+	border-left: 1px solid #e94c07;
+	padding-top: 30px;
 	padding-right: 12px;
 	padding-left: 12px;
+	overflow: auto;
 }
 
 /*/------------------------------------------------------------------\*/
@@ -110,6 +155,25 @@ a .fa {
 	/*|                        Box                                       |*/
 	/*|                                                                  |*/
 	/*\------------------------------------------------------------------/*/
+.content {
+	border: 1px solid #00407e;
+	padding: 5px 5px 15px 5px;
+	border-bottom-left-radius: 7px;
+	border-bottom-right-radius: 7px;
+	min-height: 500px;
+}
+
+.contenthead {
+	background-color: #00407e;
+	border: 1px solid #00407e;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	padding: 2px 2px 2px 10px;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-size: 12px;
+}
+
 table.box {
 	text-align: right;
 	padding-right: 5px;
@@ -358,7 +422,7 @@ span.acknowledgement {
 }
 
 .chkboxtable {
-	margin: 0;
+	margin: 0 !important;
 }
 
 .timeTable {
@@ -370,3 +434,12 @@ span.acknowledgement {
 .inputZielzeit {
   width: 70px;
 }
+
+.inputStartAnalyseTime {
+  width: 140px;
+}
+
+.inputLengthAnalyseTime {
+  width: 70px;
+}
+

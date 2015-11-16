@@ -328,12 +328,12 @@ function tDisplayEditForm($f) {
 	#		$html .="<p class=\"vboxspacer\">&nbsp;</p>\n";
 	$html .="<div class=\"vboxitem\" >\n";
 	$html .="	<div class=\"navigation-buttons\" >\n";
-	$html .="		<input name=\"submit\" type=\"submit\" value=\"Speichern\" class=\"button\">\n";
+	$html .="		<input name=\"submit\" type=\"submit\" value=\"Speichern\" class=\"ui-button ui-widget ui-state-default ui-corner-all\">\n";
 	$html .="		&nbsp;&nbsp;\n";
-	$html .="		<input type=\"button\" name=\"cancel\" value=\"<< Zur&uuml;ck\" class=\"button\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer'\">\n";
+	$html .="		<input type=\"button\" name=\"cancel\" value=\"<< Zur&uuml;ck\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer'\">\n";
 	if($func[1] == 'edit') {
 		$html .="		&nbsp;&nbsp;\n";
-		$html .="		<input type=\"button\" name=\"delete\" value=\"löschen\" class=\"button\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.delete&ID=".$_GET['ID']."'\">\n";
+		$html .="		<input type=\"button\" name=\"delete\" value=\"löschen\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.delete&ID=".$_GET['ID']."'\">\n";
 	}
 	$html .="	</div>\n";
 	$html .="</div>\n";
@@ -358,7 +358,7 @@ function tDisplayList ($f)  {
 	$i=1;
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
-			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
+			if($i%2 == 0) { $html2 .= "<tr class=\"even highlight\">\n"; } else { $html2 .= "<tr class=\"odd highlight\">\n"; }
 			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
 			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
 			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";

@@ -25,14 +25,16 @@ $(document).ready(function(){
     });
     
     
-    $(".manzeit").click(function(){
-    	alert('checked');
-//    	var pageToLoad = 'index.php?' + $(this).attr("href");
-//    	$("#data_div").load(pageToLoad);       
+    $('.zielanalyse').click(function(){
+    	
+    	// Encode the String
+    	var encodedTimeString = Base64.encode($('#startAnalyseTime_' + $(this).attr("id")).val());
+    	var duration = Base64.encode($('#duration_' + $(this).attr("id")).val());
+    	var pageToLoad = 'index.php?' + $(this).attr("href") + '&start=' + encodedTimeString + '&duration=' + duration;
+    	$("#data_div").load(pageToLoad);
     	return false;
     });
-    
-    
+        
     // Lock Race Button
     $('[id^=lock_href]').click(function(){
 		var url = 'index.php?' + $(this).attr("href");
@@ -41,7 +43,7 @@ $(document).ready(function(){
 		});
 		return false;
     });
-    
+
 });
 
 function clearDiv() {
@@ -64,3 +66,7 @@ function setLock(data) {
 	}	
 }
 
+function saveReaderTime(pageToLoad) {
+   	var pageToLoad = 'index.php?jqRequest&func=saveReaderTime&' + pageToLoad;
+   	$("#data_div").load(pageToLoad);
+}

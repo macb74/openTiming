@@ -13,7 +13,7 @@ if (stristr($_SERVER["REQUEST_URI"], '/index.php') === false) {
 session_start();
 include "function.php";
 $link = connectDB();
-$allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebnis', 'einlaufListe', 'klasse', 'rennen', 'startliste', 'urkunden', 'import');
+$allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebnis', 'einlaufListe', 'klasse', 'rennen', 'startliste', 'urkunden', 'import', 'ziel');
 
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
@@ -29,6 +29,8 @@ if(isset($_GET['jqRequest'])) {
 	if($_GET['func'] == 'saveManZielzeit')    { $html = saveManZielzeit($_GET['id'], $_GET['action'], $_GET['time']); echo $html;}
 	if($_GET['func'] == 'getKlasse')          { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
 	if($_GET['func'] == 'lockRace')           { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
+	if($_GET['func'] == 'showZielAnalyse')    { $html = showZielAnalyse($_GET['lid'], $_GET['start'], $_GET['duration']); echo $html;}
+	if($_GET['func'] == 'saveReaderTime')     { $html = saveReaderTime($_GET['id'], $_GET['action'], $_GET['values']); echo $html;}
 	exit;
 }
 
@@ -81,14 +83,17 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 	<link href="css/smart.css" rel="stylesheet" type="text/css" />
 	<link href="css/smart-tables.css" rel="stylesheet" type="text/css" />
 	<link href="css/menu.css" rel="stylesheet" type="text/css" />
-	<link href="css/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+	<link href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet">
 	<link href="css/font-awesome.min.css" rel="stylesheet">
-	
+    <link href="css/timeline.css" rel="stylesheet" type="text/css" />
 	
 	<script type="text/javascript" src="js/jquery.js"></script>
-	<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/timeline.js"></script>
 	<script type="text/javascript" src="js/openTiming.js"></script>
 	<script type="text/javascript" src="js/base64.js"></script>
+	<script type="text/javascript" src="js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/timeline.js"></script>
 
 </head>
 
@@ -100,105 +105,26 @@ if ($testDiv == true) {
 }
 ?>
 
-<table class="portal" width="100%" height="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-	<tr>
-		<td height="118">
+<div class="portal">
+	<div class="otlogo"></div>
+	<div class="header">
+		<div class="portaltitle"><?php echo $_SESSION['vTitel'] ?></div>
+		<div class="toptitle"><?php echo $_SESSION['vUntertitel'] ?></div>
+		<div class="subTitle"><?php echo $_SESSION['vDatum'] ?></div>
+	</div>
+	
+	<div class="main">
+		<div class="menu">
+			<div class="menuTitle">Men&uuml;</div>
+			<div class="menuBody"><?php menue(); ?></div>
+		</div>
+		<div class="main-right"><?php echo $html; ?></div>
+	</div>
+</div>
+<div class="footer">
+		<div class="copy">&copy; 2015 open Timing by M. Bußmann</div>
+</div>
 
-		<table class="backgrd-top" border="0" cellspacing="0" cellpadding="0" width="100%" height="118">
-			<tr>
-				<td width="200" height="118">&nbsp;</td>
-				<td height="118">
-				<table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">
-					<tr>
-						<td align="right">
-
-						<table class="box" width="300" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td class="boxBody" align="right"><!-- username --></td>
-							</tr>
-						</table>
-
-						</td>
-					</tr>
-					<tr>
-						<td class="portaltitle"><?php echo $_SESSION['vTitel'] ?></td>
-					</tr>
-					<tr>
-						<td class="toptitle"><?php echo $_SESSION['vUntertitel'] ?></td>
-					</tr>
-					<tr>
-						<td class="subTitle" align="center" valign="top"><?php echo $_SESSION['vDatum'] ?>
-						</td>
-				
-				</table>
-				</td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-
-	<tr>
-		<td valign="top">
-		<table width="100%" height="100%" class="backgrd-left">
-			<tr>
-				<td class="menucolumn" valign="top" height="100%">
-
-				<table class="menu" cellpadding="0" cellspacing="0">
-					<tr>
-						<th class="menuTitle">Men&uuml;</th>
-					</tr>
-					<tr>
-						<td class="menuBody">
-						<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
-							<tr>
-								<td valign="top"><?php menue(); ?></td>
-
-							</tr>
-
-							<tr>
-								<td>&nbsp;</td>
-							</tr>
-						</table>
-						</td>
-					</tr>
-				</table>
-
-				</td>
-
-				<td width="100%" valign="top">
-				<table width="100%" border="0" cellspacing="0" cellpadding="3">
-
-					<tr>
-						<td>&nbsp;</td>
-					</tr>
-
-					<tr>
-						<td>&nbsp;</td>
-					</tr>
-
-					<tr>
-						<td class="mainBody" valign="top"><?php
-						echo $html;
-						?></td>
-					</tr>
-
-					<tr>
-						<td>&nbsp;</td>
-					</tr>
-				</table>
-				</td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-</table>
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-	<tr>
-		<td valign="bottom">
-		<div class="copy">&copy; 2013 open Timing by M. Bußmann</div>
-		</td>
-	</tr>
-</table>
 <?php if($func[0] == 'teilnehmer' && ($func[1] == 'edit' || $func[1] == 'insert')) {?>
 <script type="text/javascript" src="js/teilnehmer.js"></script>
 <?php }?>
@@ -206,6 +132,13 @@ if ($testDiv == true) {
 <?php if($func[0] == 'einlaufListe') { ?>
 	<script>
 	var pageToLoad = 'index.php?jqRequest&func=showEinlaufListe&lid=0&action=none';
+	$("#data_div").load(pageToLoad);
+	</script>
+<?php }?>
+
+<?php if($func[0] == 'ziel' && $func[1] == 'edit') { ?>
+	<script>
+	var pageToLoad = 'index.php?jqRequest&func=saveReaderTime&action=show&id&values';
 	$("#data_div").load(pageToLoad);
 	</script>
 <?php }?>

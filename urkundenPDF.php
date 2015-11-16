@@ -3,6 +3,7 @@
 require_once('fpdf/fpdf.php');
 require_once('fpdi/fpdi.php');
 include("function.php");
+$link = connectDB();
 session_start();
 
 $stnr=0;
@@ -151,8 +152,6 @@ class PDF extends FPDI
 	//	}
 
 }
-
-$link = connectDB();
 
 #$pdf=new PDF();
 $pdf=new PDF();

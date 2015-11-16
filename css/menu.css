@@ -14,16 +14,18 @@
 }
 
 .menu {
-	width: 200px;
+	width: 199px;
+	margin-top: 60px;
+	margin-left: 5px;
+	float: left;
 }
 
 .menuTitle {
 	border: 0px;
+	font-weight: bold;
+	text-align: center;
 }
 
-.menuBody {
-	
-}
 
 /*/------------------------------------------------------------------\*/
 	/*|                                                                  |*/
@@ -45,5 +47,5 @@ img.smd-menu {
 }
 
 a.smd-menu {
-	text-decoration: none;
+	text-decoration: none !important;
 }

@@ -49,3 +49,11 @@ ALTER TABLE `zeit` ADD `zeit_tmp` DATETIME NOT NULL AFTER `nummer`;
 update zeit set zeit_tmp = concat(DATE(timestamp), ' ',zeit);
 ALTER TABLE `zeit` DROP `zeit`;
 ALTER TABLE `zeit` CHANGE `zeit_tmp` `zeit` DATETIME NOT NULL;
+
+-- 21.10.2015
+ALTER TABLE `lauf` ADD `start_tmp` DATETIME NOT NULL AFTER `start`;
+UPDATE lauf as l
+	inner join veranstaltung as v on v.id = l.vid
+SET l.start_tmp = concat(v.datum, ' ', l.start);
+ALTER TABLE `lauf` DROP `start`;
+ALTER TABLE `lauf` CHANGE `start_tmp` `start` DATETIME NOT NULL;

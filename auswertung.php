@@ -101,7 +101,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
         }
         if(defined('ZEITSPRUNG')) $zeit="if(HOUR($zeit)>2 AND HOUR($zeit)<12,timediff($zeit,'01:00:00'),$zeit)";
 
-    $startZeit = $_SESSION['vDatum']." ".$rInfo['startZeit'];
+    $startZeit = $rInfo['startZeit'];
 	if($rInfo["rundenrennen"] != 2) {
 	# ohne Rundenvorgabe oder kein Rundenrennen:
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
@@ -401,7 +401,7 @@ function showWithowtTime($rennen) {
 
 function updateAnzRunden($veranstaltung, $rennen, $rInfo) {
 	$numbers = array();
-	$startZeit = $_SESSION['vDatum']." ".$rInfo['startZeit'];
+	$startZeit = $rInfo['startZeit'];
 	
 	// um mit mehreren Readern arbeiten zu können werden immer nur Runden gezählt, die länger als 10 sec. dauern.
 	// alles was kleiner als 10 sec ist, wird als zeit vom backup Reader interpretiert und nicht gezählt.

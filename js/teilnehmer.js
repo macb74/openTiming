@@ -1,5 +1,8 @@
 $(document).ready(function(){
-	$("#verein").autocomplete('getVerein.php');
+	$("#verein").autocomplete({
+		source: 'getVerein.php', 
+		minLength: 2
+	});
 });
 
 $(document).ready(function(){

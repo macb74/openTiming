@@ -2,6 +2,7 @@
 
 require('fpdf/fpdf.php');
 include("function.php");
+$link = connectDB();
 session_start();
 
 $_GET = filterParameters($_GET);
@@ -486,7 +487,6 @@ $pdf=new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage('Portrait', 'A4');
 
-$link = connectDB();
 $rData = getRennenData($_GET['id']);
 $filename = $rData['titel']."_".$rData['untertitel'].".pdf";
 

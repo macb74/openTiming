@@ -9,6 +9,22 @@
 }
 
 
+tr.highlight:hover {
+	background: -webkit-linear-gradient(#d9e3ec, #cddbea) repeat scroll 0 0; /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#d9e3ec, #cddbea) repeat scroll 0 0; /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#d9e3ec, #cddbea) repeat scroll 0 0; /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#d9e3ec, #cddbea) repeat scroll 0 0; /* Standard syntax */
+}
+
+/*
+.odd:hover, .even:hover, .hover {
+	background: -webkit-linear-gradient(#ced6df, #b6c6d7) repeat scroll 0 0;
+	background: -o-linear-gradient(#ced6df, #b6c6d7) repeat scroll 0 0;
+	background: -moz-linear-gradient(#ced6df, #b6c6d7) repeat scroll 0 0;
+	background: linear-gradient(#ced6df, #b6c6d7) repeat scroll 0 0;
+}
+*/
+
 /*/------------------------------------------------------------------\*/
 /*|                                                                  |*/
 /*|      Tables                                                      |*/
@@ -99,6 +115,7 @@ table.common {
 /*    border-collapse		: collapse;*/
     border-color		: #e94c07;
     width				: 100%;
+    border-spacing		: 0px;
 /*    margin				: 20px 0 20px 0;*/
 }
 table.common thead tr {
@@ -108,9 +125,15 @@ table.common tr.even {
 	background-color	: #eeeeee;
 }
 table.common td, table.common th {
-    padding				: 2px 4px 2px 4px;
-    vertical-align		: top;
+    padding				: 3px 3px 3px 3px;
+    /* vertical-align		: top; */
+    border-bottom		: thin solid #bfbfbf;
 }
+
+table.common td table td {
+    border-bottom		: none;
+}
+
 table.common th.sortable {
     text-align			: left;
     text-indent			: 10px;
@@ -280,13 +303,15 @@ table.history td, table.history th {
 
 table.meetings td, table.meetings th {
     border-bottom		: thin solid #e94c07;
-    padding				: 5px;
+    padding				: 6px;
 }
 
+/*
 table.teilnehmer td, table.teilnehmer th {
-    border-bottom		: thin solid #e94c07;
-    padding				: 1px;
+    border-bottom		: thin solid #bfbfbf;
+    padding				: 2px 4px;
 }
+*/
 
 table.meetings .link-group .subtable td {
     border-bottom       : none;

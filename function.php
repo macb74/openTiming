@@ -18,39 +18,17 @@ include "ergebnis.php";
 include "urkunden.php";
 include "import.php";
 include "einlaufListe.php";
+include "ziel.php";
+
 
 function table($title, $content) {
-	$html  = "<table class=\"deco-box\" width=\"100%\" cellspacing=\"0\" >\n";
-	$html .= "  <thead>\n";
-	$html .= "     <tr>\n";
-	$html .= "         <th class=\"deco-box-left\"   >&nbsp;</th>\n";
-	$html .= "         <th class=\"deco-box-middle\" >$title</th>\n";
-	$html .= "         <th class=\"deco-box-right\"  >&nbsp;</th>\n";
-	$html .= "     </tr>\n";
-	$html .= " </thead>\n";
-	$html .= " 	<tbody>\n";
-	$html .= " 	<tr class=\"content\" >\n";
-	$html .= " 	    <td class=\"deco-box-left\" >&nbsp;</td>\n";
-	$html .= " 	    <td class=\"deco-box-middle\" >\n";
-
-	$html .= $content;	
-
-	$html .= "	            </td>\n";
-	$html .= "	            <td class=\"deco-box-right\"  >&nbsp;</td>\n";
-	$html .= "	        </tr>\n";
-	$html .= "	        <tr class=\"footer\" >\n";
-	$html .= "	            <td class=\"deco-box-left\"   >&nbsp;</td>\n";
-	$html .= "	            <td class=\"deco-box-middle\" >&nbsp;</td>\n";
-	$html .= "	            <td class=\"deco-box-right\"  >&nbsp;</td>\n";
-	$html .= "	        </tr>\n";
-	$html .= "	    </tbody>\n";
-	$html .= "	</table>\n";
-
+	$html = "<div class=\"contenthead\">$title</div> ".
+			"<div class=\"content\">$content</div>";
 	return $html;
 }
 
 function tableList($columns, $content, $class) {
-	$html = "<table frame=\"void\" rules=\"rows\" class=\"$class\" id=\"race\">\n";
+	$html = "<table class=\"$class\" id=\"race\">\n";
 	$html .= "<thead>\n";
 	$html .= "<tr>\n";
 		foreach($columns as $c) {
@@ -160,14 +138,14 @@ function getRennenData($rennen) {
 		$rd['mainReaderIp']	= $row['mainReaderIp'];
 		$rd['titel']		= $row['titel'];
 		$rd['untertitel']	= $row['untertitel'];
+		$rd['vID']			= $row['vID'];
 	}
 	return $rd;
 }
 
 
 function filterParameters($array) {
-	
-	$link = connectDB();
+	global $link;
 	if(is_array($array)) {
 		foreach($array as $key => $value) {
 			if(is_array($array[$key])) {
@@ -179,9 +157,8 @@ function filterParameters($array) {
 		}
 	}
 	if(is_string($array)) {
-		$array = mysql_real_escape_string($array);
+		$array = $link->real_escape_string($array);
 	}
-	$link->close();
  	return $array;
 	 
 }

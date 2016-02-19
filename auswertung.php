@@ -10,6 +10,7 @@ function doAuswertung() {
 	$anzTeams = 0;
 	$veranstaltung = $_SESSION['vID'];
 	$rInfo = getRennenData($rennen);
+	if($rInfo['lockRace'] == 1 ) { die; }
 	cleanAll($veranstaltung, $rennen);
 	
 	if($rInfo['rundenrennen'] == 0 || $rInfo['rundenrennen'] == 2) {
@@ -381,7 +382,9 @@ function showRaceList() {
 					<td><?php echo substr($row['start'], 10); ?></td>
 					<td>
 						<div class="btn-group" role="group" aria-label="...">
-							<a rid="<?php echo $row['ID']; ?>" class="btn btn-default btn-small-border last-race-update" onclick="javascript:doAuswertung(<?php echo $row['ID']; ?>)">
+							<?php if($row['lockRace'] == 1) { $disabled = "disabled=\"disabled\""; } else { $disabled = ""; } ?>
+							<?php if($row['lockRace'] != 1) { $onclick = "onclick=\"javascript:doAuswertung(".$row['ID'].")\""; } else { $onclick = ""; } ?>
+							<a rid="<?php echo $row['ID']; ?>" class="btn btn-default btn-small-border last-race-update" <?php echo $disabled; ?> <?php echo $onclick; ?>>
 								<!--<i class="fa fa-cog"></i> --><i class="fa fa-clock-o"></i> Laufwertung
 							</a>
 						</div>

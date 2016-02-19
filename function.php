@@ -114,6 +114,7 @@ function getRennenData($rennen) {
 		$rd['titel']		= $row['titel'];
 		$rd['untertitel']	= $row['untertitel'];
 		$rd['vID']			= $row['vID'];
+		$rd['lockRace']		= $row['lockRace'];
 	}
 	return $rd;
 }

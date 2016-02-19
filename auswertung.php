@@ -370,12 +370,14 @@ function showRaceList() {
 
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
-	
+
+			$count = getCountRunner($row['ID']);
+			
 ?>
 
 				<tr>
 					<td><?php echo $row['ID']; ?></td>
-					<td><?php echo $row['titel']." / ".$row['untertitel']; ?></td>
+					<td><?php echo $row['titel']; ?> <small><?php echo $row['untertitel']; ?> (<?php echo $count[0]; ?> / <?php echo $count[1] ?>)</small></td>
 					<td><?php echo substr($row['start'], 10); ?></td>
 					<td>
 						<div class="btn-group" role="group" aria-label="...">
@@ -571,4 +573,17 @@ function updateStatus($veranstaltung, $rennen) {
 	$timestamp = date("YmdHis", time());
 	$sql = "update lauf set aktualisierung = $timestamp where vid = $veranstaltung and id = $rennen";
 	$res = dbRequest($sql, 'UPDATE');
+}
+
+function getCountRunner($race) {
+
+	$sql = "select id from teilnehmer where lid = $race and disq = 0 and del = 0;";
+	$res = dbRequest($sql, 'SELECT');
+	$count[0] = $res[1];
+	
+	$sql = "select id from teilnehmer where lid = $race and disq = 0 and del = 0 and zeit <> '00:00:00';";
+	$res = dbRequest($sql, 'SELECT');
+	$count[1] = $res[1];
+	
+	return $count;
 }

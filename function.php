@@ -7,42 +7,17 @@
  */
 
 include "config.php";
-include "veranstaltungen.php";
+include "veranstaltung.php";
 include "teilnehmer.php";
 include "rennen.php";
 include "klasse.php";
-include "menue.php";
 include "startliste.php";
 include "auswertung.php";
 include "ergebnis.php";
-include "urkunden.php";
 include "import.php";
 include "einlaufListe.php";
 include "ziel.php";
 
-
-function table($title, $content) {
-	$html = "<div class=\"contenthead\">$title</div> ".
-			"<div class=\"content\">$content</div>";
-	return $html;
-}
-
-function tableList($columns, $content, $class) {
-	$html = "<table class=\"$class\" id=\"race\">\n";
-	$html .= "<thead>\n";
-	$html .= "<tr>\n";
-		foreach($columns as $c) {
-			$html .= "<th align=\"left\">\n";
-			$html .= $c."\n";
-			$html .= "</th>\n";
-		}
-	$html .= "<tbody>\n";
-
-	$html .= $content;
-
-	$html .= "</tbody></table>\n";
-	return $html;	
-}
 
 function connectDB() {
 	global $config;

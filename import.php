@@ -8,53 +8,32 @@
 
 function import() {
 	global $func;
-	$html = '';
-
-	if($func[1] == 'teilnehmer') {
-		$html = tImport();
-	} elseif ($func[1] == 'zeit') {
-		$html = zImport();
-	}
-	return $html;
+	uploadForm($func[1]);
 }
 
 function tImport() {
-	if(isset($_POST['submit'])) {
-
-		$filename = uploadFile();
-		$lines = parseFile($filename);
-		//		echo "<pre>";
-		//		print_r($lines);
-		//		echo "</pre>";
-		$html = tUpdateDB($lines);
-
-	} else {
-		$html = uploadForm();
-	}
-	return table("Teilnehmerliste importieren", $html);
+	$filename = uploadFile();
+	$lines = parseFile($filename);
+	//		echo "<pre>";
+	//		print_r($lines);
+	//		echo "</pre>";
+	tUpdateDB($lines);
 }
 
 function zImport() {
-	if(isset($_POST['submit'])) {
-
-		$filename = uploadFile();
-		$lines = parseFile($filename);
-		//		echo "<pre>";
-		//		print_r($lines);
-		//		echo "</pre>";
-		$html = zUpdateDB($lines);
-
-	} else {
-		$html = uploadForm();
-	}
-	return table("Zeit importieren", $html);
+	$filename = uploadFile();
+	$lines = parseFile($filename);
+	//		echo "<pre>";
+	//		print_r($lines);
+	//		echo "</pre>";
+	zUpdateDB($lines);
 }
 
 function uploadFile() {
 	$uploaddir = 'upload/';
-	$uploadfile = $uploaddir.basename($_FILES['userfile']['name']);
+	$uploadfile = $uploaddir.basename($_FILES['uploadFile-0']['name']);
 
-	if (!move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
+	if (!move_uploaded_file($_FILES['uploadFile-0']['tmp_name'], $uploadfile)) {
 		echo "uploadError"; die;
 	}
 	return $uploadfile;
@@ -134,8 +113,8 @@ function tUpdateDB($lines) {
 		}
 	}
 
-	$errMsg .= "$didIt Datensätze erfolgreich eingefügt / aktualisiert<br>\n";
-	return $errMsg;
+	$errMsg .= "$didIt Datens&aumltze erfolgreich eingef&uuml;gt / aktualisiert<br>\n";
+	echo $errMsg;
 }
 
 function zUpdateDB($lines) {
@@ -176,93 +155,109 @@ function zUpdateDB($lines) {
 		$i++;
 	}
 
-	$errMsg .= "$didIt Datensätze erfolgreich eingefügt / aktualisiert<br>\n";
-	return $errMsg;
+	$errMsg .= "$didIt Datens&aumltze erfolgreich eingef&uuml;gt / aktualisiert<br>\n";
+	echo $errMsg;
 }
 
-function uploadForm() {
-	global $func;
-	$html ="<form enctype=\"multipart/form-data\" name=\"Formular\" method=\"POST\" action=\"?func=import.$func[1]\">\n";
-	$html .="<div class=\"vboxitem\" >\n";
-	$html .="	<span class=\"description\" >\n";
-	$html .="		Bitte wählen Sie die Datei.\n";
-	$html .="	</span>\n";
-	$html .="</div>\n";
-	$html .="<div class=\"vboxitem\" >\n";
-	$html .="	<table class=\"grey-bg\" width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" >\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				&nbsp;\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				&nbsp;\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
+function uploadForm($func) {
+	
+?>
+
+	<script>
+
+		$(document).on('change', '.btn-file :file', function() {
+		  var input = $(this),
+		      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+		      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+		  input.trigger('fileselect', [numFiles, label]);
+		});
+
+		$(document).ready( function() {
+
+			$("#submit").click(function(event){
+			    event.preventDefault();			    
+				submitForm('#upload', false);
+			});
 
 
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	if ($func[1] == "teilnehmer") {
-		$html .="				Teilnehmerdatei:\n";
-	} else {
-		$html .="				Zeitdatei:\n";
-	}
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"file\" name=\"userfile\" size=\"40\" value=\"\">\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-
-	if ($func[1] == "teilnehmer") {
-		$html .="		<tr class=\"middle-row\" >\n";
-		$html .="			<td class=\"leftcolumn\" nowrap >\n";
-		$html .="				Update existing:\n";
-		$html .="			</td>\n";
-		$html .="			<td class=\"rightcolumn\" >\n";
-		$html .="				<input type=\"checkbox\" name=\"update\" value=\"1\">&nbsp;wenn diese Option nicht aktiviert ist, werden nur Datensätze angelegt, die noch nicht vorhanden sind.\n";
-		$html .="			</td>\n";
-		$html .="			<td class=\"errorcolumn\" ></td>\n";
-		$html .="		</tr>\n";
-	}
-
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				&nbsp;\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				&nbsp;\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-
-	$html .="	</table>\n";
-	$html .="</div>\n";
-
-	$html .="<div class=\"vboxitem\" >\n";
-	$html .="	<div class=\"navigation-buttons\" >\n";
-	$html .="		<input name=\"submit\" type=\"submit\" value=\"Upload\" class=\"button\">\n";
-	$html .="		&nbsp;&nbsp;\n";
-	$html .="		<input type=\"button\" name=\"cancel\" value=\"<< Zur&uuml;ck\" class=\"button\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer'\">\n";
-	$html .="	</div>\n";
-	$html .="</div>\n";
-	$html .="</form>\n";
-
-	$html .="<div class=\"vboxitem\" >\n";
-	$html .="<p>&nbsp;</p>\n";
-	$html .="<p><b>Dateiformat:</b></p>\n";
-	if ($func[1] == "teilnehmer") {
-		$html .="<p>Die erste Zeile enthält die Spaltenüberschriften</p>\n";
-		$html .="<p>Veranstaltung;Rennen;Startnumer;Nachname;Vorname;Geschlecht;Jahrgang;Verein;Attribut</p>\n";
-	} else {
-		$html .="<p>Die erste Zeile enthält die Spaltenüberschriften</p>\n";
-		$html .="<p>Veranstaltung;Rennen;Startnumer;Zeit (HH:MM:SS)</p>\n";
-	}
-	$html .="</div>\n";
+		    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+		        
+		        var input = $(this).parents('.input-group').find(':text'),
+		            log = numFiles > 1 ? numFiles + ' files selected' : label;
+		        
+		        if( input.length ) {
+		            input.val(log);
+		        } else {
+		            if( log ) alert(log);
+		        }
+		        
+		    });
+		});
+		
+	</script>
 
 
-	return $html;
+<?php if ($func == "teilnehmer")	{ echo	"<h3>Teilnehmerliste einlesen</h3>"; } ?>
+<?php if ($func == "zeit") 			{ echo	"<h3>Zeitliste einlesen</h3>"; } ?>
+
+<?php  if ($func == "teilnehmer")	{ $form = "uploadTeilnehmer"; } ?>
+<?php  if ($func == "zeit")		 	{ $form = "uploadZeit"; } ?>
+
+	<div class="alert alert-danger hidden col-sm-offset-3 col-sm-6" id="alert" role="alert"></div>
+	<form role="form" class="form-horizontal" enctype="multipart/form-data" id="upload" name="upload">
+
+		<input type="hidden" name="form" value="<?php echo $form; ?>"></input>
+	
+		<div class="form-group">
+			<?php if ($func == "teilnehmer") { ?>
+			<label for="datei" class="col-sm-4 control-label">
+				Update existing:
+			</label>
+			<label class="checkbox-inline">
+				<input type="checkbox" name="update" value="1">	wenn diese Option nicht aktiviert ist, werden nur Datens&auml;tze angelegt, die noch nicht vorhanden sind			
+			</label>
+	
+			
+			<?php } ?>
+		</div>	
+		
+		<div class="form-group">
+			<label for="datei" class="col-sm-4 control-label">
+				<?php  if ($func == "teilnehmer")	{ echo "Teilnehmerdatei:"; } ?>
+				<?php  if ($func == "zeit")		 	{ echo "Zeitdatei:"; } ?>
+			</label>
+			<div class="col-sm-4">
+				<div class="input-group">
+		            <input type="text" class="form-control input-readonly" readonly>
+		        	<span class="input-group-btn">
+		            	<span class="btn btn-primary btn-file">
+		                        Browse&hellip; <input type="file" name="uploadFile" multiple>
+		                </span>
+		            </span>
+				</div>
+	        </div>
+		</div>
+	
+		<div class="form-group">
+			<div class="col-sm-offset-4 col-sm-5">
+				<button type="submit" id="submit" class="btn btn-success" value="upload">upload</button>
+			</div>
+		</div>
+	</form>
+
+	<p>&nbsp;</p>
+	<p class="col-sm-offset-2 col-sm-8 bg-info">
+		<b>Dateiformat:</b><br>
+		<?php if ($func == "teilnehmer") { ?>
+			Die erste Zeile enth&auml;lt die Spalten&uuml;berschriften<br>
+			Veranstaltung;Rennen;Startnumer;Nachname;Vorname;Geschlecht;Jahrgang;Verein;Attribut
+		<?php } else { ?>
+			Die erste Zeile enth&auml;lt die Spalten&uuml;berschriften<br>
+			Veranstaltung;Rennen;Startnumer;Zeit (HH:MM:SS)
+		<?php } ?>
+	</p>
+
+<?php
 }
 
 ?>

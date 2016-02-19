@@ -1,48 +1,26 @@
 <?php
 /*
- * Created on 06.11.2009
+ * Created on 23.11.2015
  *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 function teilnehmer() {
-	global $func;
-	$errmsg 	= "";
-	$zeit 		= '00:00:00';
-	$editError 	= 0;
-	$f = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	
-	# insert / edit Teilnehmer
-	if (isset($_POST['submit']) || $func[1] == 'delete') {
-		$f = tInsertUpdate();
-		$editError = $f[13];
-	}
 
-	# display Form
-	if ($func[1] == "edit" || $func[1] == "insert" || $editError == 1) {
-		$f = tDisplayEditForm($f);
-	} else {
-		$f = tDisplayList($f);
-	}
+	if (isset($_GET['id'])) { showTeilnehmerEditForm(); } else { showTeilnehmer(); }
 	
-	$html = $f[14];
-	$html .= "<div id='data_div'></div>";
-	return table("Teilnehmer", $html);
 }
 
-function tInsertUpdate( ) {
-	global $func;
-
-	$_SESSION['rID'] = $_POST['rID'];
+function saveTeilnehmer() {
+	
+	//phpinfo(32);
 
 	$f[0] 		= $_SESSION['vID'];
 	$f[1] 		= $_POST['rID'];
-	$f[2]		= $_POST['tID'];
-	$f[3]	 	= $_POST['name'];
+	$f[2]		= $_POST['id'];
+	$f[3]	 	= $_POST['nachname'];
 	$f[4] 		= $_POST['vorname'];
 	$f[5]		= $_POST['geschlecht'];
 	$f[6] 		= $_POST['ort'];
-	$f[7] 		= $_POST['jg'];
+	$f[7] 		= $_POST['jahrgang'];
 	$f[8] 		= $_POST['stnr'];
 	$f[9] 		= $_POST['verein'];
 	$f[10]		= $_POST['zeit'];
@@ -56,330 +34,377 @@ function tInsertUpdate( ) {
 	$f[19]		= $_POST['vklasse'];
 	$f[20]		= $_POST['att'];
 	
-	if($_POST['func'] == "edit") {
+	if($_POST['id'] != "new") {
 		$sql = "update teilnehmer set " .
 				"vID = $f[0], lID = $f[1], nachname = '$f[3]', vorname = '$f[4]', " .
 				"geschlecht = '$f[5]', ort = '$f[6]', jahrgang = $f[7], stnr = $f[8], " .
-				"verein = '$f[9]', manzeit = '$f[10]', zeit = '$f[10]', useManTime = $f[16] ,disq = $f[11], klasse = '$f[15]', man_runden = $f[18], vklasse = '$f[19]' , att = '$f[20]'" .
+				"verein = '$f[9]', manzeit = '$f[10]', zeit = '$f[10]', useManTime = $f[16] ,disq = $f[11], klasse = '$f[15]', man_runden = $f[18], vklasse = '$f[19]', att = '$f[20]' " .
 				"where ID = $f[2]";
-	} elseif ($func[0] == 'teilnehmer' && $func[1] == 'delete') {
-		$sql = "update teilnehmer set del = 1 where ID = ".$_GET['ID'];
 	} else {
 		$sql = "insert into teilnehmer " .
 				"(vID, lID, nachname, vorname, jahrgang, geschlecht, ort, stnr, verein, zeit, manzeit, useManTime, disq, klasse, man_runden, vklasse, att) " .
 				"values ( $f[0], $f[1], '$f[3]', '$f[4]', $f[7], '$f[5]', '$f[6]', '$f[8]', '$f[9]', '$f[10]','$f[10]', $f[16], $f[11], '$f[15]', $f[18], '$f[19]', '$f[20]')";			
 	}
+	
 	//echo $sql;
 	$result = dbRequest($sql, 'INSERT');
-	if (!$result[0]) {
-		$f[12] = $result[2];
-		if (!isset($func[1])) { $f[13] = 1; }
+	if($result[2] == "") {
+		echo 'ok';
+	} else {
+		echo $result[2];
 	}
 
-	if ($func[0] == 'teilnehmer' && $func[1] == 'delete') {
-		$script = 'index.php?func=teilnehmer';
-		header('Location: '.$script);
-		die;
-	}
-
-	if (isset($_POST['nextUrl']) && ($_POST['nextUrl'] != '') && ($f[13] == 0)) {
-		$script = $_POST['nextUrl'];
-		header('Location: '.$script);
-		die;
-	}
-
-	return $f;
 }
 
-function tDisplayEditForm($f) {
-	global $func;
-	$html = "";
+function showTeilnehmerEditForm() {
 	
-	// wenn vorher kein Fehler war werden leere Felder angezeigt
-	if ($f[12] == "") {
-		$f[3] 	= '';
-		$f[4] 	= '';
-		$f[5]	= '';
-		$f[6] 	= '';
-		$f[7] 	= '';
-		$f[8] 	= '';
-		$f[9] 	= '';
-		$f[10]	= '00:00:00';
-		$f[11]	= '0';
-		$f[20] = '';
-	}
+		$stnr		= "";
+		$lID		= "";
+		$nachname	= "";
+		$vorname 	= "";
+		$verein 	= "";
+		$jahrgang	= "";
+		$klasse		= "";
+		$useManTime = "";
+		$geschlecht	= "";
+		$ort		= "";
+		$zeit		= "00:00:00";
+		$disq		= "";
+		$id			= "";
+		$autRunden	= "0";
+		$manRunden	= "0";
+		$vKlasse	= "";
+		$att		= "";
 
-	if($func[1] == "edit") {
-		$sql = "select * from teilnehmer where ID = ".$_GET['ID'];
+	if($_GET['id'] != "new") {
+		$sql = "select * from teilnehmer where ID = ".$_GET['id'];
 		$result = dbRequest($sql, 'SELECT');
 
 		foreach ($result[0] as $row) {
-			$f[8]	= $row['stnr'];
-			$f[1]	= $row['lID'];
-			$f[3] 	= $row['nachname'];
-			$f[4] 	= $row['vorname'];
-			$f[9] 	= $row['verein'];
-			$f[7] 	= $row['jahrgang'];
-			$f[15]	= $row['klasse'];
-			$f[16]  = $row['useManTime'];
-			$f[5]	= $row['geschlecht'];
-			$f[6]	= $row['ort'];
-			$f[10]	= $row['zeit'];
-			$f[11] 	= $row['disq'];
-			$f[2]	= $row['ID'];
-			$f[17]  = $row['aut_runden'];
-			$f[18]  = $row['man_runden'];
-			$f[19]	= $row['vklasse'];
-			$f[20]	= $row['att'];
+			$stnr		= $row['stnr'];
+			$lID		= $row['lID'];
+			$nachname	= $row['nachname'];
+			$vorname 	= $row['vorname'];
+			$verein 	= $row['verein'];
+			$jahrgang	= $row['jahrgang'];
+			$klasse		= $row['klasse'];
+			$useManTime = $row['useManTime'];
+			$geschlecht	= $row['geschlecht'];
+			$ort		= $row['ort'];
+			$zeit		= $row['zeit'];
+			$disq		= $row['disq'];
+			$id			= $row['ID'];
+			$autRunden	= $row['aut_runden'];
+			$manRunden	= $row['man_runden'];
+			$vKlasse	= $row['vklasse'];
+			$att		= $row['att'];
 			
 		}
-		$rInfo = getRennenData($f[1]);
-	}
-
-	$nextUrl = '';
-	if(isset($_POST['nextUrl'])) { $nextUrl = $_POST['nextUrl']; }
-	if(isset($_GET['nextUrl'])) { $nextUrl = base64_decode($_GET['nextUrl']); }
-
-	if ($func[1] == 'insert') {
-		$html .="<form name=\"Formular\" method=\"POST\" action=\"?func=teilnehmer.insert\">\n";
+		
+		$rInfo = getRennenData($lID);
+		
 	} else {
-		$html .="<form name=\"Formular\" method=\"POST\" action=\"?func=teilnehmer\">\n";
-		if ($f[13] == 1) { $func[1] = "edit"; }
+		$id = 'new';
 	}
-	$html .="<input name=\"func\" type=\"hidden\" value=\"$func[1]\">\n";
-	$html .="<input name=\"tID\" type=\"hidden\" value=\"$f[2]\">\n";
-	$html .="<input name=\"nextUrl\" type=\"hidden\" value=\"$nextUrl\">\n";
-	$html .="<div class=\"vboxitem\" >\n";
-	if ($f[12] != "") {
-		$html .="	<div class=\"errorbox\" >\n";
-		$html .="		$f[12]\n";
-		$html .="	</div>\n";
-	}
-	$html .="	<div class=\"description\" >\n";
-	$html .="		<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n";
-	$html .="			<tr>\n";
-	$html .="				<td>\n";
-	$html .="					Hier k&ouml;nnen Sie die Teilnehmerdaten eingeben. Felder mit einem * sind Pflicht.\n";
-	$html .="				</td>\n";
-	$html .="				<td>\n";
-	$html .="					<span class=\"description\" style=\"float: right;\">\n";
-	$html .="						<a href=\"#\" id=\"calculator\" onClick=\"return false;\">show Calculator</a>\n";
-	$html .="					</span>\n";
-	$html .="				</td>\n";
-	$html .="			</tr>\n";
-	$html .="		</table>\n";
-	$html .="	</div>\n";
+
+?>
+	<script>
 	
-	$html .="</div>\n";
-	#$html .="    <p class=\"vboxspacer\">&nbsp;</p>\n";
-	$html .="<div class=\"vboxitem\" >\n";
-	$html .="	<table class=\"grey-bg\" width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" >\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				StartNr*:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" name=\"stnr\" id=\"stnr\" maxlength=\"4\" size=\"4\" value=\"$f[8]\">\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"top-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Name, Vorname*:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" name=\"name\" maxlength=\"200\" size=\"20\" value=\"$f[3]\">\n";
-	$html .="				<input type=\"text\" name=\"vorname\" maxlength=\"200\" size=\"20\" value=\"$f[4]\">\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Jahrgang*:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" id=\"jg\" name=\"jg\" maxlength=\"4\" size=\"4\" value=\"$f[7]\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
-	$html .="				&nbsp;&nbsp;\n";
-	$html .="				<input type=\"text\" readonly id=\"klasse\" name=\"klasse\" maxlength=\"5\" size=\"5\" value=\"$f[15]\">\n";
-	$html .="				&nbsp;&nbsp;\n";
-	$html .="				<input type=\"text\" readonly id=\"vklasse\" name=\"vklasse\" maxlength=\"5\" size=\"5\" value=\"$f[19]\">\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Geschlecht*:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<select id=\"geschlecht\" name=\"geschlecht\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
-	$m = ""; $w = ""; $x= "";
-	if($f[5] == "X") { $x="selected"; }
-	elseif ($f[5] == "W") { $w="selected"; }
-	else { $m="selected"; }
-	$html .="					<option value=\"M\" $m>M</option>\n";
-	$html .="					<option value=\"W\" $w>W</option>\n";
-	$html .="					<option value=\"X\" $x>X</option>\n";
+ 		$(document).ready(function(){
+			
+			$("#verein").autocomplete({
+				source: 'ajaxRequest.php?func=getVerein&', 
+				minLength: 2
+			});
 
-	$html .="				</select>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Verein:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" id=\"verein\" name=\"verein\" maxlength=\"200\" size=\"43\" value=\"$f[9]\">\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Ort:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" name=\"ort\" maxlength=\"200\" size=\"43\" value=\"$f[6]\">\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Zeit:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" name=\"zeit\" maxlength=\"8\" size=\"8\" value=\"$f[10]\">&nbsp;HH:MM:SS\n";
-	if ($f[16] == 1 ) { $c1 = "checked"; } else { $c1 = ""; }
-	$html .="				 <input type=\"checkbox\" name=\"useManTime\" $c1>&nbsp;&nbsp;manuell eingegebene Zeit nutzen\n";
-	$html .="			</td>\n";
-	$html .="				<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
 
-	$html .="		<tr class=\"middle-row\">\n";
-	$html .="			<td id=\"rr1\" style=\"display:none\" class=\"leftcolumn\" nowrap >\n";
-	$html .="				Runden:\n";
-	$html .="			</td>\n";
-	$html .="			<td id=\"rr2\" style=\"display:none\" class=\"rightcolumn\" nowrap>\n";
-	if($f[17] == '') { $f[17] = 0; }
-	$html .="				<input type=\"text\" readonly name=\"autRunden\" id=\"autRunden\" maxlength=\"8\" size=\"8\" value=\"$f[17]\"> (Zeittabelle)\n";
-	$html .="				&nbsp;&nbsp;&nbsp;\n";
-	if($f[18] == '') { $f[18] = 0; }
-	$html .="				<input type=\"text\" name=\"manRunden\" id=\"manRunden\" size=\"8\" onkeyup=\"updateSumRunden(document.getElementById('manRunden').value, document.getElementById('autRunden').value); return false;\" value=\"$f[18]\"> (manuell erfasst)\n";
-	$html .="			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id=\"sumRunden\"><span>\n";
-	$html .="			</td>\n";
-	$html .="				<td id=\"rr3\" style=\"display:none\" class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
+			$("#submit-close").click(function(event){
+			    event.preventDefault();
+				checkAndSubmit( 'close' );
+			});
 
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Attribut:\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<input type=\"text\" name=\"att\" maxlength=\"2\" size=\"3\" value=\"$f[20]\">&nbsp;\n";
-	$html .="			</td>\n";
-	$html .="				<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
+			
+			$("#submit").click(function(event){
+			    event.preventDefault();
+				checkAndSubmit( 'next' );
+			});
+
+
+			$("#rID").change(function(){
+				getKlasse($('#jahrgang').val(), $('#geschlecht').val(), $('#rID').val());
+				showHideRunden($("option:selected", this).attr('rr'));
+			});
+
+			
+			$("#jahrgang").change(function(){
+				getKlasse($('#jahrgang').val(), $('#geschlecht').val(), $('#rID').val());
+			});
+
+			
+			$("#geschlecht").change(function(){
+				getKlasse($('#jahrgang').val(), $('#geschlecht').val(), $('#rID').val());
+			});
+
+			
+			$("#manRunden").change(function(){
+				var a = $("#manRunden").val();
+				var b = $("#autRunden").val();
+
+				if(a == '') { a = 0 }
+				var c = parseInt(a) + parseInt(b);
+
+				console.log(c);
+				$("#sumRunden").val(c);
+			});
+
+			
+			showHideRunden($("option:selected", '#rID').attr('rr'));
+			getKlasse($('#jahrgang').val(), $('#geschlecht').val(), $('#rID').val());
+			
+		});
+ 		
+		function checkAndSubmit( form ) {
+		    var msg = '';
+			if( $('#nachname').val().length  < 2 ) { msg = msg + '<strong>Nachname</strong> darf nicht leer sein<br>'; }
+		    if( $('#vorname').val().length  < 2 ) { msg = msg + '<strong>Vorname</strong> darf nicht leer sein<br>'; }
+			if( $('#rID').val() == 'X' ) { msg = msg + 'Bitte einen <strong>Lauf</strong> ausw&auml;hlen<br>'; }
+
+			var next = 'teilnehmer';
+			if( $('#nextFunc').val() != '' ) { next = $('#nextFunc').val(); }
+			
+		    if( msg == '' ) {
+			    if( form == 'next' ) {
+					submitForm('#editTeilnehmer', false);
+					$(".alert").addClass('hidden');
+			    } else {
+			    	submitForm('#editTeilnehmer', 'index.php?func=' + next);
+				}
+		    } else {
+				$(".alert").html(msg);
+				$(".alert").removeClass('hidden');
+		    }
+		}
+
+	</script>
 	
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Rennen:\n";
-	$html .="			</td>\n";
+	<div class="alert alert-danger hidden col-sm-offset-3 col-sm-6" id="alert" role="alert"></div>
+	<form role="form" class="form-horizontal" id="editTeilnehmer" name="editTeilnehmer">
+		<div class="form-group">
+			<input type="hidden" name="form" value="saveTeilnehmer">
+			<input type="hidden" name="id" value="<?php echo $id; ?>">
+			<input type="hidden" name="nextFunc" id= "nextFunc" value="<?php if(isset($_GET['nextFunc'])) { echo $_GET['nextFunc']; } ?>">
+		</div>
+		
+		<div class="form-group">
+			<label for="stnr" class="col-sm-4 control-label">Startnummer:</label>
+			<div class="col-sm-4">
+				<input name="stnr" maxlength="200" type="text" class="form-control" id="stnr" placeholder="Stnr" value="<?php echo $stnr; ?>">
+			</div>
+		</div>
+		
+		
+		<div class="form-group">
+			<label for="title" class="col-sm-4 control-label">Name, Vorname:</label>
+			<div class="col-sm-2">
+				<input name="nachname" maxlength="200" type="text" class="form-control" id="nachname" placeholder="Name" value="<?php echo $nachname; ?>">
+			</div>
+			<div class="col-sm-2">
+				<input name="vorname" maxlength="200" type="text" class="form-control" id="vorname" placeholder="Vorname" value="<?php echo $vorname; ?>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="title" class="col-sm-4 control-label">Jahrgang:</label>
+			<div class="col-sm-1">
+				<input name="jahrgang" maxlength="200" type="text" class="form-control" id="jahrgang" placeholder="Jahrgang" value="<?php echo $jahrgang; ?>">
+			</div>
+			<label for="title" class="col-sm-1 control-label">Klasse:</label>
+			<div class="col-sm-1">
+				<input readonly name="klasse" type="text" class="form-control" id="klasse" placeholder="Klasse" value="<?php echo $klasse; ?>">
+			</div>
+			<div class="col-sm-1">
+				<input readonly name="vklasse" type="text" class="form-control" id="vklasse" placeholder="Klasse" value="<?php echo $vKlasse; ?>">
+			</div>
+		</div>
 
-	// Lauf auswählen
+		<div class="form-group">
+			<label for="title" class="col-sm-4 control-label">Geschlecht:</label>
+			<div class="col-sm-4">
+				<select class="form-control" name="geschlecht" id="geschlecht">
+					<option value="-">-</option>
+					<option value="M" <?php if($geschlecht == "M") { echo "selected"; }?>>M</option>
+					<option value="W" <?php if($geschlecht == "W") { echo "selected"; }?>>W</option>
+					<option value="X" <?php if($geschlecht == "X") { echo "selected"; }?>>X</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="verein" class="col-sm-4 control-label">Verein:</label>
+			<div class="col-sm-4">
+				<input name="verein" maxlength="200" type="text" class="form-control" id="verein" placeholder="Verein" value="<?php echo $verein; ?>">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="ort" class="col-sm-4 control-label">Ort:</label>
+			<div class="col-sm-4">
+				<input name="ort" maxlength="200" type="text" class="form-control" id="ort" placeholder="Ort" value="<?php echo $ort; ?>">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="zeit" class="col-sm-4 control-label">Zeit:</label>
+			<div class="col-sm-2">
+				<input name="zeit" type="text" class="form-control" id="zeit" placeholder="00:00:00" value="<?php echo $zeit; ?>">
+			</div>
+			<label class="col-sm-3 checkbox-inline">
+  				<input type="checkbox" name="useManTime" id="useManTime" value="1" <?php if($useManTime == 1) { echo "checked"; }?>>manuell eingegebene Zeit nutzen
+			</label>
+		</div>
+		
+		<div class="form-group">
+			<label for="att" class="col-sm-4 control-label">Attribut:</label>
+			<div class="col-sm-4">
+				<input name="att" maxlength="2" type="text" class="form-control" id="att" placeholder="Attribut" value="<?php echo $att; ?>">
+			</div>
+		</div>
+		
+		<div id="rundenrennen" class="hidden">
+			<div class="form-group">
+				<label for="runden" class="col-sm-4 control-label">Runden:</label>
+				<div class="col-sm-1">
+					<input readonly name="autRunden" type="text" class="form-control" id="autRunden" placeholder="" value="<?php echo $autRunden; ?>">
+				</div>
+				<div class="col-sm-1">
+					<input name="manRunden" type="text" class="form-control" id="manRunden" placeholder="" value="<?php echo $manRunden; ?>">
+				</div>
+				<label for="title" class="col-sm-1 control-label">Summe:</label>
+				<div class="col-sm-1">
+					<input readonly name="sumRunden" type="text" class="form-control" id="sumRunden" placeholder="" value="">
+				</div>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="rennen" class="col-sm-4 control-label">Lauf:</label>
+			<div class="col-sm-4">
+				<select id="rID" name="rID"  class="form-control">
+					<option rr="0" value="X">bitte w&auml;hlen</option>
+
+<?php
+
 	$sql = "select * from lauf where vID = ".$_SESSION['vID']." order by start";
 	$result2 = dbRequest($sql, 'SELECT');
-
-	$html .="			<td class=\"rightcolumn\" >\n";
-	$html .="				<select id=\"rID\" name=\"rID\" onChange=\"getKlasse(document.getElementById('jg').value, document.getElementById('geschlecht').value, document.getElementById('rID').value); return false;\">\n";
-	$html .="					<option value=\"X\">bitte wählen</option>\n";
 
 	foreach ($result2[0] as $row2) {
 		$rID 		= $row2['ID'];
 		$kID 		= $row2['klasse'];
 		$titel 		= $row2['titel'];
 		$utitel 	= $row2['untertitel'];
+		$rr			= $row2['rundenrennen'];
 
-		if($func[1] == "edit") {
-			if($rID == $f[1]) { $s="selected"; } else { $s=""; }
-		} else {
-			if($rID == $_SESSION['rID']) { $s="selected"; } else { $s=""; }
+		if($_GET['id'] != "new") {
+			if($rID == $lID) { $s="selected"; } else { $s=""; }
 		}
-
-		$html .="					<option value=\"$rID\" $s>$titel - $utitel</option>\n";
+		echo "<option rr=\"$rr\" value=\"$rID\" $s>$titel - $utitel</option>\n";
 	}
-	// ende - Lauf auswählen
+	
+?>
 
-	$html .="				</select>\n";
-	$html .="			</td>\n";
-	$html .="				<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="		<tr class=\"middle-row\" >\n";
-	$html .="			<td class=\"leftcolumn\" nowrap >\n";
-	$html .="				Disqualifiziert :\n";
-	$html .="			</td>\n";
-	$html .="			<td class=\"rightcolumn\" >\n";
-	if ($f[11] == 1 ) { $c2 = "checked"; } else { $c2 = ""; }
-	$html .="				<input type=\"checkbox\" name=\"disq\" $c2>\n";
-	$html .="			</td>\n";
-	$html .="				<td class=\"errorcolumn\" ></td>\n";
-	$html .="		</tr>\n";
-	$html .="	</table>\n";
-	$html .="</div>\n";
-	#		$html .="<p class=\"vboxspacer\">&nbsp;</p>\n";
-	#		$html .="<div class=\"vboxitem\" ></div>\n";
-	#		$html .="<p class=\"vboxspacer\">&nbsp;</p>\n";
-	$html .="<div class=\"vboxitem\" >\n";
-	$html .="	<div class=\"navigation-buttons\" >\n";
-	$html .="		<input name=\"submit\" type=\"submit\" value=\"Speichern\" class=\"ui-button ui-widget ui-state-default ui-corner-all\">\n";
-	$html .="		&nbsp;&nbsp;\n";
-	$html .="		<input type=\"button\" name=\"cancel\" value=\"<< Zur&uuml;ck\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer'\">\n";
-	if($func[1] == 'edit') {
-		$html .="		&nbsp;&nbsp;\n";
-		$html .="		<input type=\"button\" name=\"delete\" value=\"löschen\" class=\"ui-button ui-widget ui-state-default ui-corner-all\" ONCLICK=\"window.location.href='".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.delete&ID=".$_GET['ID']."'\">\n";
-	}
-	$html .="	</div>\n";
-	$html .="</div>\n";
-	$html .="</form>\n";
-
-	$f[14] = $html;
-	return $f;
+				</select>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="disq" class="col-sm-4 control-label">Disqualifiziert:</label>
+			<label class="col-sm-3 checkbox-inline">
+  				<input type="checkbox" name="disq" id="disq" <?php if($disq == 1) { echo "checked"; }?>>
+			</label>
+		</div>
+		
+		<div class="form-group">
+			<div class="col-sm-offset-4 col-sm-5">
+				<button type="submit" id="submit" class="btn btn-success" value="save">save + new</button>
+				<button type="submit" id="submit-close" class="btn btn-success" value="save + close">save + close</button>
+				<a type="button" class="btn btn-default" href="index.php?func=<?php if(isset($_GET['nextFunc'])) { echo $_GET['nextFunc']; } else { echo 'teilnehmer'; } ?>">cancel</a>
+			</div>
+		</div>
+		
+		
+	</form>
+	
+<?php
 }
 
-function tDisplayList ($f)  {
-	$html = "";
-	if ($f[12] != "") {
-		$html .="	<div class=\"errorbox\" >\n";
-		$html .="		$f[12]\n";
-		$html .="	</div>\n";
-	}
+function showTeilnehmer()  {
 
 	$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID where t.vID = '".$_SESSION['vID']."' and del=0 order by nachname asc;";
 	$result = dbRequest($sql, 'SELECT');
 
-	$html2 = "";
-	$i=1;
+?>
+
+	<h3>Teilnehmer</h3>
+	<div class="table-responsive">
+		<table class="table table-striped table-condensed">
+			<thead>
+				<tr>
+					<th>Stnr.</th>
+					<th>Name</th>
+					<th>Verein</th>
+					<th>JG</th>
+					<th>G</th>
+					<th>Klasse</th>
+					<th>Rennen</th>
+					<th>Zeit</th>
+					<th>Platz</th>
+					<th>AK Platz</th>
+				</tr>
+			</thead>
+			<tbody>
+	
+<?php	
+		
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
-			if($i%2 == 0) { $html2 .= "<tr class=\"even highlight\">\n"; } else { $html2 .= "<tr class=\"odd highlight\">\n"; }
-			$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
-			$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-			$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['jahrgang']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['geschlecht']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['titel']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['zeit']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['platz']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['akplatz']."</td>\n";
-	
-			$html2 .= "</tr>\n";
-			$i++;
+
+?>
+
+				<tr>
+					<td><?php echo $row['stnr']; ?></td>
+					<td><a href="<?php echo $_SERVER["SCRIPT_NAME"]."?func=teilnehmer&id=".$row['ID'] ?>"><?php echo $row['nachname'].", ".$row['vorname'] ?></a></td>
+					<td><?php echo $row['verein']; ?></td>
+					<td><?php echo $row['jahrgang']; ?></td>
+					<td><?php echo $row['geschlecht']; ?></td>
+					<td><?php echo $row['klasse']; ?></td>
+					<td><?php echo $row['titel']; ?></td>
+					<td><?php echo $row['zeit']; ?></td>
+					<td><?php echo $row['platz']; ?></td>
+					<td><?php echo $row['akplatz']; ?></td>
+				</tr>
+
+<?php
+
 		}
 	}
 
-	$columns = array('Stnr', 'Name', 'Verein', 'JG', 'G', 'Klasse', 'Rennen', 'Zeit', 'Platz', 'AK Platz');
-	$html .= tableList($columns, $html2, "common");
+?>
 
-	$f[14] = $html;
-	return $f;
+			</tbody>
+		</table>
+	</div>
+
+<?php 
+}
+
+function deleteTeilnehmer() {
+	$sql = "update teilnehmer set del = 1 where ID = ".$_GET['ID'];
+	$result = dbRequest($sql, 'DELETE');
+	
+	if($result[2] == "") {
+		echo 'ok';
+	} else {
+		echo $result[2];
+	}	
 }
 
 function getKlasse($jg, $sex, $rennen, $ajax) {
@@ -391,7 +416,7 @@ function getKlasse($jg, $sex, $rennen, $ajax) {
 	$k[1] = getKlasseData($alter, $sex, $rennen, 1);
 	
 	if($ajax == 1) {
-		return $k[0].";".$k[1];
+		echo $k[0].";".$k[1];
 	} else {
 		return $k;
 	}

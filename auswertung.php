@@ -1,21 +1,11 @@
 <?php
 
 function auswertung() {
-	$result = "";
-	
-	global $func;
-	$html="";
- 	
-	if(isset($_GET['ID'])) {
-		$result = doAuswertung($_GET['ID']);
-	}
-		
-	$html = auswertungForm($html);
-	$html .= "<div id='data_div'>$result</div>";
-	return table("Auswertung", $html);
+	showRaceList();	
 }
 
-function doAuswertung($rennen) {
+function doAuswertung() {
+	$rennen = $_GET['id'];
 	$anzTeilnehmer = 0;
 	$anzTeams = 0;
 	$veranstaltung = $_SESSION['vID'];
@@ -36,7 +26,7 @@ function doAuswertung($rennen) {
 	}
 	updateStatus($veranstaltung, $rennen);
 	
-	return "<p>Es wurden <b>$anzTeilnehmer Teilnehmer</b> und <b>$anzTeams Teams ausgewertet</b></p>";
+	echo "<p>Es wurden <b>$anzTeilnehmer Teilnehmer</b> ausgewertet<br>Es wurden <b>$anzTeams Teams</b> ausgewertet</p>";
 }
 
 function getSeconds($s) {
@@ -314,54 +304,179 @@ function updateTeam($veranstaltung, $rennen, $teamAnz) {
 	return count($alleMannschaften);
 }
 
-function auswertungForm($html) {
-
-	global $func;
+function showRaceList() {
 	
-	# Display Rennen
-	//$html = "";
+?>
+
+	<script>
+
+		$(document).ready(function(){
+	
+			$('[data-toggle="tooltip"]').tooltip({container: "body"});
+
+			$('.last-race-update').mouseenter(function(data){
+				var target = this;
+				var rid = $( this ).attr('rid');
+				var jqxhr = $.get( "ajaxRequest.php?func=getLastRaceUpdate&id=" + rid);
+			
+				jqxhr.success(function( data ) {
+					$( target ).tooltip( {container: 'body' } )
+					.attr('data-original-title', data)
+					.tooltip('fixTitle')
+					.tooltip('show');
+				});
+			});
+
+
+			$(".btn").mouseup(function(){
+			    $(this).blur();
+			})
+
+			
+			<?php 
+
+					if($_SESSION['rID'] != 0) {
+						echo "showContent( '".$_SESSION['contentFunc']."', ".$_SESSION['rID']." )";
+					}
+
+			?>
+			
+		});
+	
+	</script>
+
+	<h3>Auswertung</h3>
+	
+	<div class="table-responsive">
+		<table class="table table-striped table-vcenter">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Titel</th>
+					<th>Start</th>
+					<th>Laufwertung</th>
+					<th>Startlisten</th>
+					<th>Ergebnisse</th>
+					<th>Urkunden</th>
+				</tr>
+			</thead>
+		<tbody>
+	
+<?php	
+	
 	$veranstaltung = $_SESSION['vID'];
 	$sql = "select * from lauf where vID = $veranstaltung order by start asc, titel;";
 	$result = dbRequest($sql, 'SELECT');
 
-	$html2 = "";
-	$i=1;
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
-			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
 	
-			$subtitle = "";
-			if ($row['untertitel'] != "") { $subtitle = "<i>- ".$row['untertitel']."</i>"; }
-			$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['titel']." $subtitle</td>\n";
-			//$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['start']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['aktualisierung']."</td>\n";
-			$html2 .= "<td align=\"left\">";
-				if($row['lockRace'] == 0) {	
-				$html2 .= 	"<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=".$func[0]."&ID=".$row['ID']."\">Laufwertung starten</a>" .
-							"&nbsp;&nbsp;" .
-							"| ";
-				} else {
-				$html2 .= 	"Rennen gesperrt" .
-							"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
-							"| ";
-				}
-			$html2 .= "<a id=\"showInDiv\" href=\"jqRequest&func=showWithowtTime&lid=".$row['ID']."\">Teilnehmer ohne Zeit</a>" .
-					"&nbsp;&nbsp;" .
-	//				"| " .
-	//				"&nbsp;&nbsp;" .
-	//				"<a href=\"".$_SERVER["SCRIPT_NAME"]."?func=auswertung.klasse&ID=".$row['ID']."\">Klassen neu zuordnen</a>" .
-					"</td>\n";
-			$html2 .= "</tr>\n";
-			$i++;
+?>
+
+				<tr>
+					<td><?php echo $row['ID']; ?></td>
+					<td><?php echo $row['titel']." / ".$row['untertitel']; ?></td>
+					<td><?php echo substr($row['start'], 10); ?></td>
+					<td>
+						<div class="btn-group" role="group" aria-label="...">
+							<a rid="<?php echo $row['ID']; ?>" class="btn btn-default btn-small-border last-race-update" onclick="javascript:doAuswertung(<?php echo $row['ID']; ?>)">
+								<!--<i class="fa fa-cog"></i> --><i class="fa fa-clock-o"></i> Laufwertung
+							</a>
+						</div>
+					</td>
+					<td>
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="Bildschirmliste" onclick="javascript:showContent('showStartliste', <?php echo $row['ID']; ?>)">
+								 <i class="fa"></i> <i class="fa fa-list"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="PDF nach Name sortiert" href="exportPDF.php?action=startliste&sort=nachname&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa fa-file-pdf-o"></i> <i class="fa fa-sort-alpha-asc"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="PDF nach Startnummer sortiert" href="exportPDF.php?action=startliste&sort=stnr&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa fa-file-pdf-o"></i> <i class="fa fa-sort-numeric-asc"></i>
+							</a>
+						</div>
+					</td>
+					<td>
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="Bildschirmliste" onclick="javascript:showContent('showErgebnisse', <?php echo $row['ID']; ?>)">
+								<i class="fa fa-male"></i> <i class="fa fa-list"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="PDF Gesammt" href="exportPDF.php?action=ergebnisGesamt&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa fa-male"></i> <i class="fa fa-file-pdf-o"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="PDF nach Klassen" href="exportPDF.php?action=ergebnisKlasse&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa fa-male"></i><i class="fa fa-female"></i> <i class="fa fa-file-pdf-o"></i>
+							</a>
+						</div>
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="Ergebnisse Mannschaft" onclick="javascript:showContent('showErgebnisseM', <?php echo $row['ID']; ?>)">
+								<i class="fa fa-users"></i> <i class="fa fa-list"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="PDF Ergebnisse Mannschaft" href="exportPDF.php?action=ergebninsMannschaft&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa fa-users"></i> <i class="fa fa-file-pdf-o"></i>
+							</a>
+						</div>
+						<?php if($row['rundenrennen'] == 1) {?>
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="PDF Rundenzeiten" href="exportRundenzeiten.php?&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa fa-repeat"></i> <i class="fa fa-file-pdf-o"></i>
+							</a>
+						</div>
+						<?php } ?>
+					</td>
+					<td>
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="Gesammtwertung" href="urkundenPDF.php?action=gesamt&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa"></i> <i class="fa fa-user"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="Klassenwertung" href="urkundenPDF.php?action=klasse&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa"></i> <i class="fa fa-user-times"></i>
+							</a>
+							<a class="btn btn-default btn-small-border" data-toggle="tooltip" title="Mannschaftswertung" href="urkundenPDF.php?action=team&id=<?php echo $row['ID']; ?>" target="_new">
+								<i class="fa"></i> <i class="fa fa-users"></i>
+							</a>
+						</div>
+						<div class="btn-group" role="group">
+							<a class="btn btn-default btn-small-border dropdown-toggle" id="num-of-results-<?php echo $row['ID']; ?>" data-toggle="dropdown" aria-haspopup="true" id="selectUrkundeResult" aria-expanded="false">
+
+<?php 
+
+if(isset($_SESSION['anzUrkunden-'.$row['ID']])) { 
+	echo $_SESSION['anzUrkunden-'.$row['ID']];
+	if($_SESSION['anzUrkunden-'.$row['ID']] != 'ALL') {
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+	}
+} else {
+	$_SESSION['anzUrkunden-'.$row['ID']] = 3;
+	echo "3&nbsp;&nbsp;&nbsp;&nbsp;";
+} 
+
+?>
+
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a onclick="javascript:selectUrkundeResult(3, <?php echo $row['ID']; ?>);">3</a></li>
+								<li><a onclick="javascript:selectUrkundeResult(6, <?php echo $row['ID']; ?>);">6</a></li>
+								<li><a onclick="javascript:selectUrkundeResult('ALL', <?php echo $row['ID']; ?>);">ALL</a></li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+	
+<?php
+	
 		}
 	}
+	
+?>
+			</tbody>
+		</table>
+	</div>
+	
+<?php 
 
-	$columns = array('ID', 'Titel', 'Start', 'Aktualisierung', 'Aktion');
-	$html .= tableList($columns, $html2, "common meetings");
-			
-	return $html;
 }
 
 function showWithowtTime($rennen) {

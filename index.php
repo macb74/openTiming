@@ -1,42 +1,26 @@
 <?php
 /*
- * Created on 06.11.2009
+ * Created on 20.11.2015
  *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 
 if (stristr($_SERVER["REQUEST_URI"], '/index.php') === false) {
-	header('Location: '.$_SERVER["SCRIPT_NAME"].'?func=veranstaltungen');
+	header('Location: '.$_SERVER["SCRIPT_NAME"].'?func=veranstaltung');
 }
 
+$showContent = false;
 session_start();
 include "function.php";
 $link = connectDB();
-$allowedFunctions = array('veranstaltungen', 'teilnehmer', 'auswertung', 'ergebnis', 'einlaufListe', 'klasse', 'rennen', 'startliste', 'urkunden', 'import', 'ziel');
+$allowedFunctions = array('veranstaltung', 'teilnehmer', 'auswertung', 'rennen', 'klasse', 'import', 'einlaufListe', 'ziel');
 
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
 $html = "";
 
-if(isset($_GET['jqRequest'])) {
-	if($_GET['func'] == 'showStartList')      { $html = showStartResult($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showStartWithoutKl') { $html = showStartWithoutKl($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showResult')         { $html = showResult($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showResultM')        { $html = showResultM($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showWithowtTime')    { $html = showWithowtTime($_GET['lid']); echo $html;}
-	if($_GET['func'] == 'showEinlaufListe')   { $html = showEinlaufListe($_GET['lid'], $_GET['action']); echo $html;}
-	if($_GET['func'] == 'saveManZielzeit')    { $html = saveManZielzeit($_GET['id'], $_GET['action'], $_GET['time']); echo $html;}
-	if($_GET['func'] == 'getKlasse')          { $html = getKlasse($_GET['jg'], $_GET['sex'], $_GET['lid'], 1); echo $html;}
-	if($_GET['func'] == 'lockRace')           { $html = lockRace($_GET['lid'], $_GET['lock']); echo $html;}
-	if($_GET['func'] == 'showZielAnalyse')    { $html = showZielAnalyse($_GET['lid'], $_GET['start'], $_GET['duration']); echo $html;}
-	if($_GET['func'] == 'saveReaderTime')     { $html = saveReaderTime($_GET['id'], $_GET['action'], $_GET['values']); echo $html;}
-	exit;
-}
-
 # Wenn keine Funktion übergeben wurde, dann wird die Veranstaltungsauswahl angezeigt
 if (!isset($_GET['func'])) {
-	$func[0] = 'veranstaltungen';
+	$func[0] = 'veranstaltung';
 } else {
 	$func[0] = "";
 	$func[1] = "";
@@ -45,14 +29,14 @@ if (!isset($_GET['func'])) {
 
 #Prüfung ob eine erlaubte function übergeben wird.
 if(array_search($func[0], $allowedFunctions) !== false) {
-	if (!isset($func[1])) {
-		$func[1] = "";
+	if (isset($_SESSION['vID']) || $func[0] == 'veranstaltung') {
+		$showContent = true;
 	}
-	if (isset($_SESSION['vID']) || $func[0] == 'veranstaltungen') {
-		$html = $func[0]();
+	
+	if (!isset($_SESSION['vID'])) {
+		$func[0] = 'veranstaltung';
+		$showContent = true;
 	}
-} else {
-	echo "Use of disallowed function"; die;
 }
 
 if (!isset($_SESSION['vTitel']))      { $_SESSION['vTitel'] = ''; }
@@ -68,7 +52,9 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 
 <html>
 <head>
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="pragma" content="no-cache" />
 	<meta http-equiv="cache-control" content="no-cache; no-store; max-age=0" />
 	<meta http-equiv="expires" content="0" />
@@ -80,73 +66,126 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 	
 	<title>openTiming</title>
 	
-	<link href="css/smart.css" rel="stylesheet" type="text/css" />
-	<link href="css/smart-tables.css" rel="stylesheet" type="text/css" />
-	<link href="css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/opentiming.css" rel="stylesheet">
+	<link href="css/font-awesome.css" rel="stylesheet">
+	<link href="css/bootstrap-datepicker3.css" rel="stylesheet">
 	<link href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet">
-	<link href="css/font-awesome.min.css" rel="stylesheet">
-    <link href="css/timeline.css" rel="stylesheet" type="text/css" />
 	
-	<script type="text/javascript" src="js/jquery.js"></script>
-	<script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
-	<script type="text/javascript" src="js/timeline.js"></script>
-	<script type="text/javascript" src="js/openTiming.js"></script>
-	<script type="text/javascript" src="js/base64.js"></script>
-	<script type="text/javascript" src="js/d3.v3.min.js"></script>
-    <script type="text/javascript" src="js/timeline.js"></script>
+	<script src="js/jquery-2.1.4.js"></script>
+	<script src="js/jquery-ui/jquery-ui.min.js"></script>
+	
+	<script>
+		/*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
+		$.widget.bridge('uibutton', $.ui.button);
+		$.widget.bridge('uitooltip', $.ui.tooltip);
+	</script>
+
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/bootstrap-datepicker.de.min.js"></script>
+    <script src="js/opentiming.js"></script>
+    <script src="js/base64.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="js/ie10-viewport-bug-workaround.js"></script>
 
 </head>
 
 <body>
-
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span class="navbar-brand-orange">open</span>Timing</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-left">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-wrench"></i> Administration <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="index.php?func=veranstaltung">Veranstaltung</a></li>
+							<li><a href="index.php?func=rennen">Rennen</a></li>
+							<li><a href="index.php?func=klasse">Klassen</a></li>					
+						</ul>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> Teilnehmer <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="index.php?func=teilnehmer">Teilnehmerliste</a></li>
+							<li><a href="index.php?func=teilnehmer&id=new">Teilnehmer Eingabe</a></li>
+							<li><a href="index.php?func=import.teilnehmer">Teilnehmer Laden</a></li>
+						</ul>
+					</li>
+		
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-clock-o"></i> Zeit <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="index.php?func=import.zeit">Zeitliste Einlesen</a></li>
+							<li><a href="index.php?func=ziel.edit">Readerzeit manuell Bearbeiten</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="index.php?func=einlaufListe">Einlaufliste</a></li>
+							<li><a href="index.php?func=ziel.analyse">Analyse Zielzeiten</a></li>
+						</ul>
+					</li>
+					<li><a href="index.php?func=auswertung"><i class="fa fa-cog"></i> Auswertung</a></li>
+				</ul>
+				
 <?php 
 if ($testDiv == true) {
-	echo "<div id=\"testsystem\">Das ist das Testsystem</div>";
+	echo "<div class=\"nav navbar-nav navbar-right testsystem\">Das ist das Testsystem</div>";
 }
 ?>
-
-<div class="portal">
-	<div class="otlogo"></div>
-	<div class="header">
-		<div class="portaltitle"><?php echo $_SESSION['vTitel'] ?></div>
-		<div class="toptitle"><?php echo $_SESSION['vUntertitel'] ?></div>
-		<div class="subTitle"><?php echo $_SESSION['vDatum'] ?></div>
-	</div>
+		
+			</div>
+		</div>
+	</nav>
 	
 	<div class="main">
-		<div class="menu">
-			<div class="menuTitle">Men&uuml;</div>
-			<div class="menuBody"><?php menue(); ?></div>
+	<h2 id="page-header" class="page-header text-center"><?php echo $_SESSION['vTitel']; ?></h2>
+		<div class="race-table">
+
+<?php
+if ($showContent == true) { 
+	$func[0]();
+} else {
+	echo "Use of disallowed function"; die;
+}
+?>
+		
 		</div>
-		<div class="main-right"><?php echo $html; ?></div>
+
+		<div class="content-table"></div>
 	</div>
-</div>
-<div class="footer">
-		<div class="copy">&copy; 2015 open Timing by M. Bußmann</div>
-</div>
 
-<?php if($func[0] == 'teilnehmer' && ($func[1] == 'edit' || $func[1] == 'insert')) {?>
-<script type="text/javascript" src="js/teilnehmer.js"></script>
-<?php }?>
-
-<?php if($func[0] == 'einlaufListe') { ?>
-	<script>
-	var pageToLoad = 'index.php?jqRequest&func=showEinlaufListe&lid=0&action=none';
-	$("#data_div").load(pageToLoad);
-	</script>
-<?php }?>
-
-<?php if($func[0] == 'ziel' && $func[1] == 'edit') { ?>
-	<script>
-	var pageToLoad = 'index.php?jqRequest&func=saveReaderTime&action=show&id&values';
-	$("#data_div").load(pageToLoad);
-	</script>
-<?php }?>
-
+	
+	<div class="modal fade" tabindex="-1" role="dialog" id="modal" aria-labelledby="gridSystemModalLabel">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+      			<div class="modal-header">
+      				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      				<h4 class="modal-title" id="gridSystemModalLabel">Laufwertung</h4>
+      			</div>
+      			<div class="modal-body" id="modal-body">
+      				<span class="text-muted">loading...</span>
+      			</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" onclick="clearModal(); return false;" data-dismiss="modal">Close</button>
+				</div>
+    		</div>
+ 		</div>
+	</div>
+	
+	
 </body>
 </html>
 
 <?php
 $link->close();
-#phpinfo();
+#phpinfo(32);
+#print_r($_SESSION);
 ?>

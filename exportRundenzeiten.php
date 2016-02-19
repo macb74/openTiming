@@ -18,7 +18,7 @@ class PDF extends FPDF
 		$pageheader = $this->getHeader($_SESSION['vID'], $id);
 
 		$rd = getRennenData($id);
-		$startZeit = $_SESSION['vDatum']." ".$rd['startZeit'];
+		$startZeit = $rd['startZeit'];
 		
 		
 		$this->setHeader($pageheader);

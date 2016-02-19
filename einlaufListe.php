@@ -1,20 +1,36 @@
 <?php
 
 function einlaufListe() {
-	global $func;
-	$html="";
-		
-	$html = einlaufListeForm($html);
-	$html .= "<div id='data_div'></div>";
-	return table("Einlauf Liste", $html);
+	echo einlaufListeForm();
 }
 
-function einlaufListeForm($html) {
+function einlaufListeForm() {
 
-	global $func;
+?>
+	<script>
 	
-	# Display Rennen
-	//$html = "";
+		$(document).ready(function(){
+			checkEinlaufListe( this );
+		});
+	
+	</script>
+	
+	<h3>Einlaufliste</h3>
+	
+	<div class="table-responsive">
+		<table class="table table-striped table-vcenter">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Titel</th>
+					<th>Start</th>
+					<th></th>
+				</tr>
+			</thead>
+		<tbody>
+	
+<?php
+
 	$veranstaltung = $_SESSION['vID'];
 	$sql = "select * from lauf where vID = $veranstaltung order by start asc, titel;";
 	$result = dbRequest($sql, 'SELECT');
@@ -25,43 +41,40 @@ function einlaufListeForm($html) {
 		$rennenIDs = explode( ",", $_SESSION['rennenIDs']);
 	}
 
-	$html2 = "";
-	$i=1;
-	foreach ($result[0] as $row) {
-		if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			if(in_array($row['ID'], $rennenIDs) === true) { $c = "checked"; } else { $c = ""; }
+				
+	?>
+	
+				<tr>
+					<td><?php echo $row['ID']; ?></td>
+					<td><?php echo $row['titel']." / ".$row['untertitel']; ?></td>
+					<td><?php echo substr($row['start'], 10); ?></td>
+					<td>
+						<input <?php echo $c; ?> class="chkboxtable" type="checkbox" onchange="javascript:checkEinlaufListe( this );" name="<?php echo $row['ID']; ?>" id="<?php echo $row['ID']; ?>">
+					</td>
+				</tr>
 
-		$sql = "select count(ID) as anz from teilnehmer where platz <> 0 and vID = $veranstaltung and lID = ".$row['ID'];
-		$resultCount = dbRequest($sql, 'SELECT');
+	<?php
 		
-		foreach ($resultCount[0] as $rowCount) {
-			$anzTeilnehmer = $rowCount['anz'];
+			}
 		}
 		
-		$subtitle = "";
-		if ($row['untertitel'] != "") { $subtitle = "<i>- ".$row['untertitel']."</i>"; }
-		$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
-		$html2 .= "<td width=\"250\" align=\"left\">".$row['titel']." $subtitle ($anzTeilnehmer)</td>\n";
-		//$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
-		$html2 .= "<td width=\"150\" align=\"left\">".$row['start']."</td>\n";
-		$html2 .= "<td width=\"200\" align=\"left\">".$row['aktualisierung']."</td>\n";
-		if(in_array($row['ID'], $rennenIDs) === true) { $c = "checked"; } else { $c = ""; }
-		$html2 .= "<td align=\"left\"><input $c class=\"chkboxtable\" type=\"checkbox\" name=\"".$row['ID']."\" value=\"jqRequest&func=showEinlaufListe&lid=".$row['ID']."\" id=\"".$row['ID']."\"></td>\n";
-		$html2 .= "</tr>\n";
-		$i++;
-	}
-
-	$columns = array('ID', 'Titel', 'Start', 'Aktualisierung', 'show');
-	$html .= tableList($columns, $html2, "common meetings");
+	?>
+			</tbody>
+		</table>
+	</div>
+		
 	
-	return $html;
+<?php
+
 }
 
-function showEinlaufListe($rennen, $action) {
-	
-	?>
-	<script type="text/javascript" src="js/einlaufListe.js"></script>
-	<?php
-	
+function showEinlaufListe() {
+	$rennen = $_GET['id'];
+	$action = $_GET['action'];
+		
 	// der anzuzeigenden rennen werden in der Variable $_SESSION['rennenIDs'] gespeichert
 	if(!isset($_SESSION['rennenIDs']) || $_SESSION['rennenIDs'] == '') { 
 		$rennenIDs = array(); 
@@ -83,15 +96,13 @@ function showEinlaufListe($rennen, $action) {
 	$_SESSION['rennenIDs'] = implode(",", $rennenIDs);
 	//echo $_SESSION['rennenIDs'];
 			
-	$html = "<br>";
-	$html = "<p><a href=\"#\" onClick=\"clearDiv()\">clear</a></p>";
-	
 	
 	if($_SESSION['rennenIDs'] != "") {
 		$i = 0;
 		$rIDs = explode( ",", $_SESSION['rennenIDs']);
 		$tmptable = "tmp_".rand(100, 999);
 		
+
 		$sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tmptable (
 		`ID` bigint(20) NOT NULL DEFAULT '0',
 		`stnr` int(11) NOT NULL,
@@ -125,7 +136,7 @@ function showEinlaufListe($rennen, $action) {
 			$i++;
 		}
 		
-		// Zielzeit für manuell gesetzte Laufzeit berechnen und eintragen
+		// Zielzeit fuer manuell gesetzte Laufzeit berechnen und eintragen
 		$sql = "select * from $tmptable where usemantime = 1";
 		$result = dbRequest($sql, 'SELECT');
 		if($result[1] > 0) {
@@ -139,11 +150,11 @@ function showEinlaufListe($rennen, $action) {
 			}
 		}
 
- 		// um richtig sortieren zu können werden die Zeiten in der spalte manzeit zusammengefasst.
+ 		// um richtig sortieren zu koennen werden die Zeiten in der spalte manzeit zusammengefasst.
  		$sql = "update $tmptable set manzeit = zielzeit where zielzeit is not NULL and usemantime <> 2";
  		$result = dbRequest($sql, 'UPDATE');
 		
-		$sql = "SELECT * from $tmptable where zielzeit is not NULL order by manzeit, millisecond asc;";
+		$sql = "SELECT * from $tmptable where zielzeit is not NULL or usemantime = 2 order by manzeit, millisecond asc;";
 		$result = dbRequest($sql, 'SELECT');
 		
 		$html2 = "";
@@ -152,34 +163,57 @@ function showEinlaufListe($rennen, $action) {
 		$dataSetBefore['klasse'] = 'none';
 		
 		$sameTimeAsBefore ='';
-	
+		
+?>
+			<div class="table-responsive">
+				<table class="table table-striped table-condensed">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Verein</th>
+							<th>Klasse</th>
+							<th>Rennen</th>
+							<th>Laufzeit</th>
+							<th>Stnr.</th>
+							<th>Zielzeit</th>
+						</tr>
+					</thead>
+		
+<?php		
+		
 		if($result[1] > 0) {
 			foreach ($result[0] as $row) {
 				$laufzeit = getRealTime($row['startzeit'], $_SESSION['vDatum']." ".$row['manzeit']);
 				if($row['usemantime'] == 1 ) { $umt = '*'; } else { $umt = ''; }
-				if($i%2 == 0) { $html2 .= "<tr class=\"even highlight\">\n"; } else { $html2 .= "<tr class=\"odd highlight\">\n"; }
-				$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=einlaufListe")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-				$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
-				$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
-				$html2 .= "<td align=\"left\">".$row['lname']."</td>\n";
-				if (($dataSetBefore['zeit'] == $laufzeit) && ($dataSetBefore['klasse'] == $row['klasse'])) { $sameTimeAsBefore = 'style="font-weight:bold"'; } else { $sameTimeAsBefore = ''; }
-				$html2 .= "<td align=\"left\" $sameTimeAsBefore >".$laufzeit.$umt."</td>\n";
-				$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
-				$html2 .= "<td align=\"left\"><input id=\"zeit_".$row['ID']."\" class=\"inputZielzeit\" value=\"".$row['manzeit']."\">";
-				$html2 .= "&nbsp;&nbsp;<span><a class=\"setmanzeit\" id=\"".$row['ID']."\" href=\"jqRequest&func=saveManZielzeit&id=".$row['ID']."&action=save\"><i class=\"fa fa-floppy-o fa-lg\"></i></a>";
-				if ($row['usemantime'] == 2 ) {
-				$html2 .= "&nbsp;&nbsp;|&nbsp;&nbsp;<a class=\"setmanzeit\" id=\"".$row['ID']."\" href=\"jqRequest&func=saveManZielzeit&id=".$row['ID']."&action=del\"><i class=\"fa fa-times fa-lg\"></i></a></span></td>\n";
-				}
+
+?>
+			<tr>
+				<td><a href="index.php?func=teilnehmer&id=<?php echo $row['ID']; ?>&nextFunc=einlaufListe"><?php echo $row['nachname'].", ".$row['vorname']; ?></a></td>
+				<td><?php echo $row['verein']; ?></td>
+				<td><?php echo $row['klasse']; ?></td>
+				<td><?php echo $row['lname']; ?></td>
+				<td <?php echo $sameTimeAsBefore; ?>><?php echo $laufzeit.$umt; ?></td>
+				<td><?php echo $row['stnr']; ?></td>
+				<td>
+					<div class="col-sm-5">
+						<input id="zeit_<?php echo $row['ID']; ?>" class="form-control input-sm input-very-small" value="<?php echo $row['manzeit']; ?>">
+					</div>
+					&nbsp;&nbsp;<a class="manzeit" id="<?php echo $row['ID']; ?>" onclick="javascript:saveManZielzeit( this, 'save'); return false;" href="#"><i class="fa fa-floppy-o fa-lg"></i></a>
+					
+					<?php if ($row['usemantime'] == 2 ) { ?>
+					&nbsp;&nbsp;|&nbsp;&nbsp;<a class="setmanzeit" id="<?php echo $row['ID']; ?>" onclick="javascript:saveManZielzeit( this, 'del'); return false;" href="#"><i class="fa fa-times fa-lg"></i></a>
+					<?php } ?>	
+				</td>					
+			</tr>
+<?php				
 				$dataSetBefore['zeit'] = $laufzeit;
 				$dataSetBefore['klasse'] = $row['klasse'];
 				
-				$html2 .= "</tr>\n";
 				$i++;
 			}
 		}
-	
 		
-		$sql = "SELECT * from $tmptable where zielzeit is NULL";
+		$sql = "SELECT * from $tmptable where zielzeit is NULL and usemantime <> 2";
 		
 		$result = dbRequest($sql, 'SELECT');
 		
@@ -192,40 +226,54 @@ function showEinlaufListe($rennen, $action) {
 			foreach ($result[0] as $row) {
 				$laufzeit = '00:00:00';
 				if($row['usemantime'] == 1 ) { $umt = '*'; $laufzeit = $row['manzeit']; } else { $umt = ''; }
-				if($i%2 == 0) { $html2 .= "<tr class=\"even highlight\">\n"; } else { $html2 .= "<tr class=\"odd highlight\">\n"; }
-				$html2 .= "<td align=\"left\"><a href=\"".$_SERVER["SCRIPT_NAME"]."?func=teilnehmer.edit&ID=".$row['ID']."&nextUrl=".base64_encode($_SERVER["SCRIPT_NAME"]."?func=einlaufListe")."\">".$row['nachname'].", ".$row['vorname']."</a></td>\n";
-				$html2 .= "<td align=\"left\">".$row['verein']."</td>\n";
-				$html2 .= "<td align=\"left\">".$row['klasse']."</td>\n";
-				$html2 .= "<td align=\"left\">".$row['lname']."</td>\n";
-				$html2 .= "<td align=\"left\">".$laufzeit.$umt."</td>\n";
-				$html2 .= "<td align=\"left\">".$row['stnr']."</td>\n";
-				$html2 .= "<td align=\"left\"><input id=\"zeit_".$row['ID']."\" class=\"inputZielzeit\" value=\"00:00:00\">";
-				$html2 .= "&nbsp;&nbsp;<span><a class=\"manzeit\" id=\"".$row['ID']."\" href=\"jqRequest&func=saveManZielzeit&id=".$row['ID']."&action=save\"><i class=\"fa fa-floppy-o fa-lg\"></i></a>";
-									
+				
+				
+?>
+				<tr>
+					<td><a href="index.php?func=teilnehmer&id=<?php echo $row['ID']; ?>&nextFunc=einlaufListe"><?php echo $row['nachname'].", ".$row['vorname']; ?></a></td>
+					<td><?php echo $row['verein']; ?></td>
+					<td><?php echo $row['klasse']; ?></td>
+					<td><?php echo $row['lname']; ?></td>
+					<td <?php echo $sameTimeAsBefore; ?>><?php echo $laufzeit.$umt; ?></td>
+					<td><?php echo $row['stnr']; ?></td>
+					<td>
+						<div class="col-sm-5">
+							<input id="zeit_<?php echo $row['ID']; ?>" class="form-control input-sm input-very-small" value="<?php echo $row['manzeit']; ?>">
+						</div>
+						&nbsp;&nbsp;<a class="manzeit" id="<?php echo $row['ID']; ?>" onclick="javascript:saveManZielzeit( this, 'save'); return false;" href="#"><i class="fa fa-floppy-o fa-lg"></i></a>
+					
+						<?php if ($row['usemantime'] == 2 ) { ?>
+						&nbsp;&nbsp;|&nbsp;&nbsp;<a class="setmanzeit" id="<?php echo $row['ID']; ?>" onclick="javascript:saveManZielzeit( this, 'del'); return false;" href="#"><i class="fa fa-times fa-lg"></i></a>
+						<?php } ?>
+					</td>					
+				</tr>
+				
+<?php
 				$dataSetBefore['zeit'] = $laufzeit;
 				$dataSetBefore['klasse'] = $row['klasse'];
-					
-				$html2 .= "</tr>\n";
 				$i++;
 			}
 		}
-		
-		
-		
-		$columns = array('Name', 'Verein', 'Klasse', 'Rennen', 'Laufzeit', 'Stnr', 'Zielzeit');
-		$html .= tableList($columns, $html2, "common einlaufListe");
+?>
+			</tbody>
+		</table>
+	</div>
+<?php 	
 	
 	}
-	return $html;
 }
 
-function saveManZielzeit($id, $action, $time) {
+function saveManZielzeit() {
+	$id = $_GET['id'];
+	$action = $_GET['action'];
+	$time = $_GET['time'];
+	
 	if ($action == 'save') {
 		$sql = "update teilnehmer set usemantime = 2, manzeit = '".base64_decode($time)."' where id = $id";
 	} elseif ($action == 'del') {
 		$sql = "update teilnehmer set usemantime = 0, manzeit = '' where id = $id";
 	}
 	$result = dbRequest($sql, 'UPDATE');
-	return "";
+	echo "ok";
 }
 

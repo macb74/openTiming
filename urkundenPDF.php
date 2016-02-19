@@ -58,8 +58,7 @@ class PDF extends FPDI
 					} else {
 						$platz = $row['akplatz'];
 					}
-	
-	                                $stnr=$row['stnr'];
+					 $stnr=$row['stnr'];
 		
 					include($uDefinition);
 		
@@ -161,13 +160,20 @@ $pdf->AddFont('verdana','B','verdanab.php');
 
 //$pdf->AddPage();
 
-if(!isset($_GET['num'])) { $_GET['num'] = 0;}
 if(!isset($_GET['id'])) { $_GET['id'] = 0;}
 if(!isset($_GET['tid'])) { $_GET['tid'] = 0;}
 
+if($_GET['action'] != 'einzel') {
+	$anzahl=$_SESSION['anzUrkunden-'.$_GET['id']];
+} else {
+	$anzahl=0;
+}
+
+if($anzahl == 'ALL') { $anzahl = 10000; }
+
 if(isset($_GET['action'])) {
 	$templates = getTemplate($_GET['action'], $_GET['id'], $_GET['tid']);
-	$pdf->urkunde($_GET['action'], $_GET['num'],  $_GET['id'], $_GET['tid'], $templates['template'], $templates['definition']);
+	$pdf->urkunde($_GET['action'], $anzahl,  $_GET['id'], $_GET['tid'], $templates['template'], $templates['definition']);
 }
 
 if($_GET['id'] != 0) { 
@@ -175,7 +181,7 @@ if($_GET['id'] != 0) {
  $filename = $rData['titel']."_".$rData['untertitel'].".pdf";
 }
 
-if($_GET['num']<10000) { $anzahl=$_GET['num']; } else { $anzahl="alle"; }
+
 
 if($_GET['action'] == "gesamt") {
         $filename = "Urkunden_Gesamt_$anzahl-".$filename;       

@@ -6,30 +6,40 @@ function ziel() {
 
 	if( isset($func[1])) {
 		if( $func[1] == 'analyse' ) {
-			$html = zielAnalyseHeader();
-			$html .= "<br><div id='data_div'></div>";
-			return table("Zieleinlauf Analyse", $html);
+			zielAnalyseHeader();
 		}
 		if( $func[1] == 'edit' ) {
-			$html = zielEditForm();
-			$html .= "<br><div id='data_div'></div>";
-			return table("Zieleinlauf bearbeiten", $html);
+			zielEditForm();
 		}
 	}
 }
 
 function zielAnalyseHeader() {
 
-	global $func;
-
 	# Display Rennen
-	//$html = "";
 	$veranstaltung = $_SESSION['vID'];
 	$sql = "select * from lauf where vID = $veranstaltung order by start asc, titel;";
 	$result = dbRequest($sql, 'SELECT');
 
-	$html2 = "";
-	$i=1;
+	?>
+	<h3>Zieleinlauf Analyse</h3>
+	
+	<div class="table-responsive">
+		<table class="table table-striped table-vcenter">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Titel</th>
+					<th>Untertitel</th>
+					<th>Start</th>
+					<th></th>
+				</tr>
+			</thead>
+		<tbody>
+			
+	<?php
+	
+	
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			$sql = "select count(ID) as anz from teilnehmer where del = 0 and vID = $veranstaltung and lID = ".$row['ID'];
@@ -37,35 +47,52 @@ function zielAnalyseHeader() {
 			foreach ($resultCount[0] as $rowCount) {
 				$anzTeilnehmer = $rowCount['anz'];
 			}
-			
-			if($i%2 == 0) { $html2 .= "<tr class=\"even\">\n"; } else { $html2 .= "<tr class=\"odd\">\n"; }
-	
+				
 			$subtitle = "";
 			if ($row['untertitel'] != "") { $subtitle = "<i>- ".$row['untertitel']."</i>"; }
-			$html2 .= "<td width=\"30\" align=\"left\">".$row['ID']."</td>\n";
-			$html2 .= "<td width=\"250\" align=\"left\">".$row['titel']." $subtitle ($anzTeilnehmer)</td>\n";
-			//$html2 .= "<td align=\"left\">".$row['untertitel']."</td>\n";
-			$html2 .= "<td width=\"150\" align=\"left\">".$row['start']."</td>\n";
-			$html2 .= "<td class=\"tdinput\" align=\"left\"><span>Start: </span><input class=\"inputStartAnalyseTime\" id='startAnalyseTime_".$row['ID']."' value='".$row['start']."'>" .
-					" <span>Dauer: </span><input class=\"inputLengthAnalyseTime\" id='duration_".$row['ID']."' value='01:00:00'> " .
-					"<a id=\"".$row['ID']."\" class=\"zielanalyse\" href=\"jqRequest&func=showZielAnalyse&lid=".$row['ID']."\" >start Analyse</a>" .
-						"</td>\n";
-			$html2 .= "</tr>\n";
-			$i++;
+			
+?>
+			<tr>
+				<td><?php echo $row['ID']; ?></td>
+				<td><?php echo $row['titel']." ".$subtitle." (".$anzTeilnehmer.")"; ?></td>
+				<td><?php echo $row['untertitel']; ?></td>
+				<td><?php echo $row['start']; ?></td>
+				<td>
+					<div class="form-inline">
+						<span>Start: </span>
+						<input class="form-control input-sm input-very-small" id='startAnalyseTime_<?php echo $row['ID']; ?>' value='<?php echo $row['start'] ?>'>
+						<span>Dauer: </span>
+						<input class="form-control input-sm input-very-small" id='duration_<?php echo $row['ID']; ?>' value='01:00:00'>
+						<a id="<?php echo $row['ID']; ?>" class="zielanalyse" href="#" onclick="javascript:showZielzeitAnalyse(this); return false" >start Analyse</a>
+					</div>
+				</td>
+			</tr>
+<?php 
 		}
 	}
 
-	$columns = array('ID', 'Titel', 'Start', 'Aktion');
-	$html = tableList($columns, $html2, "common meetings");
-		
-	return $html;
+?>
+		</tbody>
+		</table>
+	</div>
+
+<?php
 }
 
-function showZielAnalyse($rennen, $start, $duration) {
-	//$html = <<<HTML
+function showZielAnalyse() {
+	
+	$rennen = $_GET['id'];
+	$start = $_GET['start'];
+	$duration = $_GET['duration'];
+	
 	$sourceFile = 'getZielAnalyseData.php?lID='.$rennen.'&start='.$start.'&duration='.$duration;
-	$html = '
 
+?>
+    <link href="css/timeline.css" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" src="js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/timeline.js"></script>
+    
 	<div id="timeline"></div>
 
 <script>
@@ -123,9 +150,11 @@ function showZielAnalyse($rennen, $start, $duration) {
         - rearrange the definitions of the components.
     */
 
+    
+
     // Define domElement and sourceFile
     var domElement = "#timeline";
-    var sourceFile = "'.$sourceFile.'";
+    var sourceFile = "<?php echo $sourceFile; ?>";
 
     // Read in the data and construct the timeline
     d3.csv(sourceFile, function(dataset) {
@@ -145,62 +174,143 @@ function showZielAnalyse($rennen, $start, $duration) {
 
     });
 
-</script>';
+</script>
 
-	return $html;
+<?php 
 }
 
 function zielEditForm() {
-	$html = "";
-	$html .="<div class=\"vboxitem grey-bg\" >\n";
-	
-	
-	$html .="</div>\n";
-
-	return $html;
-}
-
-function showZielEditTable() {
 		
-	$html = "";
-	$sql = "SELECT * FROM zeit where vID = ".$_SESSION['vID'];
+	$sql = "SELECT * FROM zeit where vID = ".$_SESSION['vID']." order by zeit asc";
 	$result = dbRequest($sql, 'SELECT');
 	
-	$html2 = "";
-	$i=1;
+?>
+	<script>
+		$(document).ready(function(){
+			$("#submit").click(function(event){
+			    event.preventDefault();
+			    submitForm( '#saveManReaderTime', 'index.php?func=ziel.edit' );
+			});
+		});
+		
+	</script>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="alert alert-danger hidden col-sm-offset-3 col-sm-6" id="alert" role="alert"></div>
+		</div>
+		<div class="row">
+			<form role="form" class="form-horizontal" id="saveManReaderTime" name="saveManReaderTime">
+				<input type="hidden" name="form" value="saveManReaderTime">
+			
+				<div class="form-group"> 
+					<label class="col-sm-offset-2 col-sm-1 control-label" for="lid">LID:</label>
+					<div class="col-sm-1">
+		    			<input class="form-control" type="text" name='lid' id="lid" placeholder="">
+		    		</div>
+					<label class="col-sm-1 control-label" for="stnr">Stnr.:</label>
+					<div class="col-sm-1">
+			    		<input class="form-control" type="text" name="stnr" id="stnr" placeholder="">
+			    	</div>
+					<label class="col-sm-1 control-label" for="zielzeit">Zielzeit:</label>
+					<div class="col-sm-2">
+		    			<input class="form-control" type="text" name="zielzeit" id="zielzeit" placeholder="YYYY-MM-DD 00:00:00">
+					</div>
+					<div class="col-sm-1">
+						<button type="submit" id="submit" class="btn btn-success" value="save">save</button>
+			  		</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<h3>Reader Zeiten</h3>
+	
+	<div class="table-responsive">
+	<table class="table table-striped table-vcenter">
+	<thead>
+	<tr>
+	<th>VID</th>
+	<th>LID</th>
+	<th>Stnr.</th>
+	<th>Zielzeit</th>
+	<th>Timestamp</th>
+	<th>Reader IP</th>
+	<th>Action</th>
+	</tr>
+	</thead>
+	<tbody>
+	
+<?php 
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			while(strlen($row['millisecond']) < 3 ) { $row['millisecond'] = "0".$row['millisecond']; }
-				
-			if($i%2 == 0) { $html2 .= "<tr class=\"even highlight\">\n"; } else { $html2 .= "<tr class=\"odd highlight\">\n"; }
-			$html2 .= "<td align=\"left\">".$row['vID']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['lID']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['nummer']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['zeit'].".".$row['millisecond']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['TIMESTAMP']."</td>\n";
-			$html2 .= "<td align=\"left\">".$row['Reader']."</td>\n";
-			$html2 .= "<td align=\"left\"><a class=\"\" id=\"".$row['ID']."\" href=\"#\" onclick=\"javascript:saveReaderTime('id=".$row['ID']."&action=del&values=none');\"><i class=\"fa fa-times fa-lg\"></i></a></span></td>\n";
-			$html2 .= "</tr>\n";
-			$i++;
+
+?>
+		<tr>
+			<td><?php echo $row['vID']; ?></td>
+			<td><?php echo $row['lID']; ?></td>
+			<td><?php echo $row['nummer']; ?></td>
+			<td><?php echo $row['zeit'].".".$row['millisecond']; ?></td>
+			<td><?php echo $row['TIMESTAMP']; ?></td>
+			<td><?php echo $row['Reader']; ?></td>
+			<td>
+				<a id="<?php echo $row['ID']; ?>" href="#" onclick="javascript:deleteManReaderTime(<?php echo $row['ID'] ?>); return false;"><i class="fa fa-times"></i></a>
+				<?php if($row['del'] == 1) { ?>
+					&nbsp;<i class="fa fa-trash"></i>
+				<?php } ?>
+				<?php if($row['Reader'] == '0.0.0.0') { ?>
+					&nbsp;<i class="fa fa-pencil"></i>
+				<?php } ?>
+			</td>
+		</tr>
+<?php 
+
 		}
 	}
 	
-	$columns = array('vID', 'lID', 'StNr.', 'Zeit', 'TIMESTAMP', 'Reader', 'Action');
-	$html .= tableList($columns, $html2, "common");
-	
-	return $html;
+?>
+	</tbody>
+	</table>
+	</div>
+<?php
+
 }
 
-function saveReaderTime($id, $action, $values) {
-	if($action == 'del') {
-		
+function deleteManReaderTime() {
+	$del = 0;
+	$sql = "select del from zeit where id = ".$_GET['id'];
+	$result = dbRequest($sql, 'SELECT');
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			if($row['del'] == 0) {
+				$del = 1;
+			} else {
+				$del = 0;
+			}
+		}
 	}
-
-	if($action == 'save') {
 	
+	$sql = "update zeit set del = ".$del." where id = ".$_GET['id'];
+	$result = dbRequest($sql, 'INSERT');
+	
+	if($result[0] == true) {
+		echo "ok";
+	} else {
+		echo $result[2];
+	}
+}
+
+function saveManReaderTime() {
+	$sql = "insert into zeit (vid, lid, nummer, zeit, reader) values (".$_SESSION['vID'].", ".$_POST['lid'].", ".$_POST['stnr'].", '".$_POST['zielzeit']."', '0.0.0.0')";
+	$result = dbRequest($sql, 'INSERT');
+	
+	if($result[0] == true) {
+		echo "ok";
+	} else {
+		echo $result[2];
 	}
 
-	return showZielEditTable();
 }
 
 ?>

@@ -260,7 +260,7 @@ class PDF extends FPDF
 		if ($rd['rundenrennen'] == 1) { $sqlAddOn = "runden desc, "; }
 
 		// Alle vorhandenen Klassen ermittlen
-		//Da ein GROUP BY keine Umlaute beachtet, wird nach den MD5 Summen der Klassennamen gruppiert
+		// Da ein GROUP BY keine Umlaute beachtet, wird nach den MD5 Summen der Klassennamen gruppiert
 
 		$sql = "SELECT MD5(klasse) as k, klasse from teilnehmer as t where t.vID = ".$_SESSION['vID']." and t.lid = $id and platz > 0 group by k order by klasse";
 		$rKlassen = dbRequest($sql, 'SELECT');
@@ -279,7 +279,7 @@ class PDF extends FPDF
 		$i = 0;
 		$ii = 1;
 
-		// Ergebniss für alle vorhandene Klassen ausgeben
+		// Ergebniss fuer alle vorhandene Klassen ausgeben
 		foreach ($kl as $k) {
 
 			if ( $i != 0 ) { $this->AddPage('Portrait', 'A4'); }

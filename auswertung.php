@@ -27,7 +27,8 @@ function doAuswertung() {
 	}
 	updateStatus($veranstaltung, $rennen);
 	
-	echo "<p>Es wurden <b>$anzTeilnehmer Teilnehmer</b> ausgewertet<br>Es wurden <b>$anzTeams Teams</b> ausgewertet</p>";
+	echo "{ \"message\": \"<p>Es wurden <b>$anzTeilnehmer Teilnehmer</b> ausgewertet<br>Es wurden <b>$anzTeams Teams</b> ausgewertet</p>\",
+		\"finisher\" : $anzTeilnehmer }";
 }
 
 function getSeconds($s) {
@@ -378,7 +379,7 @@ function showRaceList() {
 
 				<tr>
 					<td><?php echo $row['ID']; ?></td>
-					<td><?php echo $row['titel']; ?> <small><?php echo $row['untertitel']; ?> (<?php echo $count[0]; ?> / <?php echo $count[1] ?>)</small></td>
+					<td><?php echo $row['titel']; ?> <small><?php echo $row['untertitel']; ?> (<?php echo $count[0]; ?> / <span id="finisher-<?php echo $row['ID']; ?>"><?php echo $count[1] ?></span>)</small></td>
 					<td><?php echo substr($row['start'], 10); ?></td>
 					<td>
 						<div class="btn-group" role="group" aria-label="...">

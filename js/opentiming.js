@@ -185,13 +185,15 @@ function clearContent() {
 function doAuswertung( id ) {
 	$('#modal').modal();
 	
-	var jqxhr = $.get( "ajaxRequest.php?func=doAuswertung&id=" + id);
+	var jqxhr = $.getJSON( "ajaxRequest.php?func=doAuswertung&id=" + id);
 	jqxhr.success(function( data ) {
 		//console.log(data);
-		$( '#modal-body' ).html( data );
+		 
+		$( '#modal-body' ).html( data.message );
 		
 		// zeige die gerade berechneten Ergebnisse
 		showContent( 'showErgebnisse', id );
+		$('#finisher-' + id).html( data.finisher );
 	});
 		
 }

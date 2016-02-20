@@ -57,3 +57,6 @@ UPDATE lauf as l
 SET l.start_tmp = concat(v.datum, ' ', l.start);
 ALTER TABLE `lauf` DROP `start`;
 ALTER TABLE `lauf` CHANGE `start_tmp` `start` DATETIME NOT NULL;
+
+-- 20.02.2016
+ALTER TABLE `zeit` ADD `del` INT NOT NULL DEFAULT '0';

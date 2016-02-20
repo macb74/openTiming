@@ -44,7 +44,8 @@ function einlaufListeForm() {
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			if(in_array($row['ID'], $rennenIDs) === true) { $c = "checked"; } else { $c = ""; }
-				
+			$rInfo = getRennenData($row['ID']);
+			
 	?>
 	
 				<tr>
@@ -52,7 +53,9 @@ function einlaufListeForm() {
 					<td><?php echo $row['titel']." / ".$row['untertitel']; ?></td>
 					<td><?php echo substr($row['start'], 10); ?></td>
 					<td>
+						<?php if($rInfo['rundenrennen'] == 0) { ?>
 						<input <?php echo $c; ?> class="chkboxtable" type="checkbox" onchange="javascript:checkEinlaufListe( this );" name="<?php echo $row['ID']; ?>" id="<?php echo $row['ID']; ?>">
+						<?php } ?>
 					</td>
 				</tr>
 

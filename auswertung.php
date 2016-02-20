@@ -98,7 +98,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
-			"and z.zeit > '".$startZeit."' ".
+			"and z.zeit > '".$startZeit."' and z.del = 0 ".
 			"group by t.stnr";
 
 		$result = dbRequest($sql, 'SELECT');
@@ -115,7 +115,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
-			"and z.zeit > '".$startZeit."' order by stnr, zeit asc";
+			"and z.zeit > '".$startZeit."' and z.del = 0 order by stnr, zeit asc";
 		//echo $sql;
 	
 		$result = dbRequest($sql, 'SELECT');
@@ -528,7 +528,7 @@ function updateAnzRunden($veranstaltung, $rennen, $rInfo) {
 	
 	if($rInfo['use_lID'] == 1) { $sql_lID = "and lid = $rennen "; } else { $sql_lID = ""; }
 	
-	$sql = "select nummer from zeit where vid = $veranstaltung $sql_lID and zeit > '".$startZeit."' group by nummer";
+	$sql = "select nummer from zeit where vid = $veranstaltung $sql_lID and zeit > '".$startZeit."' and del = 0 group by nummer";
 	
 	$result = dbRequest($sql, 'SELECT');
 	
@@ -546,7 +546,7 @@ function updateAnzRunden($veranstaltung, $rennen, $rInfo) {
 		$re2 = "";
 		$sql2 = "";
 		
-		$sql = "select nummer, zeit from zeit where vid = $veranstaltung $sql_lID and zeit > '".$startZeit."' and nummer = $number order by zeit";
+		$sql = "select nummer, zeit from zeit where vid = $veranstaltung $sql_lID and zeit > '".$startZeit."' and nummer = $number and del = 0 order by zeit";
 				
 		$result = dbRequest($sql, 'SELECT');
 		

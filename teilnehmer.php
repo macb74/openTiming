@@ -229,7 +229,7 @@ function showTeilnehmerEditForm() {
 		<div class="form-group">
 			<label for="title" class="col-sm-4 control-label">Geschlecht:</label>
 			<div class="col-sm-4">
-				<select class="form-control" name="geschlecht" id="geschlecht">
+				<select class="form-control selectpicker" name="geschlecht" id="geschlecht">
 					<option value="-">-</option>
 					<option value="M" <?php if($geschlecht == "M") { echo "selected"; }?>>M</option>
 					<option value="W" <?php if($geschlecht == "W") { echo "selected"; }?>>W</option>
@@ -288,7 +288,7 @@ function showTeilnehmerEditForm() {
 		<div class="form-group">
 			<label for="rennen" class="col-sm-4 control-label">Lauf:</label>
 			<div class="col-sm-4">
-				<select id="rID" name="rID"  class="form-control">
+				<select id="rID" name="rID"  class="form-control selectpicker">
 					<option rr="0" value="X">bitte w&auml;hlen</option>
 
 <?php

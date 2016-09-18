@@ -12,7 +12,7 @@ $showContent = false;
 session_start();
 include "function.php";
 $link = connectDB();
-$allowedFunctions = array('veranstaltung', 'teilnehmer', 'auswertung', 'rennen', 'klasse', 'import', 'einlaufListe', 'ziel');
+$allowedFunctions = array('veranstaltung', 'teilnehmer', 'auswertung', 'rennen', 'klasse', 'import', 'einlaufListe', 'ziel', 'reader');
 
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
@@ -70,6 +70,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
     <link href="css/opentiming.css" rel="stylesheet">
 	<link href="css/font-awesome.css" rel="stylesheet">
 	<link href="css/bootstrap-datepicker3.css" rel="stylesheet">
+	<link href="css/bootstrap-select.min.css" rel="stylesheet">
 	<link href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet">
 	
 	<script src="js/jquery-2.1.4.js"></script>
@@ -84,6 +85,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
     <script src="js/bootstrap-datepicker.de.min.js"></script>
+    <script src="js/bootstrap-select.min.js"></script>
     <script src="js/opentiming.js"></script>
     <script src="js/base64.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -133,6 +135,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 						</ul>
 					</li>
 					<li><a href="index.php?func=auswertung"><i class="fa fa-cog"></i> Auswertung</a></li>
+					<li><a href="index.php?func=reader"><i class="fa fa-cog"></i> Reader</a></li>
 				</ul>
 				
 <?php 

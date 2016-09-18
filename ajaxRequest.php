@@ -36,6 +36,9 @@ if(isset($_POST['form'])) {
 	if($_POST['form'] == 'uploadTeilnehmer')		{ tImport(); }
 	if($_POST['form'] == 'uploadZeit')				{ zImport(); }
 	if($_POST['form'] == 'saveManReaderTime')		{ saveManReaderTime(); }
+	if($_POST['form'] == 'getReaderData')			{ getReaderData(); }
+	if($_POST['form'] == 'setConfig')				{ setConfig(); }
+	
 }
 
 

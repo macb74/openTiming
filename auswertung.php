@@ -321,7 +321,7 @@ function showRaceList() {
 				var rid = $( this ).attr('rid');
 				var jqxhr = $.get( "ajaxRequest.php?func=getLastRaceUpdate&id=" + rid);
 			
-				jqxhr.success(function( data ) {
+				jqxhr.done(function( data ) {
 					$( target ).tooltip( {container: 'body' } )
 					.attr('data-original-title', data)
 					.tooltip('fixTitle')

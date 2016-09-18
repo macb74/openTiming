@@ -17,7 +17,7 @@ include "ergebnis.php";
 include "import.php";
 include "einlaufListe.php";
 include "ziel.php";
-
+include "reader.php";
 
 function connectDB() {
 	global $config;
@@ -119,6 +119,25 @@ function getRennenData($rennen) {
 	return $rd;
 }
 
+
+function setConfig() {
+	$sql    = "update `config` set `key` = '".$_POST['key']."', `value` = '".$_POST['value']."'";
+	echo $sql;
+	$result = dbRequest($sql, 'INSERT');
+	print_r($result);
+}
+
+
+function getConfig() {
+	$sql    = "select * from config";
+	$result = dbRequest($sql, 'SELECT');
+	
+	foreach ($result[0] as $row) {
+		$config[$row['key']] = $row['value'];
+	}
+	
+	return $config;
+}
 
 function filterParameters($array) {
 	global $link;

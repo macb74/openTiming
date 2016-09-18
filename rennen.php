@@ -192,7 +192,7 @@ function showRaceEditForm() {
 		<div class="form-group">
 			<label for="klasse" class="col-sm-4 control-label">Klasse:</label>
 			<div class="col-sm-5">
-				<select class="form-control" name="klasse">
+				<select class="form-control selectpicker" name="klasse">
 <?php
 
 	foreach($kArray as $k) {
@@ -208,7 +208,7 @@ function showRaceEditForm() {
 		<div class="form-group">
 			<label for="vklasse" class="col-sm-4 control-label">Klasse (Mannschaft):</label>
 			<div class="col-sm-5">
-				<select class="form-control" name="vklasse">
+				<select class="form-control selectpicker" name="vklasse">
 <?php
 
 	foreach($kArray as $k) {

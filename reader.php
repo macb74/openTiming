@@ -64,12 +64,14 @@ function showReaderList() {
 
 		function setTableData(r, val) {
 			table = "";
-			f = val.split(';');
+			f = val.split('|');
 			f.sort();
 			f.forEach(function(entry) {
-			    table = table + "<tr><td>" + entry + "</td>" +
-					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"showReaderResults(" + r + ", '" + entry + "'); return false;\" role='button'>SHOW</a></td>" + 
-					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"loadReaderResults(" + r + ", '" + entry + "'); return false;\" role='button'>LOAD</a></td>" + 
+				e = entry.split(';');
+			    table = table + "<tr><td>" + e[0] + "</td>" +
+					"<td class='text-right'>" + e[1] + "</td>" + 
+			    	"<td><a class='btn btn-success btn-xs' href='#' onclick=\"showReaderResults(" + r + ", '" + e[0] + "'); return false;\" role='button'>SHOW</a></td>" + 
+					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"loadReaderResults(" + r + ", '" + e[0] + "'); return false;\" role='button'>LOAD</a></td>" + 
 					"</tr>";
 			});
 
@@ -201,6 +203,7 @@ function showReaderList() {
 					<thead>
 						<tr>
 							<th>Datei</th>
+							<th>Zeilen</th>
 							<th>Aktion</th>
 						</tr>
 					</thead>

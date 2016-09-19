@@ -559,8 +559,8 @@ function updateAnzRunden($veranstaltung, $rennen, $rInfo) {
 				
 				if( $dif > 10 ) {
 					$rowCount++;
+					$sTime = $row['zeit'];
 				}
-				$sTime = $row['zeit'];
 			}
 		}
 

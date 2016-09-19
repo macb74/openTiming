@@ -38,7 +38,8 @@ if(isset($_POST['form'])) {
 	if($_POST['form'] == 'saveManReaderTime')		{ saveManReaderTime(); }
 	if($_POST['form'] == 'getReaderData')			{ getReaderData(); }
 	if($_POST['form'] == 'setConfig')				{ setConfig(); }
-	
+	if($_POST['form'] == 'showReaderResults')		{ showReaderResults(); }
+	if($_POST['form'] == 'loadReaderResults')		{ loadReaderResults(); }	
 }
 
 

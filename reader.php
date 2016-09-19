@@ -10,13 +10,7 @@ function showReaderList() {
 
 	<script>
 
-		$(document).ready(function(){
-
-			$('#myTabs a').click(function (e) {
-				  e.preventDefault()
-				  $(this).tab('show')
-				})
-			
+		$(document).ready(function(){			
 			getReaderData(0, 'null');
 			getReaderData(1, 'null');
 		});
@@ -73,20 +67,34 @@ function showReaderList() {
 			f = val.split(';');
 			f.sort();
 			f.forEach(function(entry) {
-			    table = table + "<tr><td>" + entry + "</td><td><a class='btn btn-success' href='#' onclick=\"showReaderResults('" + entry + "'); return false;\" role='button'>SHOW</a></td></tr>";
+			    table = table + "<tr><td>" + entry + "</td>" +
+					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"showReaderResults(" + r + ", '" + entry + "'); return false;\" role='button'>SHOW</a></td>" + 
+					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"loadReaderResults(" + r + ", '" + entry + "'); return false;\" role='button'>LOAD</a></td>" + 
+					"</tr>";
 			});
 
-			$('#tbody0').html(table);
+			$('#tbody'+r).html(table);
 		}
 
-
-		function showReaderResults(file) {
-			$('#modal').modal();
-
-			var jqxhr = $.get( "ajaxRequest.php?func=showReaderResults&id=" + file );
+		function showReaderResults(r, file) {
+			$('#modal2').modal();
+			
+			params = { form: "showReaderResults", wsdl: $('#url'+r).val(), file: file };
+			var jqxhr = $.post( "ajaxRequest.php", params);
 
 			jqxhr.done(function( data ) {
-				//$( '#modal-body' ).html( data );
+				$( '#modal2-body' ).html( data );
+			});
+		}
+		
+		function loadReaderResults(r, file) {
+			$('#modal').modal();
+			
+			params = { form: "loadReaderResults", wsdl: $('#url'+r).val(), file: file };
+			var jqxhr = $.post( "ajaxRequest.php", params);
+
+			jqxhr.done(function( data ) {
+				$( '#modal-body' ).html( data );
 			});
 		}
 
@@ -109,7 +117,7 @@ function showReaderList() {
 <?php 
 	for($i=0; $i<2; $i++) {
 ?>	    
-	    <div role="tabpanel" class="tab-pane <? if ($i == 0) { echo "active"; } ?>" id="reader<?php echo $i; ?>">
+	    <div role="tabpanel" class="tab-pane <?php if ($i == 0) { echo "active"; } ?>" id="reader<?php echo $i; ?>">
 
 	    	<div class="alert alert-danger hidden col-sm-offset-3 col-sm-6" id="faultstring<?php echo $i; ?>" role="alert"></div>
 	
@@ -234,4 +242,76 @@ function getReaderData() {
 		print json_encode($fault);
 	}
 	
+}
+
+function showReaderResults() {
+	$f      = getReaderFile($_POST['wsdl'], $_POST['file']);
+	$farray = explode("|", $f);
+?>
+	
+	<div class="table-responsive">
+		<table class="table table-striped table-vcenter">
+			<thead>
+				<tr>
+					<th>Startnummer</th>
+					<th>Datum</th>					
+					<th>Uhrzeit</th>
+					<th>Milli</th>
+					<th>Reader</th>					
+					<th>Antenne</th>
+					<th>RSSI</th>
+					<th>UID</th>
+					<th>Lesezeit</th>
+				</tr>
+			</thead>
+			<tbody>
+<?php 			
+	foreach ($farray as $line) {
+		$fields = explode(";", $line);
+    	echo "<tr>";
+		foreach ($fields as $field) {
+			echo "<td>$field</td>";
+		}
+    	echo "</tr>";
+	}
+?>	
+			</tbody>
+		</table>
+	</div>
+
+<?php 
+}
+
+function loadReaderResults() {
+	$f = getReaderFile($_POST['wsdl'], $_POST['file']);
+	$f = preg_replace('/^|/', '', $f);
+	$f = preg_replace('/|$/', '', $f);
+	$farray = explode("|", $f);
+	$msg = "";
+	
+	foreach ($farray as $line) {
+		if(substr_count($line, ';') == 8) {
+			$field = explode(";", $line);
+			$sql = "insert into zeit (vID, nummer, zeit, millisecond, Reader, ant, rssi) ";
+			$sql .= "values (".$_SESSION['vID'].",  '".$field['0']."', '".$field['1']." ".$field['2']."', '".$field['3']."', '".$field['4']."', '".decbin($field['5'])."', '".$field['6']."') ";
+			$sql .= "ON DUPLICATE KEY UPDATE id=id;";
+			$result = dbRequest($sql, 'INSERT');
+			if($result[2]) { $msg .= $result[2]."<br><br>"; }
+		}
+	}
+	if ($msg == "") {
+		echo "Daten eingelesen";
+	} else {
+		echo $msg;
+	}
+}
+
+function getReaderFile($wsdl, $file) {
+	try {
+		$client = new SoapClient($wsdl, array('cache_wsdl' => WSDL_CACHE_NONE));
+		$result = $client->getReaderResults($file);
+		return $result;
+	} catch (SoapFault $fault) {
+		return json_encode($fault);
+	}
 }

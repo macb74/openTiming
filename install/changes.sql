@@ -72,3 +72,26 @@ CREATE TABLE IF NOT EXISTS `config` (
 `value` varchar( 255 ) DEFAULT NULL ,
 PRIMARY KEY ( `ID` )
 ) ENGINE = MYISAM DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci AUTO_INCREMENT =1
+
+-- 19.09.2016
+
+CREATE TABLE IF NOT EXISTS `zeit_tmp` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `vID` int(11) NOT NULL DEFAULT '0',
+  `lID` int(11) NOT NULL DEFAULT '0',
+  `nummer` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `zeit` datetime NOT NULL,
+  `millisecond` int(3) NOT NULL DEFAULT '0',
+  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Reader` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
+  `del` int(11) NOT NULL DEFAULT '0',
+  `ant` int(4) unsigned zerofill NOT NULL DEFAULT '0000',
+  `rssi` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `vID` (`vID`,`lID`,`nummer`,`zeit`,`millisecond`,`Reader`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+INSERT INTO zeit_tmp SELECT * FROM zeit ON DUPLICATE KEY UPDATE `zeit_tmp`.`ID`=`zeit_tmp`.`ID`;
+DROP TABLE `zeit`;
+ALTER TABLE zeit_tmp RENAME `zeit`;
+

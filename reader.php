@@ -66,37 +66,34 @@ function showReaderList() {
 			table = "";
 			f = val.split('|');
 			f.sort();
+			f.reverse(); 
 			f.forEach(function(entry) {
 				e = entry.split(';');
 			    table = table + "<tr><td>" + e[0] + "</td>" +
 					"<td class='text-right'>" + e[1] + "</td>" + 
-			    	"<td><a class='btn btn-success btn-xs' href='#' onclick=\"showReaderResults(" + r + ", '" + e[0] + "'); return false;\" role='button'>SHOW</a></td>" + 
-					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"loadReaderResults(" + r + ", '" + e[0] + "'); return false;\" role='button'>LOAD</a></td>" + 
+			    	"<td><a class='btn btn-success btn-xs' href='#' onclick=\"handleReaderResults('" + $( '#url' + r ).val() + "', '" + e[0] + "', 'show'); return false;\" role='button'>SHOW</a></td>" + 
+					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"handleReaderResults('" + $( '#url' + r ).val() + "', '" + e[0] + "', 'load'); return false;\" role='button'>LOAD</a></td>" + 
 					"</tr>";
 			});
 
 			$('#tbody'+r).html(table);
 		}
 
-		function showReaderResults(r, file) {
-			$('#modal2').modal();
-			
-			params = { form: "showReaderResults", wsdl: $('#url'+r).val(), file: file };
+		function handleReaderResults(r, file, mode) {
+			if(mode == "show") {
+				modal = "#modal2";
+				method = "showReaderResults";
+			} else {
+				modal = "#modal";
+				method = "loadReaderResults";
+			}
+
+			$( modal ).modal();
+			params = { form: method, wsdl: r, file: file };
 			var jqxhr = $.post( "ajaxRequest.php", params);
 
 			jqxhr.done(function( data ) {
-				$( '#modal2-body' ).html( data );
-			});
-		}
-		
-		function loadReaderResults(r, file) {
-			$('#modal').modal();
-			
-			params = { form: "loadReaderResults", wsdl: $('#url'+r).val(), file: file };
-			var jqxhr = $.post( "ajaxRequest.php", params);
-
-			jqxhr.done(function( data ) {
-				$( '#modal-body' ).html( data );
+				$( modal + '-body' ).html( data );
 			});
 		}
 
@@ -250,8 +247,12 @@ function getReaderData() {
 function showReaderResults() {
 	$f      = getReaderFile($_POST['wsdl'], $_POST['file']);
 	$farray = explode("|", $f);
+	$farray = array_reverse($farray);
 ?>
 	
+	<div class="text-right modal-button">
+		<a href="#" class="btn btn-primary btn-sm" onclick="handleReaderResults('<?php echo $_POST['wsdl']; ?>', '<?php echo $_POST['file']; ?>', 'show'); return false;" role="button">refresh</a>
+	</div>
 	<div class="table-responsive">
 		<table class="table table-striped table-vcenter">
 			<thead>
@@ -268,7 +269,7 @@ function showReaderResults() {
 				</tr>
 			</thead>
 			<tbody>
-<?php 			
+<?php
 	foreach ($farray as $line) {
 		$fields = explode(";", $line);
     	echo "<tr>";

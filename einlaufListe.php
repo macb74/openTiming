@@ -164,6 +164,7 @@ function showEinlaufListe() {
 		$i=1;
 		$dataSetBefore['zeit'] = 'none';
 		$dataSetBefore['klasse'] = 'none';
+		$dataSetBefore['lname'] = 'none';
 		
 		$sameTimeAsBefore ='';
 		
@@ -188,6 +189,9 @@ function showEinlaufListe() {
 			foreach ($result[0] as $row) {
 				$laufzeit = getRealTime($row['startzeit'], $_SESSION['vDatum']." ".$row['manzeit']);
 				if($row['usemantime'] == 1 ) { $umt = '*'; } else { $umt = ''; }
+				if (($dataSetBefore['zeit'] == $laufzeit) && ($dataSetBefore['klasse'] == $row['klasse']) && ($dataSetBefore['lname'] == $row['lname'])) {
+					$sameTimeAsBefore = '!"';
+				}
 
 ?>
 			<tr>
@@ -205,12 +209,20 @@ function showEinlaufListe() {
 					
 					<?php if ($row['usemantime'] == 2 ) { ?>
 					&nbsp;&nbsp;|&nbsp;&nbsp;<a class="setmanzeit" id="<?php echo $row['ID']; ?>" onclick="javascript:saveManZielzeit( this, 'del'); return false;" href="#"><i class="fa fa-times fa-lg"></i></a>
-					<?php } ?>	
+					<?php } ?>
+					
+					<?php if ($sameTimeAsBefore != "" ) { ?>
+					&nbsp;&nbsp;|&nbsp;&nbsp;<i class="fa fa-hand-paper-o fa-lg"></i>
+					<?php } ?>
+
 				</td>					
 			</tr>
 <?php				
-				$dataSetBefore['zeit'] = $laufzeit;
+				$dataSetBefore['zeit']   = $laufzeit;
 				$dataSetBefore['klasse'] = $row['klasse'];
+				$dataSetBefore['lname']  = $row['lname'];
+				
+				$sameTimeAsBefore = "";
 				
 				$i++;
 			}
@@ -237,7 +249,7 @@ function showEinlaufListe() {
 					<td><?php echo $row['verein']; ?></td>
 					<td><?php echo $row['klasse']; ?></td>
 					<td><?php echo $row['lname']; ?></td>
-					<td <?php echo $sameTimeAsBefore; ?>><?php echo $laufzeit.$umt; ?></td>
+					<td><?php echo $laufzeit.$umt; ?></td>
 					<td><?php echo $row['stnr']; ?></td>
 					<td>
 						<div class="col-sm-5">
@@ -252,8 +264,7 @@ function showEinlaufListe() {
 				</tr>
 				
 <?php
-				$dataSetBefore['zeit'] = $laufzeit;
-				$dataSetBefore['klasse'] = $row['klasse'];
+
 				$i++;
 			}
 		}

@@ -188,6 +188,7 @@ function showTeilnehmerEditForm() {
 	</script>
 	
 	<div class="alert alert-danger hidden col-sm-offset-3 col-sm-6" id="alert" role="alert"></div>
+	
 	<form role="form" class="form-horizontal" id="editTeilnehmer" name="editTeilnehmer">
 		<div class="form-group">
 			<input type="hidden" name="form" value="saveTeilnehmer">
@@ -343,7 +344,14 @@ function showTeilnehmer()  {
 
 ?>
 
-	<h3>Teilnehmer</h3>
+	<div class=col-sm-10>
+		<h3>Teilnehmer</h3>
+	</div>
+	
+	<div class="col-sm-2 text-right modal-button">
+		<a href="exportXLS.php?action=ergebnisliste" class="btn btn-primary btn-sm" role="button">export to Excel</a>
+	</div>
+	
 	<div class="table-responsive">
 		<table class="table table-striped table-condensed">
 			<thead>

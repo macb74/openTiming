@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once 'PHPExcel/Classes/PHPExcel.php';
+require_once 'Classes/PHPExcel.php';
 include("function.php");
 
 $link = connectDB();
@@ -13,7 +13,7 @@ $filename = $_GET['action'].'.xlsx';
 if($_GET['action'] == "startliste") {
 	exportStartliste($filename);
 } else {
-	exportErgebnins($_GET['id'], $filename);
+	exportErgebnins($filename);
 }
 
 $link->close();
@@ -69,7 +69,7 @@ function exportStartliste($filename) {
 	
 }
 
-function exportErgebnins($id, $filename) {
+function exportErgebnins($filename) {
 	// Create new PHPExcel object
 	$objPHPExcel = new PHPExcel();
 	
@@ -89,10 +89,11 @@ function exportErgebnins($id, $filename) {
 	->setCellValue('M1', 'Rennen');
 	
 
-	$sql = "SELECT t.*, l.titel, l.untertitel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
-		"where t.vID = ".$_SESSION['vID']." ".
-			"and lid = $id and del= 0 and disq = 0 and platz > 0 ".
-		"order by runden desc, zeit asc";
+	$sql = "SELECT t.*, l.titel, l.untertitel, IF(t.platz = 0, 1, 0) as p".
+			" FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID".
+			" where t.vID = ".$_SESSION['vID'].
+			" and del = 0 and disq = 0".
+			" order by p asc, runden desc, zeit asc";
 
 	$result = dbRequest($sql, 'SELECT');
 

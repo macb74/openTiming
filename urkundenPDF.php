@@ -1,7 +1,7 @@
 <?php
 
-require_once('fpdf/fpdf.php');
-require_once('fpdi/fpdi.php');
+require_once('Classes/fpdf/fpdf.php');
+require_once('Classes/fpdi/fpdi.php');
 include("function.php");
 $link = connectDB();
 session_start();

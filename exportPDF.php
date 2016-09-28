@@ -1,6 +1,6 @@
 <?php
 
-require('fpdf/fpdf.php');
+require('Classes/fpdf/fpdf.php');
 include("function.php");
 $link = connectDB();
 session_start();

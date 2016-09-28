@@ -121,7 +121,7 @@ function getRennenData($rennen) {
 
 
 function setConfig() {
-	$sql    = "update `config` set `key` = '".$_POST['key']."', `value` = '".$_POST['value']."'";
+	$sql    = "update `config` set `value` = '".$_POST['value']."' where `key` = '".$_POST['key']."';";
 	echo $sql;
 	$result = dbRequest($sql, 'INSERT');
 	print_r($result);

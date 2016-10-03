@@ -266,7 +266,7 @@ function showTeilnehmerEditForm() {
 		<div class="form-group">
 			<label for="att" class="col-sm-4 control-label">Attribut:</label>
 			<div class="col-sm-4">
-				<input name="att" maxlength="2" type="text" class="form-control" id="att" placeholder="Attribut" value="<?php echo $att; ?>">
+				<input name="att" maxlength="5" type="text" class="form-control" id="att" placeholder="Attribut" value="<?php echo $att; ?>">
 			</div>
 		</div>
 		

@@ -12,6 +12,10 @@ function einlaufListeForm() {
 		$(document).ready(function(){
 			checkEinlaufListe( this );
 		});
+
+		function markField(id) {
+			$( '#div_' + id ).addClass( "has-error" ); 
+		}
 	
 	</script>
 	
@@ -202,8 +206,8 @@ function showEinlaufListe() {
 				<td <?php echo $sameTimeAsBefore; ?>><?php echo $laufzeit.$umt; ?></td>
 				<td><?php echo $row['stnr']; ?></td>
 				<td>
-					<div class="col-sm-5">
-						<input id="zeit_<?php echo $row['ID']; ?>" class="form-control input-sm input-very-small" value="<?php echo $row['manzeit']; ?>">
+					<div class="col-sm-5" id="div_zeit_<?php echo $row['ID']; ?>">
+						<input id="zeit_<?php echo $row['ID']; ?>" class="form-control input-sm input-very-small" onchange="markField('zeit_<?php echo $row['ID']; ?>'); return false;" value="<?php echo $row['manzeit']; ?>">
 					</div>
 					&nbsp;&nbsp;<a class="manzeit" id="<?php echo $row['ID']; ?>" onclick="javascript:saveManZielzeit( this, 'save'); return false;" href="#"><i class="fa fa-floppy-o fa-lg"></i></a>
 					

@@ -95,3 +95,5 @@ INSERT INTO zeit_tmp SELECT * FROM zeit ON DUPLICATE KEY UPDATE `zeit_tmp`.`ID`=
 DROP TABLE `zeit`;
 ALTER TABLE zeit_tmp RENAME `zeit`;
 
+-- 03.10.2016
+ALTER TABLE `teilnehmer` CHANGE `att` `att` VARCHAR( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;

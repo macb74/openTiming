@@ -1,5 +1,4 @@
 <?php
-
 require_once('Classes/fpdf/fpdf.php');
 require_once('Classes/fpdi/fpdi.php');
 include("function.php");
@@ -13,12 +12,8 @@ $_POST = filterParameters($_POST);
 
 class PDF extends FPDI
 {
-	function urkunde($action, $num, $id, $tid, $template, $uDefinition) {
+	function urkunde($action, $num, $id, $raceData) {
 
-        global $stnr;   # etwas haesslich, rausgabe der StNr per globaler Variable
-
-		#$header = $this->getHeader($_SESSION['vID'], $id, $stnr);
-		#$this->setHeader($header);
 		$oldVnummer = "";
 
 		if($action == 'gesamt') {
@@ -26,14 +21,14 @@ class PDF extends FPDI
 		} elseif ($action == 'klasse') {
 			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and lid = $id and akplatz > 0 and akplatz <= $num order by klasse, platz";
 		} elseif ($action == 'einzel') {
-			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and id = $tid";
+			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and id = $id";
 		} elseif ($action == 'team') {
 			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and lid = $id and vnummer <> '' order by vplatz, zeit asc";
 		} else {
 			echo "keine action gewählt";
 			die;
 		}
-			
+
 		$result = dbRequest($sql, 'SELECT');
 		
 		$this->setMyFont();
@@ -44,23 +39,22 @@ class PDF extends FPDI
 				foreach ($result[0] as $row) {
 									
 					$this->AddPage('Portrait', 'A4');
-					
-					if($template != '') {
+
+					if($raceData['template'] != '') {
 						$this->setSourceFile($template);
 						// import page 1
 						$tplIdx = $this->importPage(1);
 						// use the imported page and place it at point 10,10 with a width of 100 mm
 						$this->useTemplate($tplIdx, 0, 0, 0);
 					}
-		
 					if ($action == 'gesamt') {
 						$platz = $row['platz'];
 					} else {
 						$platz = $row['akplatz'];
 					}
-					 $stnr=$row['stnr'];
+					$stnr=$row['stnr'];
 		
-					include($uDefinition);
+					include($raceData['definition']);
 		
 					$i++;
 		
@@ -118,7 +112,7 @@ class PDF extends FPDI
 		//$this->SetLineWidth(.5);
 	}
 
-	function getHeader($veranstaltung, $rennen) {
+	function getHeader($veranstaltung, $id, $action) {
 		$sql = "select titel, untertitel, datum from veranstaltung where id = $veranstaltung";
 		$result = dbRequest($sql, 'SELECT');
 		
@@ -130,15 +124,19 @@ class PDF extends FPDI
 			}
 		}
 
-		$sql = "select titel, untertitel from lauf where id = $rennen";
-		$result = dbRequest($sql, 'SELECT');
-		
-		if($result[1] > 0) {
-			foreach ($result[0] as $row) {
-				$header['lauf'] 		= $row['titel'];
-				$header['lauf2'] 		= $row['untertitel'];
-			}
+		if($action == "einzel") {
+			$sql = "select lauf, lauf2 from lauf where id = $id";			
+		} else {
+			$sql = "select titel, untertitel from lauf where id = $id";
 		}
+		
+		$result = dbRequest($sql, 'SELECT');		
+			if($result[1] > 0) {
+				foreach ($result[0] as $row) {
+					$header['lauf'] 		= $row['titel'];
+					$header['lauf2'] 		= $row['untertitel'];
+				}
+			}
 
 		return $header;
 	}
@@ -152,16 +150,12 @@ class PDF extends FPDI
 
 }
 
-#$pdf=new PDF();
 $pdf=new PDF();
 $pdf->AliasNbPages();
 $pdf->AddFont('verdana','','verdana.php');
 $pdf->AddFont('verdana','B','verdanab.php');
 
-//$pdf->AddPage();
-
 if(!isset($_GET['id'])) { $_GET['id'] = 0;}
-if(!isset($_GET['tid'])) { $_GET['tid'] = 0;}
 
 if($_GET['action'] != 'einzel') {
 	$anzahl=$_SESSION['anzUrkunden-'.$_GET['id']];
@@ -171,17 +165,11 @@ if($_GET['action'] != 'einzel') {
 
 if($anzahl == 'ALL') { $anzahl = 10000; }
 
-if(isset($_GET['action'])) {
-	$templates = getTemplate($_GET['action'], $_GET['id'], $_GET['tid']);
-	$pdf->urkunde($_GET['action'], $anzahl,  $_GET['id'], $_GET['tid'], $templates['template'], $templates['definition']);
+if(isset($_GET['action']) && ($_GET['id'] != 0)) {
+	$raceData = getRaceData($_GET['action'], $_GET['id']);
+	$pdf->urkunde($_GET['action'], $anzahl,  $_GET['id'], $raceData);
+	$filename = $raceData['LTitel']."_".$raceData['LUntertitel'].".pdf";
 }
-
-if($_GET['id'] != 0) { 
- $rData = getRennenData($_GET['id']);
- $filename = $rData['titel']."_".$rData['untertitel'].".pdf";
-}
-
-
 
 if($_GET['action'] == "gesamt") {
         $filename = "Urkunden_Gesamt_$anzahl-".$filename;       
@@ -195,27 +183,40 @@ if($_GET['action'] == "gesamt") {
 
 $pdf->Output($filename,"I");
 
-function getTemplate($action, $id, $tid) {
-	$u['template'] = "";
-	$u['definition'] = "";
+function getRaceData($action, $id) {
+	$raceData['template'] = "";
+	$raceData['definition'] = "";
+	$raceData['LTitel'] = "";
+	$raceData['LUntertitel'] = "";
+	$raceData['VTitel'] = "";
+	$raceData['VUntertitel'] = "";
 	
 	if($action == "einzel") {
-		$sql = "SELECT l.uDefinition, l.uTemplate FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
-		" where t.id = $tid";
+		$sql = "SELECT l.uDefinition uDefinition, l.uTemplate uTemplate, l.titel LTitel, l.untertitel LUntertitel, v.titel VTitel, v.untertitel VUntertitel".
+			" FROM `teilnehmer` as t ".
+			" INNER JOIN lauf as l ON t.lID = l.ID ".
+			" INNER JOIN veranstaltung as v ON t.vID = v.ID ".
+			" where t.id = $id";
 	} else {
-		$sql = "SELECT l.uDefinition, l.uTemplate FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
-		" where l.id = $id";
+		$sql = "SELECT l.uDefinition uDefinition, l.uTemplate uTemplate, l.titel LTitel, l.untertitel LUntertitel, v.titel VTitel, v.untertitel VUntertitel".
+			" FROM lauf as l  ".
+			" INNER JOIN veranstaltung as v ON l.vID = v.ID ".
+			" where l.id = $id";
 	}
+	
 	$result = dbRequest($sql, 'SELECT');
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
-			$u['template'] = $row['uTemplate'];
-			$u['definition'] = $row['uDefinition'];
+			$raceData['template']    = $row['uTemplate'];
+			$raceData['definition']  = $row['uDefinition'];
+			$raceData['LTitel']      = $row['LTitel'];
+			$raceData['LUntertitel'] = $row['LUntertitel'];
+			$raceData['VTitel']      = $row['VTitel'];
+			$raceData['VUntertitel'] = $row['VUntertitel'];
 		}
 	}
-	return $u;
+	return $raceData;
 }
 
 $link->close();
-
 ?>

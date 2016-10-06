@@ -76,7 +76,7 @@ function showErgebnisse() {
 					<td <?php echo $sameTimeAsBefore; ?>><?php echo $row['zeit'].$umt; ?></td>
 					<td><?php echo $row['platz']; ?></td>
 					<td><?php echo $row['akplatz']; ?></td>
-					<td><a href="urkundenPDF.php?action=einzel&tid=<?php echo $row['ID']; ?>" target="_new">Urkunde</a></td>
+					<td><a href="urkundenPDF.php?action=einzel&id=<?php echo $row['ID']; ?>" target="_new">Urkunde</a></td>
 				</tr>
 			
 <?php	

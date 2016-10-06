@@ -4,7 +4,7 @@
 		    $this->SetY(175);
 		    $this->SetFont('Verdana','B',15);
 		    //Calculate width of title and position
-		    $titel = utf8_decode("10. Holzkirchner Marktlauf");
+		    $titel = utf8_decode("11. Holzkirchner Marktlauf");
 		    $w=$this->GetStringWidth($titel);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
@@ -13,16 +13,16 @@
 
 		    $this->SetFont('Verdana','',10);
 		    //Calculate width of title and position
-		    $datum = utf8_decode("am 11. Oktober 2015");
+		    $datum = utf8_decode("am 09. Oktober 2016");
 		    $w=$this->GetStringWidth($datum);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
 		    $this->Cell($w,20,$datum,0,0,'C',false);
 		    $this->Ln(5);
-		    
+
 		    $this->SetFont('Verdana','',10);
 		    //Calculate width of title and position
-		    $datum = utf8_decode("über 10 km");
+		    $datum = htmlspecialchars_decode(utf8_decode("über ".$raceData['LUntertitel']), ENT_QUOTES);
 		    $w=$this->GetStringWidth($datum);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
@@ -48,7 +48,6 @@
 		    $this->Cell($w,15,$verein,0,0,'C',false);
 		    $this->Ln(20);
 
-		    
 		    $this->SetFont('Verdana','B',22);
 	    	$k = $platz.". Platz";
 		    $w=$this->GetStringWidth($k);
@@ -85,7 +84,7 @@
 		    $this->SetY(177);
 		    $this->SetFont('Verdana','B',15);
 		    //Calculate width of title and position
-		    $titel = utf8_decode("10. Holzkirchner Marktlauf");
+		    $titel = utf8_decode("11. Holzkirchner Marktlauf");
 		    $w=$this->GetStringWidth($titel);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
@@ -103,7 +102,7 @@
 
 		    $this->SetFont('Verdana','',10);
 		    //Calculate width of title and position
-		    $datum = utf8_decode("am 11. Oktober 2015");
+		    $datum = utf8_decode("am 09. Oktober 2016");
 		    $w=$this->GetStringWidth($datum);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
@@ -150,7 +149,6 @@
 		    $this->SetTextColor(0);
 		    $this->Cell($w,10,$zeit,0,0,'C',false);
 		    $this->Ln(0);
-		
-		
+
 	}
 ?>

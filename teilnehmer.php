@@ -362,6 +362,7 @@ function showTeilnehmer()  {
 					<th>JG</th>
 					<th>G</th>
 					<th>Klasse</th>
+					<th>Attr.</th>					
 					<th>Rennen</th>
 					<th>Zeit</th>
 					<th>Platz</th>
@@ -384,6 +385,7 @@ function showTeilnehmer()  {
 					<td><?php echo $row['jahrgang']; ?></td>
 					<td><?php echo $row['geschlecht']; ?></td>
 					<td><?php echo $row['klasse']; ?></td>
+					<td><?php echo $row['att']; ?></td>
 					<td><?php echo $row['titel']; ?></td>
 					<td><?php echo $row['zeit']; ?></td>
 					<td><?php echo $row['platz']; ?></td>

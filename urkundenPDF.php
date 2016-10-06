@@ -84,15 +84,15 @@ class PDF extends FPDI
 			foreach ($teamRow as $row) {
 				$this->AddPage('Portrait', 'A4');
 	
-				if($template != '') {
-					$this->setSourceFile($template);
+				if($raceData['template'] != '') {
+					$this->setSourceFile($raceData['template']);
 					// import page 1
 					$tplIdx = $this->importPage(1);
 					// use the imported page and place it at point 10,10 with a width of 100 mm
 					$this->useTemplate($tplIdx, 0, 0, 0);
 				}
 	
-				include($uDefinition);
+				include($raceData['definition']);
 	
 				$i++;
 	

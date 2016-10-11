@@ -167,7 +167,9 @@ function showTeilnehmerEditForm() {
 		    var msg = '';
 			if( $('#nachname').val().length  < 2 ) { msg = msg + '<strong>Nachname</strong> darf nicht leer sein<br>'; }
 		    if( $('#vorname').val().length  < 2 ) { msg = msg + '<strong>Vorname</strong> darf nicht leer sein<br>'; }
-			if( $('#rID').val() == 'X' ) { msg = msg + 'Bitte einen <strong>Lauf</strong> ausw&auml;hlen<br>'; }
+		    if( $('#geschlecht').val()  == '-' ) { msg = msg + '<strong>Geschlecht</strong> darf nicht leer sein<br>'; }
+		    if( $('#jahrgang').val().length  < 4 ) { msg = msg + '<strong>Jahrgang</strong> darf nicht leer sein<br>'; }
+		    if( $('#rID').val() == 'X' ) { msg = msg + 'Bitte einen <strong>Lauf</strong> ausw&auml;hlen<br>'; }
 
 			var next = 'teilnehmer';
 			if( $('#nextFunc').val() != '' ) { next = $('#nextFunc').val(); }

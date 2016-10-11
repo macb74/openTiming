@@ -41,7 +41,7 @@ class PDF extends FPDI
 					$this->AddPage('Portrait', 'A4');
 
 					if($raceData['template'] != '') {
-						$this->setSourceFile($template);
+						$this->setSourceFile($raceData['template']);
 						// import page 1
 						$tplIdx = $this->importPage(1);
 						// use the imported page and place it at point 10,10 with a width of 100 mm

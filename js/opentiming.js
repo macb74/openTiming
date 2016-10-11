@@ -91,9 +91,11 @@ function clearForm() {
 	$('#nachname').val('');
 	$('#verein').val('');	
 	$('#jahrgang').val('');
-	$('#geschlecht').val('');
+	$('#geschlecht').prop('selectedIndex',0);
 	$('#ort').val('');
+	$('#att').val('');	
 	$('#zeit').val('00:00:00');
+	$('.selectpicker').selectpicker('refresh');
 }
 
 

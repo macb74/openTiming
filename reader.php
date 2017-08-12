@@ -22,26 +22,26 @@ function showReaderList() {
 
 		
 		function getReaderData(r, a) {
-			var action = 'action:null';
+			var action = 'null';
 
 			switch(a) {
 				case 0:
-					action = 'antenna:' + $('#antenna'+r).val();
+					action = 'ant/' + $('#antenna'+r).val();
 					break;
 				case 1:
-					action = 'time:true';
+					action = 'time';
 					break;
 				case 2:
-					action = 'trValidTime:' + $('#trValidTime'+r).val();
+					action = 'validtime/' + $('#transponderValidTime'+r).val();
 					break;
 				case 3:
-					action = 'power:' + $('#power'+r).val();
+					action = 'power/' + $('#power'+r).val();
 					break;
 				case 4:
-					action = 'resetReaderFile:true';
+					action = 'resetReaderFile';
 			}
 			
-			params = { form: "getReaderData", wsdl: $('#url'+r).val(), action: action };
+			params = { form: "getReaderData", url: $('#url'+r).val(), action: action };
 			$('#faultstring'+r).addClass('hidden');
 			var jqxhr = $.post( "ajaxRequest.php", params);
 			
@@ -64,18 +64,21 @@ function showReaderList() {
 
 		function setTableData(r, val) {
 			table = "";
-			f = val.split('|');
-			f.sort();
-			f.reverse(); 
-			f.forEach(function(entry) {
-				e = entry.split(';');
-			    table = table + "<tr><td>" + e[0] + "</td>" +
-					"<td class='text-right'>" + e[1] + "</td>" + 
-			    	"<td><a class='btn btn-success btn-xs' href='#' onclick=\"handleReaderResults('" + $( '#url' + r ).val() + "', '" + e[0] + "', 'show'); return false;\" role='button'>SHOW</a></td>" + 
-					"<td><a class='btn btn-success btn-xs' href='#' onclick=\"handleReaderResults('" + $( '#url' + r ).val() + "', '" + e[0] + "', 'load'); return false;\" role='button'>LOAD</a></td>" + 
-					"</tr>";
+
+			val.sort(function(a, b) {
+			    return a.file > b.file;
 			});
 
+			val.reverse(); 
+
+			$.each(val, function(key, val) {
+			    table = table + "<tr><td>" + val['file'] + "</td>" +
+				"<td class='text-right'>" + val['linecount'] + "</td>" + 
+		    	"<td><a class='btn btn-success btn-xs' href='#' onclick=\"handleReaderResults('" + $( '#url' + r ).val() + "', '" + val['file'] + "', 'show'); return false;\" role='button'>SHOW</a></td>" + 
+				"<td><a class='btn btn-success btn-xs' href='#' onclick=\"handleReaderResults('" + $( '#url' + r ).val() + "', '" + val['file'] + "', 'load'); return false;\" role='button'>LOAD</a></td>" + 
+				"</tr>";
+			});
+			
 			$('#tbody'+r).html(table);
 		}
 
@@ -89,7 +92,7 @@ function showReaderList() {
 			}
 
 			$( modal ).modal();
-			params = { form: method, wsdl: r, file: file };
+			params = { form: method, url: r, file: file };
 			var jqxhr = $.post( "ajaxRequest.php", params);
 
 			jqxhr.done(function( data ) {
@@ -146,7 +149,7 @@ function showReaderList() {
 				<div class="form-group">
 					<label for="trValidTime" class="col-sm-4 control-label">Transponder Valid Time:</label>
 					<div class="col-sm-3">
-						<input name="trValidTime" maxlength="200" type="text" class="form-control" id="trValidTime<?php echo $i; ?>" placeholder="Transponder Valid Time" value="">
+						<input name="transponderValidTime" maxlength="200" type="text" class="form-control" id="transponderValidTime<?php echo $i; ?>" placeholder="Transponder Valid Time" value="">
 					</div>
 					<div class="col-sm-4">
 						<a class="btn btn-success" href="#" onclick="getReaderData(<?php echo $i; ?>,2); return false;" role="button">SET</a>
@@ -156,7 +159,7 @@ function showReaderList() {
 			 	<div class="form-group">
 					<label for="mode" class="col-sm-4 control-label">Mode:</label>
 					<div class="col-sm-3">
-						<input name="mode" maxlength="200" type="text" class="form-control" id="mode<?php echo $i; ?>" placeholder="Mode" value="">
+						<input name="mode" maxlength="200" type="text" class="form-control" id="mode<?php echo $i; ?>" placeholder="Mode" value="" readonly>
 					</div>
 			<!-- 
 					<div class="col-sm-4">
@@ -168,7 +171,7 @@ function showReaderList() {
 				<div class="form-group">
 					<label for="time" class="col-sm-4 control-label">Time:</label>
 					<div class="col-sm-3">
-						<input name="time" maxlength="200" type="text" class="form-control" id="time<?php echo $i; ?>" placeholder="Time" value="">
+						<input name="readerTime" maxlength="200" type="text" class="form-control" id="readerTime<?php echo $i; ?>" placeholder="Time" value="">
 					</div>
 					<div class="col-sm-4">
 						<a class="btn btn-success" href="#" onclick="getReaderData(<?php echo $i; ?>,1); return false;" role="button">SET</a>
@@ -222,31 +225,32 @@ function showReaderList() {
 }
 
 function getReaderData() {
-	$params['power']           = "";
-	$params['trValidTime']     = "";
-	$params['antenna']         = "";
-	$params['time']            = "";
-	$params['mode']            = "";
-	$params['resetReaderFile'] = "";
 	
-	if(isset($_POST['action'])) {
-		$a = explode(":", $_POST['action']);
-		$params[$a[0]] = $a[1];
-	}
-		
-	try {
-		$client = new SoapClient($_POST['wsdl'], array('cache_wsdl' => WSDL_CACHE_NONE));
-		$result = $client->setReaderConfig($params['power'], $params['time'], $params['trValidTime'], $params['antenna'], $params['mode'], $params['resetReaderFile']);
-		print json_encode($result);
-	} catch (SoapFault $fault) {
-		print json_encode($fault);
+	if(isset($_POST['action']) && $_POST['action'] != 'null') {
+		$url = $_POST['url'].'/'.$_POST['action'];
+		$result = getURL($url);
+		//echo $result[0];
 	}
 	
+	$url = $_POST['url'].'/info';
+	$result = getURL($url);
+	echo $result[0];
+}
+
+function getURL($url) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$result[0] = curl_exec($ch);
+	$result[1] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	return $result;
 }
 
 function showReaderResults() {
-	$f      = getReaderFile($_POST['wsdl'], $_POST['file']);
-	$farray = explode("|", $f);
+	$f      = getReaderFile($_POST['url'], $_POST['file']);
+	$farray = json_decode($f);
 	$farray = array_reverse($farray);
 ?>
 	
@@ -287,10 +291,8 @@ function showReaderResults() {
 }
 
 function loadReaderResults() {
-	$f = getReaderFile($_POST['wsdl'], $_POST['file']);
-	$f = preg_replace('/^|/', '', $f);
-	$f = preg_replace('/|$/', '', $f);
-	$farray = explode("|", $f);
+	$f = getReaderFile($_POST['url'], $_POST['file']);
+	$farray = json_decode($f);
 	$msg = "";
 	
 	foreach ($farray as $line) {
@@ -310,12 +312,8 @@ function loadReaderResults() {
 	}
 }
 
-function getReaderFile($wsdl, $file) {
-	try {
-		$client = new SoapClient($wsdl, array('cache_wsdl' => WSDL_CACHE_NONE));
-		$result = $client->getReaderResults($file);
-		return $result;
-	} catch (SoapFault $fault) {
-		return json_encode($fault);
-	}
+function getReaderFile($url, $file) {
+	$url = $url.'/file/'.$file;
+	$result = getURL($url);
+	return $result[0];
 }

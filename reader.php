@@ -23,6 +23,7 @@ function showReaderList() {
 		
 		function getReaderData(r, a) {
 			var action = 'null';
+			var error = true;
 
 			switch(a) {
 				case 0:
@@ -46,19 +47,26 @@ function showReaderList() {
 			var jqxhr = $.post( "ajaxRequest.php", params);
 			
 			jqxhr.done(function( data ) {
-				var response = jQuery.parseJSON(data);
-				$.each( response, function( key, val ) {
-					if(key == "faultstring") { 
-						$('#' + key + r).html(val);
-						$('#' + key + r).removeClass('hidden')
-					}
-					
-					if(key == "files") {
-						setTableData(r, val);
-					}
-					
-					$('#' + key + r).val(val);
-				});
+				if(data != "") {
+					var response = jQuery.parseJSON(data);
+					$.each( response, function( key, val ) {
+						if(key == "mode") { 
+							error = false;
+						}
+						
+						if(key == "files") {
+							setTableData(r, val);
+						}
+						
+						$('#' + key + r).val(val);
+					});
+				}
+
+				if(error) {
+					$('#faultstring' + r).html('no reader connection');
+					$('#faultstring' + r).removeClass('hidden')
+				}
+				
 			});
 		}
 

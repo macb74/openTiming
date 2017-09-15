@@ -1,3 +1,4 @@
+/.classpath
 /.settings
 /.buildpath
 /.project
@@ -6,3 +7,4 @@
 /upload
 /test
 .project
+/bin/

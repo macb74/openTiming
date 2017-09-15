@@ -59,7 +59,12 @@ class PDF extends FPDI
 					$i++;
 		
 				}
+				
+			} else {
+			    echo "<h1>no Results available</h1>";
+			    die;
 			}
+			
 		} else {
 			$i = -1;
 			if($result[1] > 0) {
@@ -79,6 +84,9 @@ class PDF extends FPDI
 					}
 					$oldVnummer = $row['vnummer'];
 				}
+			} else {
+			    echo "<h1>no Team available</h1>";
+			    die;
 			}
 			
 			foreach ($teamRow as $row) {

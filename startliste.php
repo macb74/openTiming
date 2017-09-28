@@ -9,7 +9,7 @@ function showStartliste() {
 	
 	$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 		"where t.vID = ".$_SESSION['vID']." ".
-			"and t.lid = $rennen and del= 0 and disq = 0 ".
+			"and t.lid = $rennen and del= 0 ".
 			"order by stnr asc;";
 	$result = dbRequest($sql, 'SELECT');
 

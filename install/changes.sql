@@ -97,3 +97,13 @@ ALTER TABLE zeit_tmp RENAME `zeit`;
 
 -- 03.10.2016
 ALTER TABLE `teilnehmer` CHANGE `att` `att` VARCHAR( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
+
+-- 027.09.2017
+ALTER TABLE `veranstaltung` ADD `sonderwertung` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER `untertitel`;
+
+CREATE TABLE `specialReporting` (
+  `vid` int(11) NOT NULL,
+  `uid` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `zeit` time NOT NULL,
+  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

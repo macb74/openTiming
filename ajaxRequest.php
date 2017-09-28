@@ -25,6 +25,7 @@ if(isset($_GET['func'])) {
 	if($_GET['func'] == 'saveManZielzeit')			{ saveManZielzeit(); }
 	if($_GET['func'] == 'showZielAnalyse')			{ showZielAnalyse(); }
 	if($_GET['func'] == 'deleteManReaderTime')		{ deleteManReaderTime(); }
+	if($_GET['func'] == 'specialReporting')         { specialReporting(); }
 }
 
 
@@ -48,22 +49,6 @@ if(isset($_POST['form'])) {
 
 $link->close();
 exit;
-
-function selectVeranstaltung( $id ) {
-	$_SESSION['vID'] = $id;
-	$_SESSION['rID'] = 0;
-	
-	$sql = "select * from veranstaltung where id = $id";
-	$result = dbRequest($sql, 'SELECT');
-
-	foreach ($result[0] as $row) {
-		$_SESSION['vTitel']      = $row['titel'];
-		$_SESSION['vUntertitel'] = $row['untertitel'];
-		$_SESSION['vDatum']      = $row['datum'];
-	}
-	
-	echo $_SESSION['vTitel'];
-}
 
 function getVerein() {
 	//$link = connectDB();
@@ -98,6 +83,12 @@ function getLastRaceUpdate() {
 		}
 	}
 	echo $a;
+}
+
+function specialReporting() {
+    include "specialReporting/s".$_SESSION['vSpecial'].".php";
+    $call = "s".$_SESSION['vSpecial'];
+    $call();
 }
 
 function setNumOfResults() {

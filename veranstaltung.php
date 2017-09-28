@@ -10,6 +10,7 @@ function veranstaltung() {
 	$titel = "";
 	$untertitel = "";
 	$datum = "";
+	$sonderwertung = "";
 		
 	# display Form
 	if (isset($_GET['id'])) {
@@ -21,6 +22,7 @@ function veranstaltung() {
 			foreach ($result[0] as $row) {
 				$titel = $row['titel'];
 				$untertitel = $row['untertitel'];
+				$sonderwertung = $row['sonderwertung'];
 				$datum = $row['datum'];
 				$id = $row['ID'];
 			}
@@ -85,7 +87,12 @@ function veranstaltung() {
 				</div>
 			</div>
 		</div>
-		
+		<div class="form-group">
+			<label for="subTitle" class="col-sm-4 control-label">Sonderwertung:</label>
+			<div class="col-sm-5">
+				<input name="sonderwertung" maxlength="200" type="text" class="form-control" id="sonderwertung" placeholder="Sonderwertung" value="<?php echo $sonderwertung; ?>">
+			</div>
+		</div>		
 		<div class="form-group">
 			<div class="col-sm-offset-4 col-sm-5">
 				<button type="submit" id="submit" class="btn btn-success">save</button>
@@ -154,9 +161,9 @@ function veranstaltung() {
 
 function saveVeranstaltung() {
 	if($_POST['id'] == "new") {
-		$sql = "insert into veranstaltung (titel, untertitel, datum) values ( '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', '".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', '".htmlspecialchars($_POST['datum'], ENT_QUOTES, 'UTF-8')."')";
+		$sql = "insert into veranstaltung (titel, untertitel, sonderwertung, datum) values ( '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', '".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', '".htmlspecialchars($_POST['sonderwertung'], ENT_QUOTES, 'UTF-8')."','".htmlspecialchars($_POST['datum'], ENT_QUOTES, 'UTF-8')."')";
 	} else {
-		$sql = "update veranstaltung set titel = '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', untertitel = '".$_POST['subTitle']."', datum = '".htmlspecialchars($_POST['datum'], ENT_QUOTES, 'UTF-8')."' where ID = ".$_POST['id'].";";
+		$sql = "update veranstaltung set titel = '".htmlspecialchars($_POST['title'], ENT_QUOTES, 'UTF-8')."', untertitel = '".htmlspecialchars($_POST['subTitle'], ENT_QUOTES, 'UTF-8')."', sonderwertung = '".htmlspecialchars($_POST['sonderwertung'], ENT_QUOTES, 'UTF-8')."', datum = '".htmlspecialchars($_POST['datum'], ENT_QUOTES, 'UTF-8')."' where ID = ".$_POST['id'].";";
 	}
 	$result = dbRequest($sql, 'INSERT');
 	if($result[2] == "") {
@@ -164,5 +171,23 @@ function saveVeranstaltung() {
 	} else {
 		echo $result[2];
 	}
+}
+
+
+function selectVeranstaltung( $id ) {
+    $_SESSION['vID'] = $id;
+    $_SESSION['rID'] = 0;
+    
+    $sql = "select * from veranstaltung where id = $id";
+    $result = dbRequest($sql, 'SELECT');
+    
+    foreach ($result[0] as $row) {
+        $_SESSION['vTitel']      = $row['titel'];
+        $_SESSION['vUntertitel'] = $row['untertitel'];
+        $_SESSION['vDatum']      = $row['datum'];
+        $_SESSION['vSpecial']    = $row['sonderwertung'];
+    }
+    
+    echo $_SESSION['vTitel'];
 }
 ?>

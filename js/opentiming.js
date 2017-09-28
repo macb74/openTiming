@@ -250,3 +250,4 @@ function clearModal() {
 	$( '#modal-body' ).html( data );
 }
 
+

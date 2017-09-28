@@ -333,12 +333,15 @@ function showRaceList() {
 			$(".btn").mouseup(function(){
 			    $(this).blur();
 			})
-
 			
 			<?php 
 
 					if($_SESSION['rID'] != 0) {
-						echo "showContent( '".$_SESSION['contentFunc']."', ".$_SESSION['rID']." )";
+						echo "showContent( '".$_SESSION['contentFunc']."', ".$_SESSION['rID']." );";
+					}
+					
+					if($_SESSION['vSpecial'] != "") {
+					    echo "$( '#specialReporting' ).load( 'ajaxRequest.php?func=specialReporting' );";
 					}
 
 			?>
@@ -480,7 +483,7 @@ if(isset($_SESSION['anzUrkunden-'.$row['ID']])) {
 			</tbody>
 		</table>
 	</div>
-	
+	<div id="specialReporting"></div>
 <?php 
 
 }

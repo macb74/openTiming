@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `teilnehmer` (
   `ort` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `stnr` int(11) NOT NULL,
   `verein` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `att` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
+  `att` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   `chip` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `zeit` time NOT NULL DEFAULT '00:00:00',
   `millisecond` int(3) NOT NULL DEFAULT '0',
@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS `veranstaltung` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `titel` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `untertitel` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `sonderwertung` varchar(255) COLLATE utf8_unicode_ci NOT NULL,  
   `datum` date NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=16 ;

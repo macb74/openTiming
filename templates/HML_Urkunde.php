@@ -93,21 +93,21 @@
 		    
 		    $this->SetFont('Verdana','',10);
 		    //Calculate width of title and position
-		    $datum = htmlspecialchars_decode(utf8_decode("über ".$raceData['LUntertitel']), ENT_QUOTES);
-		    $w=$this->GetStringWidth($datum);
-		    $this->SetX((210-$w)/2); // Mitte
-		    $this->SetTextColor(0);
-		    $this->Cell($w,20,$datum,0,0,'C',false);
-		    $this->Ln(5);
-
-		    $this->SetFont('Verdana','',10);
-		    //Calculate width of title and position
 		    $datum = utf8_decode("am 09. Oktober 2016");
 		    $w=$this->GetStringWidth($datum);
 		    $this->SetX((210-$w)/2); // Mitte
 		    $this->SetTextColor(0);
 		    $this->Cell($w,20,$datum,0,0,'C',false);
 		    $this->Ln(17);
+
+		    $this->SetFont('Verdana','',10);
+		    //Calculate width of title and position
+		    $datum = htmlspecialchars_decode(utf8_decode("über ".$raceData['LUntertitel']), ENT_QUOTES);
+		    $w=$this->GetStringWidth($datum);
+		    $this->SetX((210-$w)/2); // Mitte
+		    $this->SetTextColor(0);
+		    $this->Cell($w,20,$datum,0,0,'C',false);
+		    $this->Ln(5);
 		    
 		    $this->SetFont('Verdana','B',22);
 		    $verein = htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES);

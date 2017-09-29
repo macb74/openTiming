@@ -352,6 +352,7 @@ function showTeilnehmer()  {
 	
 	<div class="col-sm-2 text-right modal-button">
 		<a href="exportXLS.php?action=ergebnisliste" class="btn btn-primary btn-sm" role="button">export to Excel</a>
+		<a href="printLabels.php" class="btn btn-primary btn-sm" role="button" target="_new">print Labels</a>
 	</div>
 	
 	<div class="table-responsive">

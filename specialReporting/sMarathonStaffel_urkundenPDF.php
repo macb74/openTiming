@@ -61,27 +61,27 @@ class PDF extends FPDI
 			}
 
 			$this->SetY(177);
-			$this->SetFont('Verdana','B',15);
+			$this->SetFont('Verdana','B',16);
 			//Calculate width of title and position
 			$titel = utf8_decode("12. Holzkirchner Marktlauf");
 			$w=$this->GetStringWidth($titel);
 			$this->SetX((210-$w)/2); // Mitte
 			$this->SetTextColor(0);
 			$this->Cell($w,20,$titel,0,0,'C',false);
-			$this->Ln(5);
+			$this->Ln(6);
 			
-			$this->SetFont('Verdana','',10);
+			$this->SetFont('Verdana','',12);
 			//Calculate width of title and position
 			$datum = utf8_decode("am 22. Oktober 2017");
 			$w=$this->GetStringWidth($datum);
 			$this->SetX((210-$w)/2); // Mitte
 			$this->SetTextColor(0);
 			$this->Cell($w,20,$datum,0,0,'C',false);
-			$this->Ln(5);
+			$this->Ln(6);
 			
-			$this->SetFont('Verdana','',10);
+			$this->SetFont('Verdana','',12);
 			//Calculate width of title and position
-			$datum = htmlspecialchars_decode(utf8_decode("über 42,2km"), ENT_QUOTES);
+			$datum = htmlspecialchars_decode(utf8_decode("Marathon Teamwertung"), ENT_QUOTES);
 			$w=$this->GetStringWidth($datum);
 			$this->SetX((210-$w)/2); // Mitte
 			$this->SetTextColor(0);
@@ -113,15 +113,15 @@ class PDF extends FPDI
 			}
 			$this->Ln(12);
 			
-			$this->SetFont('Verdana','B',18);
+			$this->SetFont('Verdana','B',20);
 			$k = $row['vplatz'].". Platz";
 			$w=$this->GetStringWidth($k);
 			$this->SetX((210-$w)/2);
 			$this->SetTextColor(0);
 			$this->Cell($w,10,$k,0,0,'C',false);
-			$this->Ln(6);
+			$this->Ln(8);
 			
-			$this->SetFont('Verdana','B',12);
+			$this->SetFont('Verdana','B',16);
 			$zeit = "Zeit: ".$row['vtime'];
 			$w=$this->GetStringWidth($zeit);
 			$this->SetX((210-$w)/2);

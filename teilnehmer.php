@@ -345,14 +345,22 @@ function showTeilnehmer()  {
 	$result = dbRequest($sql, 'SELECT');
 
 ?>
+	<script>
+	
+		$(document).ready(function(){
+			$('[data-toggle="tooltip"]').tooltip({container: "body"});
+		});
 
+	</script>
+	
 	<div class=col-sm-10>
 		<h3>Teilnehmer</h3>
 	</div>
 	
 	<div class="col-sm-2 text-right modal-button">
-		<a href="exportXLS.php?action=ergebnisliste" class="btn btn-primary btn-sm" role="button">export to Excel</a>
-		<a href="printLabels.php" class="btn btn-primary btn-sm" role="button" target="_new">print Labels</a>
+		<a href="exportXLS.php?action=ergebnisliste" data-toggle="tooltip" title="export to excel" class="btn btn-primary btn-sm" role="button">&nbsp;<i class="fa fa-file-excel-o fa-lg" aria-hidden="true"></i>&nbsp;</a>
+		<a href="printLabels.php?labels=24" data-toggle="tooltip" title="print labels" class="btn btn-primary btn-sm" role="button" target="_new">&nbsp;<i class="fa fa-table fa-lg" aria-hidden="true"></i> (24)&nbsp;</a>
+		<a href="printLabels.php?labels=52" data-toggle="tooltip" title="print labels" class="btn btn-primary btn-sm" role="button" target="_new">&nbsp;<i class="fa fa-table fa-lg" aria-hidden="true"></i> (52)&nbsp;</a>
 	</div>
 	
 	<div class="table-responsive">

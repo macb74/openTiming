@@ -2,6 +2,10 @@
  * 
  */
 
+var lastChatID = null;
+var maxChatID = null;
+var cncm = null; //checkNewChatMessage loop
+
 function selectUrkundeResult(num, id) {
 	//var target = this;
 	var jqxhr = $.get( "ajaxRequest.php?func=setNumOfResults&id=" + id + "&num=" + num);
@@ -77,7 +81,7 @@ function submitForm(form, redirect) {
 					clearForm();
 				}
 			}
-			console.log(redirect);
+			//console.log(redirect);
 			if(redirect) { window.location.href = redirect; }
 		}
 	})
@@ -250,4 +254,73 @@ function clearModal() {
 	$( '#modal-body' ).html( data );
 }
 
+function closeChat() {
+	setCookie('openTimingLastChatID', maxChatID, 1000);
+	lastChatID = maxChatID;
+	console.log(maxChatID);
+	$( '#chat' ).css( "display", "none" );
+}
 
+function checkNewChatMessage() {
+	
+	if(lastChatID == null) { 
+		lastChatID = getCookie('openTimingLastChatID');
+	}
+	
+	firstTime = false;
+	if(lastChatID == "" || lastChatID == 'null') { 
+		lastChatID = 1;
+		firstTime = true;
+	}
+
+	var jqxhr = $.getJSON( "ajaxRequest.php?func=chat&id=" + lastChatID );
+
+	jqxhr.done( function( data ) {
+		if(data != "") {
+			$.each( data, function( key, val ) {
+				if(key == 'id') { 
+					maxChatID = val;
+					if(firstTime) {
+						console.log(firstTime);
+						lastChatID = val;
+						setCookie('openTimingLastChatID', val, 5);
+					}
+				}
+				
+				if(key == 'message' && firstTime == false && maxChatID != lastChatID) { 
+					$( '#chat' ).css("display", "block");
+					$( '#chat-message' ).html(val);
+				}
+			});
+			firstTime = false;
+		}		
+	});
+	
+	cncm = setTimeout(function() { 
+		checkNewChatMessage();
+		}, 5000);
+	
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}

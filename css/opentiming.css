@@ -184,3 +184,25 @@ table {
 .modal-button {
   padding: 0px 0px 15px 0px;
 }
+
+#chat {
+  padding: 10px;
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  border-top-left-radius: 8px;
+  width: 500px;
+  height: auto;
+  position: fixed;
+  z-index: 1050;
+  right: 0px;
+  bottom: 0px;
+  padding-bottom: 56px;
+  background-color: white !important;
+}
+
+#chat-new-message {
+  position: fixed;
+  bottom: 0px;
+  width: 480px;
+  background-color: white !important;
+}

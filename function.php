@@ -18,6 +18,7 @@ include "import.php";
 include "einlaufListe.php";
 include "ziel.php";
 include "reader.php";
+include "chat.php";
 
 function connectDB() {
 	global $config;

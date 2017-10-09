@@ -94,6 +94,26 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 </head>
 
 <body>
+
+    <script>
+      $(document).ready(function(){
+
+		  $("#submit").click(function(event){
+		      event.preventDefault();
+		      submitForm('#addChatMessage', false);
+		      clearTimeout(cncm);
+		      checkNewChatMessage();
+		      $( "#new-chat-message" ).val('');
+		  });
+
+		  $("#enableChat").click(function(event){
+		      event.preventDefault();
+		      $( "#chat" ).css('display', 'block');
+		  });
+          
+          checkNewChatMessage();
+      });
+    </script>
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -136,6 +156,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 					</li>
 					<li><a href="index.php?func=auswertung"><i class="fa fa-cog"></i> Auswertung</a></li>
 					<li><a href="index.php?func=reader"><i class="fa fa-cog"></i> Reader</a></li>
+                    <li><a href="#" id="enableChat"><i class="fa fa-envelope-o"></i> Chat</a></li>
 				</ul>
 				
 <?php 
@@ -143,7 +164,6 @@ if ($testDiv == true) {
 	echo "<div class=\"nav navbar-nav navbar-right testsystem\">Das ist das Testsystem</div>";
 }
 ?>
-		
 			</div>
 		</div>
 	</nav>
@@ -199,6 +219,23 @@ if ($showContent == true) {
  		</div>
 	</div>
 
+	<div id="chat" class="" style="display:none;" tabindex="-1">
+      <button type="button" class="close" onclick="closeChat(); return false;" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <div id="chat-message"></div>
+      <div id="chat-new-message">
+        <form role="form" id="addChatMessage">
+            <input type="hidden" name="form" value="addChatMessage">
+	        <div class="row">
+	          <div class="col-xs-10">
+	            <input type="text" class="form-control input-sm" id="new-chat-message" name="new-chat-message" placeholder="new chat message">
+	          </div>
+	          <div class="col-xs-2">
+	            <button type="submit" id="submit" class="btn btn-default input-sm">Send</button>
+	          </div>
+	        </div>
+        </form>
+      </div>
+	</div>
 			
 </body>
 

@@ -26,6 +26,7 @@ if(isset($_GET['func'])) {
 	if($_GET['func'] == 'showZielAnalyse')			{ showZielAnalyse(); }
 	if($_GET['func'] == 'deleteManReaderTime')		{ deleteManReaderTime(); }
 	if($_GET['func'] == 'specialReporting')         { specialReporting(); }
+	if($_GET['func'] == 'chat')         			{ getChatMessage( $_GET['id']); }
 }
 
 
@@ -41,6 +42,7 @@ if(isset($_POST['form'])) {
 	if($_POST['form'] == 'setConfig')				{ setConfig(); }
 	if($_POST['form'] == 'showReaderResults')		{ showReaderResults(); }
 	if($_POST['form'] == 'loadReaderResults')		{ loadReaderResults(); }	
+	if($_POST['form'] == 'addChatMessage')		    { addChatMessage(); }
 }
 
 

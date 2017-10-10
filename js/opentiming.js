@@ -50,7 +50,7 @@ function submitForm(form, redirect) {
 	
     $.each(params, function(i, val) {
         formData.append(val.name, val.value);
-        console.log(val.name + ': ' + val.value);
+        //console.log(val.name + ': ' + val.value);
     });
     
     // wenn es ein file upload gibt
@@ -257,8 +257,9 @@ function clearModal() {
 function closeChat() {
 	setCookie('openTimingLastChatID', maxChatID, 1000);
 	lastChatID = maxChatID;
-	console.log(maxChatID);
+	//console.log(maxChatID);
 	$( '#chat' ).css( "display", "none" );
+	$( '#chat-message' ).html('');
 }
 
 function checkNewChatMessage() {
@@ -281,7 +282,7 @@ function checkNewChatMessage() {
 				if(key == 'id') { 
 					maxChatID = val;
 					if(firstTime) {
-						console.log(firstTime);
+						//console.log(firstTime);
 						lastChatID = val;
 						setCookie('openTimingLastChatID', val, 5);
 					}

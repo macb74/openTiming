@@ -98,9 +98,11 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
     <script>
       $(document).ready(function(){
 
-		  $("#submit").click(function(event){
+		  $("#submit-chat").click(function(event){
 		      event.preventDefault();
-		      submitForm('#addChatMessage', false);
+              if( $( "#new-chat-message" ).val() != "" ) {
+                  submitForm('#addChatMessage', false);
+              }
 		      clearTimeout(cncm);
 		      checkNewChatMessage();
 		      $( "#new-chat-message" ).val('');
@@ -230,7 +232,7 @@ if ($showContent == true) {
 	            <input type="text" class="form-control input-sm" id="new-chat-message" name="new-chat-message" placeholder="new chat message">
 	          </div>
 	          <div class="col-xs-2">
-	            <button type="submit" id="submit" class="btn btn-default input-sm">Send</button>
+	            <button type="submit" id="submit-chat" class="btn btn-default input-sm">Send</button>
 	          </div>
 	        </div>
         </form>

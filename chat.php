@@ -22,5 +22,5 @@ function getChatMessage($id) {
 function addChatMessage() {
 	$sql = "insert into chat (message) values ('".$_POST['new-chat-message']."');";
 	$result = dbRequest($sql, 'INSERT');
-	echo "O.K";
+	echo "ok";
 }

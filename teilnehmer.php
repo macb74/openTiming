@@ -16,23 +16,23 @@ function saveTeilnehmer() {
 	$f[0] 		= $_SESSION['vID'];
 	$f[1] 		= $_POST['rID'];
 	$f[2]		= $_POST['id'];
-	$f[3]	 	= $_POST['nachname'];
-	$f[4] 		= $_POST['vorname'];
-	$f[5]		= $_POST['geschlecht'];
-	$f[6] 		= $_POST['ort'];
-	$f[7] 		= $_POST['jahrgang'];
-	$f[8] 		= $_POST['stnr'];
-	$f[9] 		= $_POST['verein'];
-	$f[10]		= $_POST['zeit'];
+	$f[3]	 	= trim($_POST['nachname']);
+	$f[4] 		= trim($_POST['vorname']);
+	$f[5]		= trim($_POST['geschlecht']);
+	$f[6] 		= trim($_POST['ort']);
+	$f[7] 		= trim($_POST['jahrgang']);
+	$f[8] 		= trim($_POST['stnr']);
+	$f[9] 		= trim($_POST['verein']);
+	$f[10]		= trim($_POST['zeit']);
 	if (isset($_POST['disq'])) { $f[11] = 1; } else { $f[11] = 0; }
 	if (isset($_POST['useManTime'])) { $f[16] = 1; } else { $f[16] = 0; }
 	$f[12]		= "";
 	$f[13]		= 0;
-	$f[15]		= $_POST['klasse'];
+	$f[15]		= trim($_POST['klasse']);
 	$f[17]		= "";
-	$f[18]		= $_POST['manRunden'];
-	$f[19]		= $_POST['vklasse'];
-	$f[20]		= $_POST['att'];
+	$f[18]		= trim($_POST['manRunden']);
+	$f[19]		= trim($_POST['vklasse']);
+	$f[20]		= trim($_POST['att']);
 	
 	if($_POST['id'] != "new") {
 		$sql = "update teilnehmer set " .

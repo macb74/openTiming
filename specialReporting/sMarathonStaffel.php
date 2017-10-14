@@ -19,72 +19,72 @@ function sMarathonStaffel() {
 }
 
 function sMarathonStaffel_doAuswertung() {
-	$anzTeams = 0;
-	$veranstaltung = $_SESSION['vID'];
-	sMarathonStaffel_cleanAll($veranstaltung, null);
-	$anzTeams = sMarathonStaffel_Teamwertung($veranstaltung, 3);
-	echo "{ \"message\": \"<p>Es wurden <b>Es wurden <b>$anzTeams Teams</b> ausgewertet</p>\",
+    $anzTeams = 0;
+    $veranstaltung = $_SESSION['vID'];
+    sMarathonStaffel_cleanAll($veranstaltung, null);
+    $anzTeams = sMarathonStaffel_Teamwertung($veranstaltung, 3);
+    echo "{ \"message\": \"<p>Es wurden <b>$anzTeams Teams</b> ausgewertet</p>\",
 		\"finisher\" : 0 }";
 }
 
 
 function sMarathonStaffel_Teamwertung($veranstaltung, $teamAnz) {
-	    
-	# Platz in Verein + eindeutige Vereinsnummer
-	$sql = "select ID, verein, vklasse, zeit, att from teilnehmer ";
-	$sql .= "where vid = $veranstaltung ";
-	$sql .= "and zeit <> '00:00:00' ";
-	$sql .= "and verein <> '' ";
-	$sql .= "and disq = 0 ";
-	$sql .= "and del = 0 ";
-	$sql .= "and vklasse <> '' ";
-	$sql .= "and att like 'M%' ";
-	$sql .= "order by att, verein, vklasse, zeit";
-
-	$result = dbRequest($sql, 'SELECT');
-
-	$v 		     = '';	# Verein des vorherigen Datensatzes
-	$mZeitSec    = 0;
-	$count       = 0;
-	
-	if($result[1] > 0) {
-		foreach ($result[0] as $row) {
+    
+    # Platz in Verein + eindeutige Vereinsnummer
+    $sql = "select ID, verein, vklasse, zeit, att from teilnehmer ";
+    $sql .= "where vid = $veranstaltung ";
+    $sql .= "and zeit <> '00:00:00' ";
+    $sql .= "and verein <> '' ";
+    $sql .= "and disq = 0 ";
+    $sql .= "and del = 0 ";
+    $sql .= "and vklasse <> '' ";
+    $sql .= "and att like 'M%' ";
+    $sql .= "order by att, verein, vklasse, zeit";
+    
+    $result = dbRequest($sql, 'SELECT');
+    
+    $v 		     = '';	# Verein des vorherigen Datensatzes
+    $mZeitSec    = 0;
+    $count       = 0;
+    
+    if($result[1] > 0) {
+        foreach ($result[0] as $row) {
             
-		    if ($v != $row["att"]) {
-		        $zeit = "";
-		    }
-		    
-		    $name             = $row['verein'];
-		    $att              = $row['att'];
-		    $zeit[$row["ID"]] = $row['zeit'];
-
-			#  eine komplette Mannschaft
-		    if (count($zeit) == $teamAnz) {
-		        $count++;
-				
-				foreach ($zeit as $z) {
-				    $mZeitSec = $mZeitSec + getSeconds('1970-01-01 '.$z);
-				}
-				
-				$mzeit = sec2Time($mZeitSec);
-				
-				$q = "insert into specialReporting (vid, uid, zeit) VALUES ($veranstaltung, '".$att."', '".$mzeit."')";
-				$r = dbRequest($q, 'INSERT');
-
-				$mZeitSec = 0;
-				$zeit = "";
-			}
-		
-			$v = $row["att"];
-			
-		}		
-	}
+            if ($v != $row["att"]) {
+                $zeit = "";
+            }
+            
+            $name             = $row['verein'];
+            $att              = $row['att'];
+            $zeit[$row["ID"]] = $row['zeit'];
+            
+            #  eine komplette Mannschaft
+            if (count($zeit) == $teamAnz) {
+                $count++;
+                
+                foreach ($zeit as $z) {
+                    $mZeitSec = $mZeitSec + getSeconds('1970-01-01 '.$z);
+                }
+                
+                $mzeit = sec2Time($mZeitSec);
+                
+                $q = "insert into specialReporting (vid, uid, zeit) VALUES ($veranstaltung, '".$att."', '".$mzeit."')";
+                $r = dbRequest($q, 'INSERT');
+                
+                $mZeitSec = 0;
+                $zeit = "";
+            }
+            
+            $v = $row["att"];
+            
+        }
+    }
     return $count;
 }
 
 function sMarathonStaffel_showRaceList() {
-	
-?>
+    
+    ?>
 
 	<script>
 

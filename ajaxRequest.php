@@ -27,6 +27,7 @@ if(isset($_GET['func'])) {
 	if($_GET['func'] == 'deleteManReaderTime')		{ deleteManReaderTime(); }
 	if($_GET['func'] == 'specialReporting')         { specialReporting(); }
 	if($_GET['func'] == 'chat')         			{ getChatMessage( $_GET['id']); }
+	if($_GET['func'] == 'getHelpMessage')         	{ getHelpMessage( $_GET['id']); }
 }
 
 

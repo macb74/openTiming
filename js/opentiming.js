@@ -253,7 +253,7 @@ function showZielzeitAnalyse(t) {
 
 function clearModal() {
   var data = '<span class="text-muted">loading...</span>';
-  $('#modal-body').html(data);
+  $('.modal-body').html(data);
 }
 
 function closeChat() {
@@ -301,7 +301,7 @@ function checkNewChatMessage() {
 
   cncm = setTimeout(function() {
     checkNewChatMessage();
-  }, 5000);
+  }, 10000);
 
 }
 
@@ -326,4 +326,15 @@ function getCookie(cname) {
     }
   }
   return "";
+}
+
+function showHelpMessage(file) {
+	$( '#modal2' ).modal();
+	  var jqxhr = $.get("ajaxRequest.php?func=getHelpMessage&id=" + Base64.encode(file));
+	  
+	  jqxhr.done(function(data) {
+		  console.log( data );
+		  $( '#modal2-body').html( data );
+	  });
+	
 }

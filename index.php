@@ -125,7 +125,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#"><span class="navbar-brand-orange">open</span>Timing</a>
+				<a class="navbar-brand" href="index.php"><span class="navbar-brand-orange">open</span>Timing</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-left">
@@ -158,6 +158,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 					</li>
 					<li><a href="index.php?func=auswertung"><i class="fa fa-cog"></i> Auswertung</a></li>
 					<li><a href="index.php?func=reader"><i class="fa fa-cog"></i> Reader</a></li>
+					<?php getHelpMenue(); ?>
                     <li><a href="#" id="enableChat"><i class="fa fa-envelope-o"></i> Chat</a></li>
 				</ul>
 				

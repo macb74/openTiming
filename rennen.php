@@ -101,11 +101,25 @@ function showRaceEditForm() {
 		
 	global $config;
 	$ID = "new";
-	$start = $_SESSION['vDatum']." 00:00:00";
-	$titel = ""; $teamAnz = 0; $untertitel = "";
-	$dat[0] = ""; $dat[1] = ""; $dat[2] = "";
-	$kl = 0; $vkl = 0; $use_lID = 0; $tr = 0; $sl = 1; $rr = 0;
-	$rdVorgabe = 0; $readerIp = "0.0.0.0"; $uTemplate = ""; $uDefinition = "";
+	$start       = $_SESSION['vDatum']." 00:00:00";
+	$titel       = ""; 
+	$teamAnz     = 0; 
+	$untertitel  = "";
+	$dat[0]      = "";
+	$dat[1]      = "";
+	$dat[2]      = "";
+	$kl          = 0; 
+	$vkl         = 0;
+	$use_lID     = 0;
+	$tr          = 0;
+	$sl          = 1;
+	$rr          = 0;
+	$rdVorgabe   = 0;
+	$readerIp    = "0.0.0.0";
+	$uTemplate   = "";
+	$uDefinition = "";
+	$teamAtt     = 0; 
+	$teamAttVal  = "";
 			
 	if($_GET['id'] != "new") {
 		$sql = "select * from lauf where ID = ".$_GET['id'];
@@ -127,6 +141,8 @@ function showRaceEditForm() {
 			$use_lID = $row['use_lID'];
 			$rdVorgabe = $row['rdVorgabe'];
 			$readerIp = $row['mainReaderIp'];
+			$teamAtt = $row['teamAtt'];
+			$teamAttVal = $row['teamAttVal'];
 		}					
 	}
 	
@@ -250,7 +266,30 @@ function showRaceEditForm() {
   				<input type="radio" name="teamrennen" id="teamrennen_ja" value="1" <?php if ($tr == 1) { echo "checked"; }?>>Ja (relevant für die Darstellung der Ergebnisliste)
 			</label>
 		</div>
-		
+
+
+		<div class="form-group">
+			<label for="teamAtt" class="col-sm-4 control-label">Teamwertung:</label>
+			<label class="radio-inline">
+				<input type="radio" name="teamAtt" id="team-att_0" value="0" <?php if ($teamAtt == 0) { echo "checked"; } ?>>keine Einschr&auml;nkung
+			</label>
+			<div class="col-sm-offset-4">
+				<div class="radio form-inline">
+					<label>
+		  				<input type="radio" name="teamAtt" id="team-att_1" value="1" <?php if ($teamAtt == 1) { echo "checked"; }?>>nur mit Attribut
+					</label>
+					<input name="teamAttVal" size="5" maxlength="10" type="text" class="form-control input-sm input-very-small" id="teamAttVal" placeholder="" value="<?php echo $teamAttVal; ?>">	(SQL like)	
+				</div>
+			</div>
+			<div class="col-sm-offset-4">
+				<div class="radio">
+					<label>
+		  				<input type="radio" name="teamAtt" id="team-att_2" value="2" <?php if ($teamAtt == 2) { echo "checked"; }?>>nur ohne Attribut
+					</label>
+				</div>
+			</div>
+		</div>
+
 		
 		<div class="form-group">
 			<label for="showLogo" class="col-sm-4 control-label">openTiming Logo anzeigen:</label>
@@ -345,13 +384,15 @@ function saveRennen() {
 							 rdVorgabe = ".$_POST['rdVorgabe'].",
 							 vklasse = ".$_POST['vklasse'].",
 							 showLogo = ".$_POST['showLogo'].",
-							 mainReaderIp = '".$_POST['reader']."'
+							 mainReaderIp = '".$_POST['reader']."',
+							 teamAtt = '".$_POST['teamAtt']."',
+							 teamAttVal = '".$_POST['teamAttVal']."'
 						where ID = ".$_POST['id'].";";
 	} else {
 		$sql = "insert into lauf (vID, titel, untertitel, start,
 										klasse, team_anz, uDefinition, uTemplate,
 										rundenrennen, use_lID, teamrennen, rdVorgabe,
-										vklasse, showLogo, mainReaderIp) values
+										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal) values
 										( '".$_SESSION['vID']."',
 										'".$_POST['title']."',
 										'".$_POST['subTitle']."',
@@ -366,7 +407,9 @@ function saveRennen() {
 										".$_POST['rdVorgabe'].",
 										".$_POST['vklasse'].",
 										".$_POST['showLogo'].",
-										'".$_POST['reader']."')";
+										'".$_POST['reader']."',
+										".$_POST['teamAtt'].",
+										'".$_POST['teamAttVal']."')";
 	}
 
 	//echo $sql;

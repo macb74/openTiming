@@ -98,7 +98,7 @@ ALTER TABLE zeit_tmp RENAME `zeit`;
 -- 03.10.2016
 ALTER TABLE `teilnehmer` CHANGE `att` `att` VARCHAR( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
 
--- 027.09.2017
+-- 27.09.2017
 ALTER TABLE `veranstaltung` ADD `sonderwertung` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER `untertitel`;
 
 CREATE TABLE `specialReporting` (
@@ -116,3 +116,5 @@ CREATE TABLE IF NOT EXISTS `chat` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+-- 15.10.2017
+ALTER TABLE `lauf` ADD `teamAtt` INT NOT NULL AFTER `mainReaderIp`, ADD `teamAttVal` VARCHAR(20) NOT NULL AFTER `teamAtt`;

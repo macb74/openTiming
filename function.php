@@ -20,6 +20,7 @@ include "ziel.php";
 include "reader.php";
 include "chat.php";
 
+
 function connectDB() {
 	global $config;
 	
@@ -116,6 +117,8 @@ function getRennenData($rennen) {
 		$rd['untertitel']	= $row['untertitel'];
 		$rd['vID']			= $row['vID'];
 		$rd['lockRace']		= $row['lockRace'];
+		$rd['teamAtt']		= $row['teamAtt'];
+		$rd['teamAttVal']	= $row['teamAttVal'];
 	}
 	return $rd;
 }

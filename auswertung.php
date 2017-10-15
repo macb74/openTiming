@@ -17,8 +17,7 @@ function doAuswertung() {
 		setKlasse($veranstaltung,$rennen);
 		updateZeit($veranstaltung, $rennen, $rInfo);
 		$anzTeilnehmer = updatePlatzierung($veranstaltung, $rennen, $rInfo);
-		$teamAnz = $rInfo['teamAnz'];
-		$anzTeams = updateTeam($veranstaltung, $rennen, $teamAnz);
+		$anzTeams = updateTeam($veranstaltung, $rennen, $rInfo);
 	} elseif ($rInfo['rundenrennen'] == 1) {
 		setKlasse($veranstaltung,$rennen);
 		updateAnzRunden($veranstaltung, $rennen, $rInfo);
@@ -215,8 +214,19 @@ function setKlasse($veranstaltung, $rennen) {
 	}
 }
 
-function updateTeam($veranstaltung, $rennen, $teamAnz) {
+function updateTeam($veranstaltung, $rennen, $rInfo) {
 	
+    $teamAnz = $rInfo['teamAnz'];
+    
+    $teamAtt = "";
+    if( $rInfo['teamAtt'] == 1) {
+        $teamAtt = "and att like '".$rInfo['teamAttVal']."' ";
+    }
+    
+    if( $rInfo['teamAtt'] == 2) {
+        $teamAtt = "and att = '' ";
+    }
+    
 	# Platz in Verein + eindeutige Vereinsnummer
 	$sql = "select ID, verein, vklasse from teilnehmer ";
 	$sql .= "where vid = $veranstaltung ";
@@ -226,6 +236,7 @@ function updateTeam($veranstaltung, $rennen, $teamAnz) {
 	$sql .= "and disq = 0 ";
 	$sql .= "and del = 0 ";
 	$sql .= "and vklasse <> '' ";
+	$sql .= $teamAtt;
 	$sql .= "order by verein, vklasse, zeit";
 	
 	$result = dbRequest($sql, 'SELECT');

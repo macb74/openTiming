@@ -15,5 +15,10 @@ SELECT 18, '', Startnummer, name, Vorname, Geschlecht, Jahrgang, Verein, Att, `E
  WHERE veranstaltung = '2016' 
  order by `Event`, Verein;
  
- -- Anmeldungen pro Lauf
- select count(*), event from marktlauf where veranstaltung = '2017' group by event 
+-- Anmeldungen pro Lauf
+select count(*), event from marktlauf where veranstaltung = '2017' group by event 
+
+-- Anmeldungen pro Lauf vergeleichen
+select count(*), event, veranstaltung from marktlauf where veranstaltung = '2017' group by event
+union all
+select count(*), event, veranstaltung from marktlauf where veranstaltung = '2016' group by event order by event, veranstaltung;

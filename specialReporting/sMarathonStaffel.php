@@ -39,7 +39,7 @@ function sMarathonStaffel_Teamwertung($veranstaltung, $teamAnz) {
     $sql .= "and del = 0 ";
     $sql .= "and vklasse <> '' ";
     $sql .= "and att like 'M%' ";
-    $sql .= "order by att, verein, vklasse, zeit";
+    $sql .= "order by att, zeit, verein, vklasse";
     
     $result = dbRequest($sql, 'SELECT');
     

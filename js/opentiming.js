@@ -334,6 +334,7 @@ function showHelpMessage(file) {
 	  
 	  jqxhr.done(function(data) {
 		  console.log( data );
+		  data = data.replace(/<table>/i, "<table class=\"table table-striped table-condensed table-vcenter\">");
 		  $( '#modal2-body').html( data );
 	  });
 	

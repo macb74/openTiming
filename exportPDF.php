@@ -25,7 +25,7 @@ class PDF extends FPDF
 		} else {
 		    $fontSize = 9;
 		    $lineHeight = 4.5;
-		    $linesPerPage = 51;
+		    $linesPerPage = 50;
 		}
 		
 		$sqlAddOn = "";
@@ -82,7 +82,7 @@ class PDF extends FPDF
 					$fill=!$fill;
 					$i++;
 		
-					if($i%$linesPerPage == 0) {
+					if($i%$linesPerPage == 1) {
 					    if($roc) { $this->setRocFooter(); }
 						$this->AddPage('Portrait', 'A4');
 						$this->printHeader($header);
@@ -273,12 +273,17 @@ class PDF extends FPDF
 				//$this->Ln();
 				$fill=!$fill;
 				$i++;
-	
-				if($i%$linesPerPage == 0) {
-					$this->AddPage('Portrait', 'A4');
-					$this->printHeader($header);
-					$this->setMyFont($fontSize);
-					$this->setErgebninsHeader();
+				
+				// wenn die erste Seite fertig ist ($i größer der Teammitglieder
+				// dann wird eine neue Seite erstellt, sobald die Zeilen (jedes Teammitglied eine Zeile) größer als $linesPerPage ist
+				if($i > $rd['teamAnz']) {
+				    $lines = $i*$rd['teamAnz'];
+				    if($lines%$linesPerPage < $rd['teamAnz']) {
+    					$this->AddPage('Portrait', 'A4');
+    					$this->printHeader($header);
+    					$this->setMyFont($fontSize);
+    					$this->setErgebninsMannschaftHeader();
+    				}
 				}
 			}
 		}
@@ -507,7 +512,7 @@ class PDF extends FPDF
 
 	function Footer() {
 		$this->SetTextColor(50,50,50);
-		$this->SetY(-25);
+		$this->SetY(-24);
 		$this->SetFont('Arial','',8);
 		$this->Cell(0,10,'w w w . o p e n - r f i d - t i m i n g . d e',0,0,'C');
 		$this->Ln(5);
@@ -539,9 +544,9 @@ class PDF extends FPDF
 	}
 	
 	function setRocFooter() {
-	    $this->Ln(2);
+	    $this->Ln(1);
 	    $this->SetFont('Arial','',7);
-	    $this->Cell(0,4,'* vorbehaltlich der offiziellen ROC Berechnung',0,0,'R');
+	    $this->Cell(0,3,'* vorbehaltlich der offiziellen ROC Berechnung',0,0,'R');
 	}
 	
 }

@@ -66,7 +66,12 @@ function tUpdateDB($lines) {
 		# wenn kein Nachname vorhanden, dann wird nicht importiert
 		if ($line[3] != "") {
 			if(!isset($line[8])) { $line[8] = ""; }	
-		
+		    
+			# trim für alle Spalten
+			for ($col = 0; $col < count($line); $col++) {
+			    $line[$col] = trim($line[$col]);
+			}
+			
 			$sql = "select ID from teilnehmer where vID = $line[0] and lID = $line[1] and stnr = $line[2] and del = 0";
 			$res = dbRequest($sql, 'SELECT');
 			

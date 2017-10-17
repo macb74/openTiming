@@ -120,29 +120,31 @@ function showRaceEditForm() {
 	$uDefinition = "";
 	$teamAtt     = 0; 
 	$teamAttVal  = "";
+	$roc         = 0;
 			
 	if($_GET['id'] != "new") {
 		$sql = "select * from lauf where ID = ".$_GET['id'];
 		$result = dbRequest($sql, 'SELECT');
 
 		foreach ($result[0] as $row) {
-			$titel = $row['titel'];
-			$untertitel = $row['untertitel'];
-			$start = $row['start'];
-			$ID = $row['ID'];
-			$kl = $row['klasse'];
-			$vkl = $row['vklasse'];
-			$teamAnz = $row['team_anz'];
-			$uTemplate = $row['uTemplate'];
+			$titel       = $row['titel'];
+			$untertitel  = $row['untertitel'];
+			$start       = $row['start'];
+			$ID          = $row['ID'];
+			$kl          = $row['klasse'];
+			$vkl         = $row['vklasse'];
+			$teamAnz     = $row['team_anz'];
+			$uTemplate   = $row['uTemplate'];
 			$uDefinition = $row['uDefinition'];
-			$rr = $row['rundenrennen'];
-			$tr = $row['teamrennen'];
-			$sl = $row['showLogo'];
-			$use_lID = $row['use_lID'];
-			$rdVorgabe = $row['rdVorgabe'];
-			$readerIp = $row['mainReaderIp'];
-			$teamAtt = $row['teamAtt'];
-			$teamAttVal = $row['teamAttVal'];
+			$rr          = $row['rundenrennen'];
+			$tr          = $row['teamrennen'];
+			$sl          = $row['showLogo'];
+			$use_lID     = $row['use_lID'];
+			$rdVorgabe   = $row['rdVorgabe'];
+			$readerIp    = $row['mainReaderIp'];
+			$teamAtt     = $row['teamAtt'];
+			$teamAttVal  = $row['teamAttVal'];
+			$roc         = $row['roc'];
 		}					
 	}
 	
@@ -304,6 +306,18 @@ function showRaceEditForm() {
 		
 		
 		<div class="form-group">
+			<label for="roc" class="col-sm-4 control-label">ROC Rennen:</label>
+			<label class="radio-inline">
+				<input type="radio" name="roc" id="roc_nein" value="0" <?php if ($roc == 0) { echo "checked"; } ?>>Nein
+			</label>
+
+			<label class="radio-inline">
+  				<input type="radio" name="roc" id="roc_ja" value="1" <?php if ($roc == 1) { echo "checked"; }?>>Ja
+			</label>
+		</div>
+		
+		
+		<div class="form-group">
 			<label for="rr" class="col-sm-4 control-label">Rundenrennen:</label>
 			<label class="radio-inline">
 				<input type="radio" name="rr" id="rr_0" value="0" <?php if ($rr == 0) { echo "checked"; } ?>>kein Rundenrennen
@@ -386,7 +400,8 @@ function saveRennen() {
 							 showLogo = ".$_POST['showLogo'].",
 							 mainReaderIp = '".$_POST['reader']."',
 							 teamAtt = '".$_POST['teamAtt']."',
-							 teamAttVal = '".$_POST['teamAttVal']."'
+							 teamAttVal = '".$_POST['teamAttVal']."',
+							 roc = '".$_POST['roc']."'
 						where ID = ".$_POST['id'].";";
 	} else {
 		$sql = "insert into lauf (vID, titel, untertitel, start,
@@ -409,7 +424,8 @@ function saveRennen() {
 										".$_POST['showLogo'].",
 										'".$_POST['reader']."',
 										".$_POST['teamAtt'].",
-										'".$_POST['teamAttVal']."')";
+										'".$_POST['teamAttVal']."',
+		                                ".$_POST['roc'].");";
 	}
 
 	//echo $sql;

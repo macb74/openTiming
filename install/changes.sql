@@ -118,3 +118,7 @@ CREATE TABLE IF NOT EXISTS `chat` (
 
 -- 15.10.2017
 ALTER TABLE `lauf` ADD `teamAtt` INT NOT NULL AFTER `mainReaderIp`, ADD `teamAttVal` VARCHAR(20) NOT NULL AFTER `teamAtt`;
+
+-- 17.10.2017
+ALTER TABLE `lauf` ADD `roc` INT NOT NULL AFTER `teamAttVal`;
+UPDATE `lauf` SET `roc` = 0;

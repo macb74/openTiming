@@ -119,6 +119,7 @@ function getRennenData($rennen) {
 		$rd['lockRace']		= $row['lockRace'];
 		$rd['teamAtt']		= $row['teamAtt'];
 		$rd['teamAttVal']	= $row['teamAttVal'];
+		$rd['roc']	        = $row['roc'];
 	}
 	return $rd;
 }

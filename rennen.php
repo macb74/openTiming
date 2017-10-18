@@ -407,7 +407,7 @@ function saveRennen() {
 		$sql = "insert into lauf (vID, titel, untertitel, start,
 										klasse, team_anz, uDefinition, uTemplate,
 										rundenrennen, use_lID, teamrennen, rdVorgabe,
-										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal) values
+										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal, roc) values
 										( '".$_SESSION['vID']."',
 										'".$_POST['title']."',
 										'".$_POST['subTitle']."',

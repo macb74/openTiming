@@ -52,7 +52,6 @@ function submitForm(form, redirect) {
 
   $.each(params, function(i, val) {
     formData.append(val.name, val.value);
-    //console.log(val.name + ': ' + val.value);
   });
 
   // wenn es ein file upload gibt
@@ -79,14 +78,27 @@ function submitForm(form, redirect) {
         $('.alert').html(msg);
         $('.alert').removeClass('hidden');
       } else {
+    	
+    	// Form leeren, wenn ein Teilnehmer gespeichert wurde
         if (form == '#editTeilnehmer') {
           clearForm();
         }
+        
+        // SESSION Variablen für Veranstaltung neu setzen.
+        if (form == '#editVeranstaltung') {
+        	$.each( params, function( key, value ) {
+        		if(value.name == 'id') {
+        	      	  selectVeranstaltung(value.value);
+        		}
+        	});
+        }
+        
       }
-      //console.log(redirect);
+      
       if (redirect) {
         window.location.href = redirect;
       }
+      
     }
   })
 

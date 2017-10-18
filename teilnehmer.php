@@ -117,7 +117,7 @@ function showTeilnehmerEditForm()
     } ?>
   <script>
 
- 		$(document).ready(function(){
+ 	$(document).ready(function(){
 
       $("#verein").autocomplete({
         source: 'ajaxRequest.php?func=getVerein&',

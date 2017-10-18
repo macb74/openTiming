@@ -98,6 +98,8 @@ function clearForm() {
   $('#vorname').val('');
   $('#nachname').val('');
   $('#verein').val('');
+  $('#klasse').val(' ');
+  $('#vklasse').val(' ');
   $('#jahrgang').val('');
   $('#geschlecht').prop('selectedIndex', 0);
   $('#ort').val('');

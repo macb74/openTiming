@@ -1,8 +1,8 @@
 <?php
 
-
 if(isset($_GET['ajaxFunc'])) {
     session_start();
+    include "../config.php";
     include "../function.php";
     $link = connectDB();
     $_GET = filterParameters($_GET);
@@ -29,12 +29,10 @@ function sMarathonStaffel_doAuswertung() {
 
 
 function sMarathonStaffel_Teamwertung($veranstaltung, $teamAnz) {
-    
     # Platz in Verein + eindeutige Vereinsnummer
     $sql = "select ID, verein, vklasse, zeit, att from teilnehmer ";
     $sql .= "where vid = $veranstaltung ";
     $sql .= "and zeit <> '00:00:00' ";
-    $sql .= "and verein <> '' ";
     $sql .= "and disq = 0 ";
     $sql .= "and del = 0 ";
     $sql .= "and vklasse <> '' ";
@@ -230,13 +228,14 @@ function sMarathonStaffel_showErgebnis() {
                 $runnerCount = 0;
                 $teamCount++;
                 
-                $team[$teamCount]['verein']                        = $row['verein'];
                 $team[$teamCount]['tzeit']                         = $row['tzeit'];
                 $team[$teamCount]['runner'][$runnerCount]['name']  = $row['nachname'];
                 $team[$teamCount]['runner'][$runnerCount]['vname'] = $row['vorname'];
                 $team[$teamCount]['runner'][$runnerCount]['zeit']  = $row['zeit'];
             } else {
                 $runnerCount++;
+                // Verein ermitteln - vom langsamsten Läufer, damit kein kollition mit 10 km Lauf
+                $team[$teamCount]['verein']                        = $row['verein'];
                 $team[$teamCount]['runner'][$runnerCount]['name']  = $row['nachname'];
                 $team[$teamCount]['runner'][$runnerCount]['vname'] = $row['vorname'];
                 $team[$teamCount]['runner'][$runnerCount]['zeit']  = $row['zeit'];
@@ -246,7 +245,8 @@ function sMarathonStaffel_showErgebnis() {
     }
 
     $i = 1;
-    foreach ($team as $t) {    
+    if( isset($team) ) {
+	    foreach ($team as $t) {    
     
 ?>
 				<tr>
@@ -267,7 +267,8 @@ function sMarathonStaffel_showErgebnis() {
 				</tr>
 <?php
         $i++;
-	}
+		}
+    }
 ?>
 
 			</tbody>

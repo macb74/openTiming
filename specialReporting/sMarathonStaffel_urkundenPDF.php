@@ -1,6 +1,7 @@
 <?php
 require_once('../Classes/fpdf/fpdf.php');
 require_once('../Classes/fpdi/fpdi.php');
+include "../config.php";
 include("../function.php");
 $link = connectDB();
 session_start();
@@ -19,7 +20,7 @@ class PDF extends FPDI
 		
 	    $sql = "SELECT t.*, sr.zeit as tzeit from specialReporting sr " .
 		  		"LEFT JOIN teilnehmer t on sr.uid = t.att " .
-		        "where t.vID = 18 and sr.vid = 18 order by sr.zeit, t.zeit asc";
+		  		"where t.vID = ".$_SESSION['vID']." and sr.vid = ".$_SESSION['vID']." order by sr.zeit, t.zeit asc";
 		$result = dbRequest($sql, 'SELECT');
 		
 		$this->setMyFont();
@@ -32,12 +33,13 @@ class PDF extends FPDI
 				if ($row['att'] != $oldVnummer) {
 				    $i++;
 					$ii = 1;
-					$teamRow[$i]['verein'] = $row['verein'];
 					$teamRow[$i]['vplatz'] = $i;
 					$teamRow[$i]['vtime']  = $row['tzeit'];
 					$teamRow[$i]['Name'][$ii] = $row['nachname'].", ".$row['vorname'];
 					$ii++;
 				} else {
+					// Verein vom langsamsten Läufer, damit kein kollition mit 10 km Lauf
+					$teamRow[$i]['verein'] = $row['verein'];
 					$teamRow[$i]['Name'][$ii] = $row['nachname'].", ".$row['vorname'];
 					$ii++;
 				}

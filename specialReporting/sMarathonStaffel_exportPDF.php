@@ -1,6 +1,7 @@
 <?php
 
 require('../Classes/fpdf/fpdf.php');
+include "../config.php";
 include("../function.php");
 $link = connectDB();
 session_start();
@@ -18,13 +19,12 @@ class PDF extends FPDF
 		
 		$this->setHeader($header);
 
-		$sql = "SELECT DISTINCT t.verein, sr.uid, sr.zeit from specialReporting sr " .
-                "INNER JOIN teilnehmer t on sr.uid = t.att " .
-                "WHERE t.vID = ".$_SESSION['vID']." AND sr.vid = ".$_SESSION['vID']." " .
+		$sql = "SELECT sr.uid, sr.zeit from specialReporting sr " .
+                "WHERE sr.vid = ".$_SESSION['vID']." " .
                 "ORDER BY sr.zeit";
 			
 		$result = dbRequest($sql, 'SELECT');
-
+		
 		$this->setMyFont();
 
 		$this->setErgebninsMannschaftHeader();
@@ -35,26 +35,41 @@ class PDF extends FPDF
 			foreach ($result[0] as $row) {
 				
 				$att = $row['uid'];
-				$this->Cell(15,5,$i,0,0,'R',$fill);
-				$this->Cell(80,5,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(20,5,$row['zeit'],0,0,'R',$fill);
-				$this->Cell(5,5,'',0,0,'R',$fill);
 				
-				$sql2 = "SELECT nachname, vorname, zeit from teilnehmer " .
+				// Verein ermitteln - vom langsamsten Läufer, damit kein kollition mit 10 km Lauf
+				$sqlVerein = "SELECT verein from teilnehmer " .
+						"WHERE vid = ".$_SESSION['vID']." and att = '".$att."' " .
+						"ORDER BY zeit desc LIMIT 0, 1";
+				$resVerein = dbRequest($sqlVerein, 'SELECT');
+
+				
+				if($resVerein[1] > 0) {
+					foreach ($resVerein[0] as $rowVerein) {
+						$verein = $rowVerein['verein'];
+					}
+				}
+				
+
+				$sqlTeilnehmer = "SELECT nachname, vorname, zeit from teilnehmer " .
 						"where vid = ".$_SESSION['vID']." and del= 0 and disq = 0 and att = '$att' order by zeit";
-				$res2 = dbRequest($sql2, 'SELECT');
-					
+				$resTeilnehmer = dbRequest($sqlTeilnehmer, 'SELECT');
+								
 				$ii = 1;
 				if($result[1] > 0) {
-					foreach ($res2[0] as $row2) {
-						if($ii != 1) {
+					foreach ($resTeilnehmer[0] as $rowTeilnehmer) {
+						if($ii == 1) {
+							$this->Cell(15,5,$i,0,0,'R',$fill);
+							$this->Cell(80,5,htmlspecialchars_decode(utf8_decode($verein), ENT_QUOTES),0,0,'L',$fill);
+							$this->Cell(20,5,$row['zeit'],0,0,'R',$fill);
+							$this->Cell(5,5,'',0,0,'R',$fill);
+						} else {
 							$this->Cell(15,5,'',0,0,'R',$fill);
 							$this->Cell(80,5,'',0,0,'L',$fill);
 							$this->Cell(20,5,'',0,0,'R',$fill);
 							$this->Cell(5,5,'',0,0,'R',$fill);
 						}
-						$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($row2['nachname']), ENT_QUOTES).",\n ".htmlspecialchars_decode(utf8_decode($row2['vorname']), ENT_QUOTES),0,0,'L',$fill);
-						$this->Cell(20,5,$row2['zeit'],0,0,'R',$fill);
+						$this->Cell(50,5," ".htmlspecialchars_decode(utf8_decode($rowTeilnehmer['nachname']), ENT_QUOTES).",\n ".htmlspecialchars_decode(utf8_decode($rowTeilnehmer['vorname']), ENT_QUOTES),0,0,'L',$fill);
+						$this->Cell(20,5,$rowTeilnehmer['zeit'],0,0,'R',$fill);
 // 						if($ii == 1) {
 // 							$this->Cell(5,5,'',0,0,'R',$fill);
 // 							$this->Cell(10,5,$row['vklasse'],0,0,'R',$fill);

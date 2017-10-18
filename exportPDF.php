@@ -327,7 +327,7 @@ class PDF extends FPDF
 			if ( $i != 0 ) { $this->AddPage('Portrait', 'A4'); }
 			$this->printHeader($header);
 			$this->setMyFont($fontSize);
-			$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
+			$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true, false);
 			
 			$sql = "SELECT t.*, l.titel FROM `teilnehmer` as t INNER JOIN lauf as l ON t.lID = l.ID ".
 				"where t.vID = ".$_SESSION['vID']." ".
@@ -348,7 +348,7 @@ class PDF extends FPDF
 						$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
 						if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,$lineHeight,$row['runden'],0,0,'R',$fill); }
 						$this->Cell(18,$lineHeight,$row['zeit'],0,0,'R',$fill);
-						$this->Cell(8,$lineHeight,$row['att'],0,0,'R',$fill);
+						$this->Cell(12,$lineHeight,$row['att'],0,0,'R',$fill);
 						
 						$this->Ln();
 						$fill=!$fill;
@@ -358,7 +358,7 @@ class PDF extends FPDF
 							$this->AddPage('Portrait', 'A4');
 							$this->printHeader($header);
 							$this->setMyFont($fontSize);
-							$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true);
+							$this->setErgebninsHeader($rd['rundenrennen'], $rd['teamrennen'], true, false);
 						}
 						
 					} else {

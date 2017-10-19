@@ -73,6 +73,9 @@ function sec2Time($sec){
 function cleanAll($veranstaltung, $rennen) {
 	$query = "update teilnehmer set zeit='00:00:00', platz = 0, akplatz = 0, vplatz = 0, vnummer = '', mplatz = 0, vtime = '00:00:00' where vid = $veranstaltung and lid = $rennen";
 	$result = dbRequest($query, 'UPDATE');
+
+	$query = "update teilnehmer set manzeit='00:00:00' where useManTime = 0 and vid = $veranstaltung and lid = $rennen";
+	$result = dbRequest($query, 'UPDATE');
 }
 
 function updateZeit($veranstaltung, $rennen, $rInfo) {

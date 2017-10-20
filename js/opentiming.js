@@ -117,6 +117,8 @@ function clearForm() {
   $('#ort').val('');
   $('#att').val('');
   $('#zeit').val('00:00:00');
+  $('#useManTime').prop( "checked", false );
+  $('#disq').prop( "checked", false );
   $('.selectpicker').selectpicker('refresh');
 }
 

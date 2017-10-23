@@ -68,12 +68,16 @@ class PDF extends FPDF
 					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,$lineHeight,$row['platz'],0,0,'R',$fill); }
 					if( !$roc ) { $this->Cell(12,$lineHeight,$row['att'],0,0,'R',$fill); }
 					if( $roc ) { 
-					    $heute = getSeconds("00:00:00");
-					    $runnerTime = getSeconds($row['zeit']);
-					    $runnerTime = $runnerTime - $heute;
-					    $rocTime = $rocHundertProzent[$row['geschlecht']] - $heute;
-					    $runnersRoc = round(($rocTime * 100) / $runnerTime, 2);
-					    $this->Cell(12,$lineHeight,number_format($runnersRoc, 2),0,0,'R',$fill);
+					    if ( strpos([$row['geschlecht']], 'U' ) !== true) {
+					       $this->Cell(12,$lineHeight,"--",0,0,'R',$fill);
+					    } else {
+    					    $heute = getSeconds("00:00:00");
+    					    $runnerTime = getSeconds($row['zeit']);
+    					    $runnerTime = $runnerTime - $heute;
+    					    $rocTime = $rocHundertProzent[$row['geschlecht']] - $heute;
+    					    $runnersRoc = round(($rocTime * 100) / $runnerTime, 2);
+    					    $this->Cell(12,$lineHeight,number_format($runnersRoc, 2),0,0,'R',$fill);
+					    }
 					}
 					
 					
@@ -527,7 +531,7 @@ class PDF extends FPDF
 	    $geschlechter = ['M', 'W'];
 	    
 	    for ($i = 0; $i < count($geschlechter); $i++) {
-	        $sql = "select zeit from teilnehmer where platz > 0 and lid = $id and geschlecht = '".$geschlechter[$i]."' order by platz LIMIT 0,5";
+	        $sql = "select zeit from teilnehmer where platz > 0 and lid = $id and geschlecht = '".$geschlechter[$i]."' and klasse not like '%U%' order by platz LIMIT 0,5";
 	        $res = dbRequest($sql, 'SELECT');
 	        
 	        $time = 0;

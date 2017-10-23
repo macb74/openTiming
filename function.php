@@ -62,7 +62,7 @@ function dbRequest($sql, $action) {
 	$res = $link->query($sql);
 	if ($link->error) {
 		$result[2] = $link->error;
-		//echo htmlspecialchars($link->error)."<br>";
+		//echo htmlspecialchars($link->error)."<br>\n";
 	}
 
 	
@@ -105,21 +105,23 @@ function getRennenData($rennen) {
 	$result = dbRequest($sql, 'SELECT');
 	
 	foreach ($result[0] as $row) {
-		$rd['startZeit'] 	= $row['start'];
-		$rd['teamAnz'] 		= $row['team_anz'];
-		$rd['rundenrennen']	= $row['rundenrennen'];
-		$rd['use_lID']		= $row['use_lID'];
-		$rd['teamrennen']	= $row['teamrennen'];
-		$rd['rdVorgabe']	= $row['rdVorgabe'];
-		$rd['showLogo']		= $row['showLogo'];
-		$rd['mainReaderIp']	= $row['mainReaderIp'];
-		$rd['titel']		= $row['titel'];
-		$rd['untertitel']	= $row['untertitel'];
-		$rd['vID']			= $row['vID'];
-		$rd['lockRace']		= $row['lockRace'];
-		$rd['teamAtt']		= $row['teamAtt'];
-		$rd['teamAttVal']	= $row['teamAttVal'];
-		$rd['roc']	        = $row['roc'];
+		$rd['startZeit'] 	    = $row['start'];
+		$rd['teamAnz'] 		    = $row['team_anz'];
+		$rd['rundenrennen']	    = $row['rundenrennen'];
+		$rd['use_lID']		    = $row['use_lID'];
+		$rd['teamrennen']	    = $row['teamrennen'];
+		$rd['rdVorgabe']	    = $row['rdVorgabe'];
+		$rd['showLogo']		    = $row['showLogo'];
+		$rd['mainReaderIp']	    = $row['mainReaderIp'];
+		$rd['titel']	        = $row['titel'];
+		$rd['untertitel']	    = $row['untertitel'];
+		$rd['vID']		     	= $row['vID'];
+		$rd['lockRace']		    = $row['lockRace'];
+		$rd['teamAtt']	     	= $row['teamAtt'];
+		$rd['teamAttVal']	    = $row['teamAttVal'];
+		$rd['roc']	            = $row['roc'];
+		$rd['teamTogetherWith'] = $row['teamTogetherWith'];
+		$rd['teamTogetherWithDeaktivated'] = $row['teamTogetherWithDeaktivated'];
 	}
 	return $rd;
 }

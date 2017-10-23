@@ -13,8 +13,12 @@ $_POST = filterParameters($_POST);
 class PDF extends FPDI
 {
 	function urkunde($action, $num, $id, $raceData) {
-
+	    
 		$oldVnummer = "";
+		$rennen = $id;
+		if ($raceData['teamTogetherWith'] != '') {
+		    $rennen = $rennen.",".$raceData['teamTogetherWith'];
+		}
 
 		if($action == 'gesamt') {
 			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and lid = $id and platz > 0 and platz <= $num order by geschlecht, platz";
@@ -23,7 +27,7 @@ class PDF extends FPDI
 		} elseif ($action == 'einzel') {
 			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and id = $id";
 		} elseif ($action == 'team') {
-			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and lid = $id and vnummer <> '' order by vplatz, zeit asc";
+			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and lid in ($rennen) and vnummer <> '' order by vplatz, zeit asc";
 		} else {
 			echo "keine action gewählt";
 			die;
@@ -200,13 +204,13 @@ function getRaceData($action, $id) {
 	$raceData['VUntertitel'] = "";
 	
 	if($action == "einzel") {
-		$sql = "SELECT l.uDefinition uDefinition, l.uTemplate uTemplate, l.titel LTitel, l.untertitel LUntertitel, v.titel VTitel, v.untertitel VUntertitel".
+		$sql = "SELECT l.uDefinition uDefinition, l.uTemplate uTemplate, l.titel LTitel, l.untertitel LUntertitel, v.titel VTitel, v.untertitel VUntertitel, teamTogetherWith".
 			" FROM `teilnehmer` as t ".
 			" INNER JOIN lauf as l ON t.lID = l.ID ".
 			" INNER JOIN veranstaltung as v ON t.vID = v.ID ".
 			" where t.id = $id";
 	} else {
-		$sql = "SELECT l.uDefinition uDefinition, l.uTemplate uTemplate, l.titel LTitel, l.untertitel LUntertitel, v.titel VTitel, v.untertitel VUntertitel".
+		$sql = "SELECT l.uDefinition uDefinition, l.uTemplate uTemplate, l.titel LTitel, l.untertitel LUntertitel, v.titel VTitel, v.untertitel VUntertitel, teamTogetherWith".
 			" FROM lauf as l  ".
 			" INNER JOIN veranstaltung as v ON l.vID = v.ID ".
 			" where l.id = $id";
@@ -215,12 +219,13 @@ function getRaceData($action, $id) {
 	$result = dbRequest($sql, 'SELECT');
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
-			$raceData['template']    = $row['uTemplate'];
-			$raceData['definition']  = $row['uDefinition'];
-			$raceData['LTitel']      = $row['LTitel'];
-			$raceData['LUntertitel'] = $row['LUntertitel'];
-			$raceData['VTitel']      = $row['VTitel'];
-			$raceData['VUntertitel'] = $row['VUntertitel'];
+			$raceData['template']         = $row['uTemplate'];
+			$raceData['definition']       = $row['uDefinition'];
+			$raceData['LTitel']           = $row['LTitel'];
+			$raceData['LUntertitel']      = $row['LUntertitel'];
+			$raceData['VTitel']           = $row['VTitel'];
+			$raceData['VUntertitel']      = $row['VUntertitel'];
+			$raceData['teamTogetherWith'] = $row['teamTogetherWith'];
 		}
 	}
 	return $raceData;

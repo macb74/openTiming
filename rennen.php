@@ -121,30 +121,34 @@ function showRaceEditForm() {
 	$teamAtt     = 0; 
 	$teamAttVal  = "";
 	$roc         = 0;
-			
+	$teamTogetherWith = '';
+	$teamTogetherWithDeaktivated = 0;
+				
 	if($_GET['id'] != "new") {
 		$sql = "select * from lauf where ID = ".$_GET['id'];
 		$result = dbRequest($sql, 'SELECT');
 
 		foreach ($result[0] as $row) {
-			$titel       = $row['titel'];
-			$untertitel  = $row['untertitel'];
-			$start       = $row['start'];
-			$ID          = $row['ID'];
-			$kl          = $row['klasse'];
-			$vkl         = $row['vklasse'];
-			$teamAnz     = $row['team_anz'];
-			$uTemplate   = $row['uTemplate'];
-			$uDefinition = $row['uDefinition'];
-			$rr          = $row['rundenrennen'];
-			$tr          = $row['teamrennen'];
-			$sl          = $row['showLogo'];
-			$use_lID     = $row['use_lID'];
-			$rdVorgabe   = $row['rdVorgabe'];
-			$readerIp    = $row['mainReaderIp'];
-			$teamAtt     = $row['teamAtt'];
-			$teamAttVal  = $row['teamAttVal'];
-			$roc         = $row['roc'];
+			$titel            = $row['titel'];
+			$untertitel       = $row['untertitel'];
+			$start            = $row['start'];
+			$ID               = $row['ID'];
+			$kl               = $row['klasse'];
+			$vkl              = $row['vklasse'];
+			$teamAnz          = $row['team_anz'];
+			$uTemplate        = $row['uTemplate'];
+			$uDefinition      = $row['uDefinition'];
+			$rr               = $row['rundenrennen'];
+			$tr               = $row['teamrennen'];
+			$sl               = $row['showLogo'];
+			$use_lID          = $row['use_lID'];
+			$rdVorgabe        = $row['rdVorgabe'];
+			$readerIp         = $row['mainReaderIp'];
+			$teamAtt          = $row['teamAtt'];
+			$teamAttVal       = $row['teamAttVal'];
+			$roc              = $row['roc'];
+			$teamTogetherWith = $row['teamTogetherWith'];
+			$teamTogetherWithDeaktivated = $row['teamTogetherWithDeaktivated'];
 		}					
 	}
 	
@@ -291,6 +295,17 @@ function showRaceEditForm() {
 				</div>
 			</div>
 		</div>
+		
+		<div class="form-group">
+			<label for="teamTogetherWith" class="col-sm-4 control-label">Teamwertung gemeinsam mit:</label>
+			<div class="col-sm-3">
+				<input name="teamTogetherWith" maxlength="200" type="text" class="form-control" id="teamTogetherWith" placeholder="Lauf ID" value="<?php echo $teamTogetherWith; ?>">
+			</div>
+			<label class="col-sm-3 checkbox-inline">
+      			<input type="checkbox" name="teamTogetherWithDeaktivated" id="teamTogetherWithDeaktivated" <?php if ($teamTogetherWithDeaktivated == 1) { echo "checked"; } ?>> deaktiviert
+    		</label>
+		</div>
+		
 
 		
 		<div class="form-group">
@@ -382,6 +397,11 @@ function showRaceEditForm() {
 
 function saveRennen() {
 	
+    $teamTogetherWithDeaktivated = 0;
+    if(isset($_POST['teamTogetherWithDeaktivated'])) {
+        $teamTogetherWithDeaktivated = 1;
+    }
+    
 	$teamAnz = 0;
 	if($_POST['id'] != "new") {
 		$sql = "update lauf set vID = '".$_SESSION['vID']."',
@@ -401,13 +421,15 @@ function saveRennen() {
 							 mainReaderIp = '".$_POST['reader']."',
 							 teamAtt = '".$_POST['teamAtt']."',
 							 teamAttVal = '".$_POST['teamAttVal']."',
-							 roc = '".$_POST['roc']."'
+							 roc = '".$_POST['roc']."',
+							 teamTogetherWith = '".$_POST['teamTogetherWith']."',
+                             teamTogetherWithDeaktivated = ".$teamTogetherWithDeaktivated."
 						where ID = ".$_POST['id'].";";
 	} else {
 		$sql = "insert into lauf (vID, titel, untertitel, start,
 										klasse, team_anz, uDefinition, uTemplate,
 										rundenrennen, use_lID, teamrennen, rdVorgabe,
-										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal, roc) values
+										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal, roc, teamTogetherWith, teamTogetherWithDeaktivated) values
 										( '".$_SESSION['vID']."',
 										'".$_POST['title']."',
 										'".$_POST['subTitle']."',
@@ -425,7 +447,9 @@ function saveRennen() {
 										'".$_POST['reader']."',
 										".$_POST['teamAtt'].",
 										'".$_POST['teamAttVal']."',
-		                                ".$_POST['roc'].");";
+		                                ".$_POST['roc'].",
+                                        ".$_POST['teamTogetherWith'].",
+                                        ".$teamTogetherWithDeaktivated.");";
 	}
 
 	//echo $sql;

@@ -102,12 +102,24 @@ function showErgebnisse() {
 function showErgebnisseM() {
 	
 	$rennen = $_GET['id'];
-	$rd = getRennenData($rennen);
+	$rInfo = getRennenData($rennen);
 	$_SESSION['rID'] = $rennen;
 	$_SESSION['contentFunc'] = $_GET['func'];
 	
+	if ($rInfo['teamTogetherWith'] != '') {
+	    $rennen = $rennen.",".$rInfo['teamTogetherWith'];
+	}
+	
+	// keine Ergebnisse anzeigen, wenn Teamwertung deaktiviert
+	$limit = '';
+	if ($rInfo['teamTogetherWithDeaktivated'] == 1) {
+	    $limit = "LIMIT 0,0";
+	}
+	
+	
+	
 ?>
-	<h3 class="sub-header">Ergebnisliste <small><?php echo $rd['titel']; ?></small>&nbsp;&nbsp;<a onclick="javascript:clearContent(); return false;" class="btn btn-default"><i class="fa fa-eraser"></i></a></h3>
+	<h3 class="sub-header">Ergebnisliste <small><?php echo $rInfo['titel']; ?></small>&nbsp;&nbsp;<a onclick="javascript:clearContent(); return false;" class="btn btn-default"><i class="fa fa-eraser"></i></a></h3>
 		<div class="table-responsive">
 			<table class="table table-striped table-condensed">
 				<thead>
@@ -127,8 +139,8 @@ function showErgebnisseM() {
 	
 	$sql = "SELECT t.verein, t.vnummer, t.vtime, t.vplatz, t.vklasse FROM `teilnehmer` as t ".
 		"where t.vID = ".$_SESSION['vID']." ".
-			"and t.lid = $rennen and del= 0 and disq = 0 and vplatz > 0 ".
-			"group by vnummer order by vtime asc, vnummer";
+			"and t.lid in ($rennen) and del= 0 and disq = 0 and vplatz > 0 ".
+			"group by vnummer order by vtime asc, vnummer $limit";
 
 	$result = dbRequest($sql, 'SELECT');
 		
@@ -140,7 +152,7 @@ function showErgebnisseM() {
 		
 			$vnummer = $row['vnummer'];
 			$sql2 = "SELECT nachname, vorname, zeit from teilnehmer " .
-					"where lid = $rennen and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
+					"where lid in ($rennen) and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
 			$res2 = dbRequest($sql2, 'SELECT');
 			
 ?>

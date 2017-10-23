@@ -68,7 +68,7 @@ class PDF extends FPDF
 					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,$lineHeight,$row['platz'],0,0,'R',$fill); }
 					if( !$roc ) { $this->Cell(12,$lineHeight,$row['att'],0,0,'R',$fill); }
 					if( $roc ) { 
-					    if ( strpos([$row['geschlecht']], 'U' ) !== true) {
+					    if ( strpos($row['klasse'], 'U' ) !== false) {
 					       $this->Cell(12,$lineHeight,"--",0,0,'R',$fill);
 					    } else {
     					    $heute = getSeconds("00:00:00");
@@ -224,9 +224,14 @@ class PDF extends FPDF
 		
 		$this->printHeader($header);
 
+		$rennen = $id;
+		if ($rd['teamTogetherWith'] != '') {
+		    $rennen = $rennen.",".$rd['teamTogetherWith'];
+		}
+		
 		$sql = "SELECT t.verein, t.vnummer, t.vtime, t.vplatz, t.vklasse FROM `teilnehmer` as t ".
 		"where t.vID = ".$_SESSION['vID']." ".
-			"and t.lid = $id and del= 0 and disq = 0 and vplatz > 0 ".
+			"and t.lid in ($rennen) and del= 0 and disq = 0 and vplatz > 0 ".
 			"group by vnummer order by vtime asc, vnummer";
 			
 		$result = dbRequest($sql, 'SELECT');
@@ -247,7 +252,7 @@ class PDF extends FPDF
 				$this->Cell(5,$lineHeight,'',0,0,'R',$fill);
 				
 				$sql2 = "SELECT nachname, vorname, zeit from teilnehmer " .
-						"where lid = $id and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
+						"where lid in ($rennen) and del= 0 and disq = 0 and vnummer = '$vnummer' order by zeit";
 				$res2 = dbRequest($sql2, 'SELECT');
 					
 				$ii = 1;

@@ -219,8 +219,19 @@ function setKlasse($veranstaltung, $rennen) {
 
 function updateTeam($veranstaltung, $rennen, $rInfo) {
 	
-    $teamAnz = $rInfo['teamAnz'];
+    if( $rInfo['teamTogetherWithDeaktivated'] == 1) {
+        return "0 (deaktiviert)";
+    }
     
+    if ($rInfo['teamTogetherWith'] != '') {
+        $rennen = $rennen.",".$rInfo['teamTogetherWith'];
+        
+        // cleanup old results
+        $query = "update teilnehmer set vnummer = '', vtime = '00:00:00' where useManTime = 0 and vid = $veranstaltung and lid in ($rennen)";
+        $result = dbRequest($query, 'UPDATE');   
+    }
+    
+    $teamAnz = $rInfo['teamAnz'];
     $teamAtt = "";
     if( $rInfo['teamAtt'] == 1) {
         $teamAtt = "and att like '".$rInfo['teamAttVal']."' ";
@@ -233,7 +244,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 	# Platz in Verein + eindeutige Vereinsnummer
 	$sql = "select ID, verein, vklasse from teilnehmer ";
 	$sql .= "where vid = $veranstaltung ";
-	$sql .= "and lid = $rennen ";
+	$sql .= "and lid in ($rennen)";
 	$sql .= "and zeit <> '00:00:00' ";
 	$sql .= "and verein <> '' ";
 	$sql .= "and disq = 0 ";
@@ -283,7 +294,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 	if($alleMannschaften) {
 		# Mannschaftszeiten aktualisieren
 		foreach($alleMannschaften as $ms) {
-			$sql = "select vnummer, verein, zeit from teilnehmer where vid = $veranstaltung and lid = $rennen and vnummer = '".$ms."'";
+			$sql = "select vnummer, verein, zeit from teilnehmer where vid = $veranstaltung and lid in ($rennen) and vnummer = '".$ms."'";
 			$res = dbRequest($sql, 'SELECT');
 	
 			$sec = 0;
@@ -299,7 +310,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 		
 		
 		# Mannschaftsplatzierungen aktualisieren
-		$sql2 = "select vnummer, vtime, vklasse from teilnehmer where vid = $veranstaltung and lid = $rennen and vtime <> '00:00:00' and vnummer <> '' group by vnummer order by vtime, vnummer";
+		$sql2 = "select vnummer, vtime, vklasse from teilnehmer where vid = $veranstaltung and lid in ($rennen) and vtime <> '00:00:00' and vnummer <> '' group by vnummer order by vtime, vnummer";
 		$res2 = dbRequest($sql2, 'SELECT');
 		$kl = array();
 		

@@ -26,5 +26,9 @@ select count(*), event, veranstaltung from marktlauf where veranstaltung = '2016
 -- alle zeiten der U10
 SELECT * FROM `zeit` WHERE nummer in (SELECT stnr from teilnehmer where (klasse = 'MU10' or klasse = 'WU10') and vid = 19) and vid = 19 order by ID;
 
--- alle zeiten der U10 um 1:20 Minuten reduzieren
-UPDATE `zeit` set `zeit` = zeit-120 WHERE nummer in (SELECT stnr from teilnehmer where (klasse = 'MU10' or klasse = 'WU10') and vid = 19) and vid = 19;
+-- alle zeiten der U10 um 46 sekunden reduzieren
+UPDATE `zeit` set `zeit` = SEC_TO_TIME( TIME_TO_SEC(zeit) - TIME_TO_SEC('00:00:46')) WHERE nummer in (SELECT stnr from teilnehmer where (klasse = 'MU10' or klasse = 'WU10') and vid = 19) and vid = 19;
+
+-- alle zeiten der U10 löschen
+delete from zeit where nummer in (SELECT stnr from teilnehmer where (klasse = 'MU10' or klasse = 'WU10') and vid = 19) and vid = 19;
+

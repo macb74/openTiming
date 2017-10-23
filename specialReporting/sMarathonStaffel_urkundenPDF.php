@@ -15,8 +15,8 @@ class PDF extends FPDI
 {
 	function urkunde() {
 	    
-	    $template = "../templates/HML_Urkunde.pdf";
-	    //$template = "";
+	    //$template = "../templates/HML_Urkunde.pdf";
+	    $template = "";
 		
 	    $sql = "SELECT t.*, sr.zeit as tzeit from specialReporting sr " .
 		  		"LEFT JOIN teilnehmer t on sr.uid = t.att " .

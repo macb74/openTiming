@@ -147,7 +147,7 @@ function showRaceEditForm() {
 			$teamAtt          = $row['teamAtt'];
 			$teamAttVal       = $row['teamAttVal'];
 			$roc              = $row['roc'];
-			$teamTogetherWith = $row['teamTogetherWith'];
+			$teamTogetherWith = $_POST['teamTogetherWith'] = preg_replace ( "/_/" , "," , $row['teamTogetherWith'] );
 			$teamDeaktivated = $row['teamDeaktivated'];
 		}					
 	}
@@ -402,6 +402,9 @@ function saveRennen() {
         $teamDeaktivated = 1;
     }
     
+	$_POST['teamTogetherWith'] = preg_replace ( "/[^0-9]/" , "_" , $_POST['teamTogetherWith'] );
+	$_POST['teamTogetherWith'] = preg_replace ( "/_+/" , "_" , $_POST['teamTogetherWith'] );
+	
 	$teamAnz = 0;
 	if($_POST['id'] != "new") {
 		$sql = "update lauf set vID = '".$_SESSION['vID']."',

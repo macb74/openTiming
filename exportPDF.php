@@ -226,6 +226,7 @@ class PDF extends FPDF
 
 		$rennen = $id;
 		if ($rd['teamTogetherWith'] != '') {
+			$rd['teamTogetherWith'] = preg_replace ( "/_/" , "," , $rd['teamTogetherWith'] );
 		    $rennen = $rennen.",".$rd['teamTogetherWith'];
 		}
 		

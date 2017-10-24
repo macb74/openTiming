@@ -17,6 +17,7 @@ class PDF extends FPDI
 		$oldVnummer = "";
 		$rennen = $id;
 		if ($raceData['teamTogetherWith'] != '') {
+			$raceData['teamTogetherWith'] = preg_replace ( "/_/" , "," , $raceData['teamTogetherWith'] );
 		    $rennen = $rennen.",".$raceData['teamTogetherWith'];
 		}
 

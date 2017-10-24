@@ -107,6 +107,7 @@ function showErgebnisseM() {
 	$_SESSION['contentFunc'] = $_GET['func'];
 	
 	if ($rInfo['teamTogetherWith'] != '') {
+		$rInfo['teamTogetherWith'] = preg_replace ( "/_/" , "," , $rInfo['teamTogetherWith'] );
 	    $rennen = $rennen.",".$rInfo['teamTogetherWith'];
 	}
 	

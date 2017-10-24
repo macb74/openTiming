@@ -112,7 +112,7 @@ function showErgebnisseM() {
 	
 	// keine Ergebnisse anzeigen, wenn Teamwertung deaktiviert
 	$limit = '';
-	if ($rInfo['teamTogetherWithDeaktivated'] == 1) {
+	if ($rInfo['teamDeaktivated'] == 1) {
 	    $limit = "LIMIT 0,0";
 	}
 	

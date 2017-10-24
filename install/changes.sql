@@ -127,3 +127,6 @@ UPDATE `lauf` SET `roc` = 0;
 ALTER TABLE `lauf` ADD `teamTogetherWith` VARCHAR(20) NOT NULL AFTER `roc`;
 ALTER TABLE `teilnehmer` CHANGE `vnummer` `vnummer` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Eindeutige Mannschaftsnummer';
 ALTER TABLE `lauf` ADD `teamTogetherWithDeaktivated` INT(1) NOT NULL DEFAULT '0' AFTER `teamTogetherWith`;
+
+-- 24.10.2017
+ALTER TABLE `lauf` CHANGE `teamTogetherWithDeaktivated` `teamDeaktivated` INT(1) NOT NULL DEFAULT '0';

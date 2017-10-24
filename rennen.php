@@ -122,7 +122,7 @@ function showRaceEditForm() {
 	$teamAttVal  = "";
 	$roc         = 0;
 	$teamTogetherWith = '';
-	$teamTogetherWithDeaktivated = 0;
+	$teamDeaktivated = 0;
 				
 	if($_GET['id'] != "new") {
 		$sql = "select * from lauf where ID = ".$_GET['id'];
@@ -148,7 +148,7 @@ function showRaceEditForm() {
 			$teamAttVal       = $row['teamAttVal'];
 			$roc              = $row['roc'];
 			$teamTogetherWith = $row['teamTogetherWith'];
-			$teamTogetherWithDeaktivated = $row['teamTogetherWithDeaktivated'];
+			$teamDeaktivated = $row['teamDeaktivated'];
 		}					
 	}
 	
@@ -302,7 +302,7 @@ function showRaceEditForm() {
 				<input name="teamTogetherWith" maxlength="200" type="text" class="form-control" id="teamTogetherWith" placeholder="Lauf ID" value="<?php echo $teamTogetherWith; ?>">
 			</div>
 			<label class="col-sm-3 checkbox-inline">
-      			<input type="checkbox" name="teamTogetherWithDeaktivated" id="teamTogetherWithDeaktivated" <?php if ($teamTogetherWithDeaktivated == 1) { echo "checked"; } ?>> deaktiviert
+      			<input type="checkbox" name="teamDeaktivated" id="teamDeaktivated" <?php if ($teamDeaktivated == 1) { echo "checked"; } ?>> deaktiviert
     		</label>
 		</div>
 		
@@ -397,9 +397,9 @@ function showRaceEditForm() {
 
 function saveRennen() {
 	
-    $teamTogetherWithDeaktivated = 0;
-    if(isset($_POST['teamTogetherWithDeaktivated'])) {
-        $teamTogetherWithDeaktivated = 1;
+    $teamDeaktivated = 0;
+    if(isset($_POST['teamDeaktivated'])) {
+        $teamDeaktivated = 1;
     }
     
 	$teamAnz = 0;
@@ -423,13 +423,13 @@ function saveRennen() {
 							 teamAttVal = '".$_POST['teamAttVal']."',
 							 roc = '".$_POST['roc']."',
 							 teamTogetherWith = '".$_POST['teamTogetherWith']."',
-                             teamTogetherWithDeaktivated = ".$teamTogetherWithDeaktivated."
+                             teamDeaktivated = ".$teamDeaktivated."
 						where ID = ".$_POST['id'].";";
 	} else {
 		$sql = "insert into lauf (vID, titel, untertitel, start,
 										klasse, team_anz, uDefinition, uTemplate,
 										rundenrennen, use_lID, teamrennen, rdVorgabe,
-										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal, roc, teamTogetherWith, teamTogetherWithDeaktivated) values
+										vklasse, showLogo, mainReaderIp, teamAtt, teamAttVal, roc, teamTogetherWith, teamDeaktivated) values
 										( '".$_SESSION['vID']."',
 										'".$_POST['title']."',
 										'".$_POST['subTitle']."',
@@ -449,7 +449,7 @@ function saveRennen() {
 										'".$_POST['teamAttVal']."',
 		                                ".$_POST['roc'].",
                                         ".$_POST['teamTogetherWith'].",
-                                        ".$teamTogetherWithDeaktivated.");";
+                                        ".$teamDeaktivated.");";
 	}
 
 	//echo $sql;

@@ -121,7 +121,7 @@ function getRennenData($rennen) {
 		$rd['teamAttVal']	    = $row['teamAttVal'];
 		$rd['roc']	            = $row['roc'];
 		$rd['teamTogetherWith'] = $row['teamTogetherWith'];
-		$rd['teamTogetherWithDeaktivated'] = $row['teamTogetherWithDeaktivated'];
+		$rd['teamDeaktivated'] = $row['teamDeaktivated'];
 	}
 	return $rd;
 }

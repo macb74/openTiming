@@ -219,7 +219,7 @@ function setKlasse($veranstaltung, $rennen) {
 
 function updateTeam($veranstaltung, $rennen, $rInfo) {
 	
-    if( $rInfo['teamTogetherWithDeaktivated'] == 1) {
+    if( $rInfo['teamDeaktivated'] == 1) {
         return "0 (deaktiviert)";
     }
     

@@ -227,7 +227,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
         $rennen = $rennen.",".$rInfo['teamTogetherWith'];
         
         // cleanup old results
-        $query = "update teilnehmer set vnummer = '', vtime = '00:00:00' where useManTime = 0 and vid = $veranstaltung and lid in ($rennen)";
+        $query = "update teilnehmer set vnummer = '', vtime = '00:00:00', vplatz = '0' where vid = $veranstaltung and lid in ($rennen)";
         $result = dbRequest($query, 'UPDATE');   
     }
     

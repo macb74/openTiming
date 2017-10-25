@@ -147,10 +147,12 @@ function showRaceEditForm() {
 			$teamAtt          = $row['teamAtt'];
 			$teamAttVal       = $row['teamAttVal'];
 			$roc              = $row['roc'];
-			$teamTogetherWith = $_POST['teamTogetherWith'] = preg_replace ( "/_/" , "," , $row['teamTogetherWith'] );
-			$teamDeaktivated = $row['teamDeaktivated'];
+			$teamTogetherWith = preg_replace ( "/_/" , "," , $row['teamTogetherWith'] );
+			$teamDeaktivated  = $row['teamDeaktivated'];
 		}					
 	}
+	
+	$teamTogetherWith = substr($teamTogetherWith, 1, -1);
 	
 	$sql = "select * from klasse order by name";
 	$result = dbRequest($sql, 'SELECT');
@@ -404,6 +406,7 @@ function saveRennen() {
     
 	$_POST['teamTogetherWith'] = preg_replace ( "/[^0-9]/" , "_" , $_POST['teamTogetherWith'] );
 	$_POST['teamTogetherWith'] = preg_replace ( "/_+/" , "_" , $_POST['teamTogetherWith'] );
+	$_POST['teamTogetherWith'] = "_".$_POST['teamTogetherWith']."_";
 	
 	$teamAnz = 0;
 	if($_POST['id'] != "new") {

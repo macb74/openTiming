@@ -224,7 +224,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
     }
     
 	//check if race has teamTogetherWith with another race
-	$query = "select teamTogetherWith from lauf where teamTogetherWith like '%".$rennen."%' and vid = $veranstaltung";
+	$query = "select teamTogetherWith from lauf where teamTogetherWith like '%_".$rennen."_%' and vid = $veranstaltung";
     $result = dbRequest($query, 'SELECT');
 	if($result[1] > 0) {
 		return "0 (mit anderem Rennen verbunden)";

@@ -201,22 +201,6 @@ function updatePlatzierung($veranstaltung, $rennen, $rInfo) {
 	return $result[1];
 }
 
-function setKlasse($veranstaltung, $rennen) {
-
-	$sql = "select id, lid, geschlecht, jahrgang from teilnehmer ".
-	"where vid = $veranstaltung and lid = $rennen and disq = 0 and del = 0";
-		
-	$result = dbRequest($sql, 'SELECT');
-	
-	if($result[1] > 0) {
-		foreach ($result[0] as $row) {
-			$klasse = getKlasse($row['jahrgang'], $row['geschlecht'], $row['lid'], 0);
-			$sql = "update teilnehmer set klasse = '$klasse[0]', vklasse = '$klasse[1]' where id = ".$row['id'];
-			$res = dbRequest($sql, 'UPDATE');
-		}
-	}
-}
-
 function updateTeam($veranstaltung, $rennen, $rInfo) {
 	
     if( $rInfo['teamDeaktivated'] == 1) {
@@ -626,4 +610,125 @@ function getCountRunner($race) {
 	$count[1] = $res[1];
 	
 	return $count;
+}
+
+function setKlasse($veranstaltung, $rennen) {
+	
+	$klassen = getKlasseDataAuswertung($rennen);
+	
+	$sql = "select id, lid, geschlecht, jahrgang from teilnehmer ".
+			"where vid = $veranstaltung and lid = $rennen and disq = 0 and del = 0";
+	
+	$result = dbRequest($sql, 'SELECT');
+	
+	if($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			$klasse = getKlasseAuswertung($row['jahrgang'], $row['geschlecht'], $klassen, 0);
+			$sql = "update teilnehmer set klasse = '$klasse[0]', vklasse = '$klasse[1]' where id = ".$row['id'];
+			$res = dbRequest($sql, 'UPDATE');
+		}
+	}
+}
+
+function getKlasseAuswertung($jg, $sex, $klassen, $ajax) {
+	
+	$teilnehmerKlasse[0] = "";
+	$teilnehmerKlasse[1] = "";
+	
+	$jahr = substr($_SESSION['vDatum'], 0, 4);
+	$alter = $jahr - $jg;
+	
+	foreach ($klassen[0] as $klasse) {
+		if( isset($klasse[$sex])) {
+			if( $alter >= $klasse[$sex]['von'] && $alter <= $klasse[$sex]['bis'] ) {
+				$teilnehmerKlasse[0] = $klasse[$sex]['name'];
+			}
+		}
+	}
+	
+	foreach ($klassen[1] as $klasse) {
+		if( isset($klasse[$sex])) {
+			if( $alter >= $klasse[$sex]['von'] && $alter <= $klasse[$sex]['bis'] ) {
+				$teilnehmerKlasse[1] = $klasse[$sex]['name'];
+			}
+		}
+	}
+	
+	if ($ajax == 1) {
+		echo $teilnehmerKlasse[0].";".$teilnehmerKlasse[1];
+	} else {
+		return $teilnehmerKlasse;
+	}
+}
+
+function getKlasseDataAuswertung($rennen) {
+	
+	if ($rennen == "X") {
+		return $klasse;
+	}
+	
+	// Klasse der Einzelwertung
+	$sql = "SELECT kd.* FROM `klasse_data` kd left join lauf l on l.klasse = kd.kID where l.id = $rennen";
+	$result = dbRequest($sql, 'SELECT');
+	
+	$i = 0;
+	if ($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			$klasse[0][$i][$row['geschlecht']]['von'] = $row['altervon'];
+			$klasse[0][$i][$row['geschlecht']]['bis'] = $row['alterbis'];
+			$klasse[0][$i][$row['geschlecht']]['name'] = $row['name'];
+			$i++;
+		}
+	}
+	
+	// Klasse der Vereins- / Teamwertung
+	$sql = "SELECT kd.* FROM `klasse_data` kd left join lauf l on l.vklasse = kd.kID where l.id = $rennen";
+	$result = dbRequest($sql, 'SELECT');
+	
+	if ($result[1] > 0) {
+		foreach ($result[0] as $row) {
+			$klasse[1][$i][$row['geschlecht']]['von'] = $row['altervon'];
+			$klasse[1][$i][$row['geschlecht']]['bis'] = $row['alterbis'];
+			$klasse[1][$i][$row['geschlecht']]['name'] = $row['name'];
+			$i++;
+		}
+	}
+	
+	return $klasse;
+}
+
+function initKlassen() {
+	
+	$klasse[0][0]['M']['von'] = -1;
+	$klasse[0][0]['M']['bis'] = -1;
+	$klasse[0][0]['M']['name'] = "";
+	
+	$klasse[0][0]['W']['von'] = -1;
+	$klasse[0][0]['W']['bis'] = -1;
+	$klasse[0][0]['W']['name'] = "";
+	
+	$klasse[0][0]['X']['von'] = -1;
+	$klasse[0][0]['X']['bis'] = -1;
+	$klasse[0][0]['X']['name'] = "";
+	
+	$klasse[0][0]['-']['von'] = -1;
+	$klasse[0][0]['-']['bis'] = -1;
+	$klasse[0][0]['-']['name'] = "";
+	
+	$klasse[1][0]['M']['von'] = -1;
+	$klasse[1][0]['M']['bis'] = -1;
+	$klasse[1][0]['M']['name'] = "";
+	
+	$klasse[1][0]['W']['von'] = -1;
+	$klasse[1][0]['W']['bis'] = -1;
+	$klasse[1][0]['W']['name'] = "";
+	
+	$klasse[1][0]['X']['von'] = -1;
+	$klasse[1][0]['X']['bis'] = -1;
+	$klasse[1][0]['X']['name'] = "";
+	
+	$klasse[1][0]['-']['von'] = -1;
+	$klasse[1][0]['-']['bis'] = -1;
+	$klasse[1][0]['-']['name'] = "";
+	
 }

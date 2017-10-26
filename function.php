@@ -38,6 +38,18 @@ function connectDB() {
         printf("Error: %s\n", $link->error);
     }
 	
+	//$link->query("SET GLOBAL general_log_file = 'd:/mysql_general.log';");
+	//$link->query("SET GLOBAL general_log = 'ON'");
+	//$link->query("SET GLOBAL general_log = 'OFF'");
+
+	
+	/*
+	Funktioniert nicht zur Laufzeit - variablen müssen in der my.ini stehen
+	$link->query("SET GLOBAL slow_query_log = 'ON';");
+	$link->query("SET GLOBAL long_query_time = 0;");
+	$link->query("SET GLOBAL slow-query-log-file = 'd:/mysql_sloq_query_log.log';");
+	*/
+	
 	return $link;
 }
 

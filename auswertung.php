@@ -11,19 +11,18 @@ function doAuswertung() {
 	$veranstaltung = $_SESSION['vID'];
 	$rInfo = getRennenData($rennen);
 	if($rInfo['lockRace'] == 1 ) { die; }
-	cleanAll($veranstaltung, $rennen);
 	
+	cleanAll($veranstaltung, $rennen);
+	setKlasse($veranstaltung,$rennen);
+	updateZeit($veranstaltung, $rennen, $rInfo);
 	if($rInfo['rundenrennen'] == 0 || $rInfo['rundenrennen'] == 2) {
-		setKlasse($veranstaltung,$rennen);
-		updateZeit($veranstaltung, $rennen, $rInfo);
-		$anzTeilnehmer = updatePlatzierung($veranstaltung, $rennen, $rInfo);
 		$anzTeams = updateTeam($veranstaltung, $rennen, $rInfo);
-	} elseif ($rInfo['rundenrennen'] == 1) {
-		setKlasse($veranstaltung,$rennen);
-		updateAnzRunden($veranstaltung, $rennen, $rInfo);
-		updateZeit($veranstaltung, $rennen, $rInfo);
-		$anzTeilnehmer = updatePlatzierung($veranstaltung, $rennen, $rInfo);
 	}
+	
+	if($rInfo['rundenrennen'] == 1) {
+		updateAnzRunden($veranstaltung, $rennen, $rInfo);
+	}
+	$anzTeilnehmer = updatePlatzierung($veranstaltung, $rennen, $rInfo);
 	updateStatus($veranstaltung, $rennen);
 	
 	echo "{ \"message\": \"<p>Es wurden <b>$anzTeilnehmer Teilnehmer</b> ausgewertet<br>Es wurden <b>$anzTeams Teams</b> ausgewertet</p>\",
@@ -82,11 +81,11 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
     global $config;
 
 	if($rInfo['use_lID'] == 1) { $sql_lID = "and z.lid = $rennen "; } else { $sql_lID = ""; }
-
+	
 	switch($rInfo["rundenrennen"]) {
-		case 1:  $zeit = "max(z.zeit)"; break;   # Bei Rennen auf Zeit: Ende = letzte Runde
-		case 2:  $zeit = "z.zeit"; break;        # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
-        default: $zeit = "min(z.zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
+		case 1:  $zeit = "max(zeit)"; break;   # Bei Rennen auf Zeit: Ende = letzte Runde
+		case 2:  $zeit = "zeit"; break;        # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
+        default: $zeit = "min(zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
 	} 
 
         # Test auf Zeitumstellungslauf - rennen IDs muessen in Config gesetzt sein
@@ -98,21 +97,36 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
     $startZeit = $rInfo['startZeit'];
 	if($rInfo["rundenrennen"] != 2) {
 	# ohne Rundenvorgabe oder kein Rundenrennen:
-		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
-			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
-			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
-			"and z.zeit > '".$startZeit."' and z.del = 0 ".
-			"group by t.stnr";
 
-		$result = dbRequest($sql, 'SELECT');
+		$sql = "update teilnehmer t ".
+					"left join (select nummer, $zeit zeit, millisecond ".
+					"from zeit ".
+					"	where del = 0 ".
+					"	and zeit > '".$startZeit."' ".
+					"	and vid = $veranstaltung group by nummer) z on t.stnr = z.nummer ".
+					"	set t.zeit = SEC_TO_TIME(to_seconds(z.zeit) - to_seconds('".$startZeit."')), ".
+					"		t.millisecond = z.millisecond ".
+					"where t.lid = $rennen;";
 
-		if($result[1] > 0) {
-			foreach ($result[0] as $row) {
-				$realTime = getRealTime($startZeit, $row['zeit']);			
-				$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];		
-				$res = dbRequest($sql, 'UPDATE');
-			}
-		}
+		$result = dbRequest($sql, 'UPDATE');
+		
+		
+// 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
+// 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
+// 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
+// 			"and z.zeit > '".$startZeit."' and z.del = 0 ".
+// 			"group by t.stnr";
+
+// 		$result = dbRequest($sql, 'SELECT');
+
+// 		if($result[1] > 0) {
+// 			foreach ($result[0] as $row) {
+// 				$realTime = getRealTime($startZeit, $row['zeit']);			
+// 				$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];		
+// 				$res = dbRequest($sql, 'UPDATE');
+// 			}
+// 		}
+
 	} else {
         # Rennen auf x Runden:
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond".
@@ -124,10 +138,20 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 		$result = dbRequest($sql, 'SELECT');
 	
 		$i=1;
+		$sTime = "00:00:00";
 		$oldStnr = 0;
+		
 		if($result[1] > 0) {
 			foreach ($result[0] as $row) {
-				if($oldStnr == $row['stnr']) { $i++; } else { $i=1; }
+				if($oldStnr == $row['stnr']) { 
+					$dif = abs(getSeconds($row['zeit']) - getSeconds($sTime));
+					if( $dif > 10 ) {
+						$i++;
+						$sTime = $row['zeit'];
+					}
+				} else { 
+					$i=1; 
+				}
 				if($i == $rInfo['rdVorgabe']) {
 					//echo $i."-";
 					$realTime = getRealTime($startZeit, $row['zeit']);
@@ -283,24 +307,24 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 		}		
 	}
 
-	if($alleMannschaften) {
-		# Mannschaftszeiten aktualisieren
-		foreach($alleMannschaften as $ms) {
-			$sql = "select vnummer, verein, zeit from teilnehmer where vid = $veranstaltung and lid in ($rennen) and vnummer = '".$ms."'";
-			$res = dbRequest($sql, 'SELECT');
 	
-			$sec = 0;
-			if($res[1] > 0) {
-				foreach ($res[0] as $row) {
-					$sec = $sec + getSeconds('1970-01-01 '.$row['zeit']);
-				}
-			}
-			$time = sec2Time($sec);
-			$sql = "update teilnehmer set vtime = '".$time."' where vnummer = '".$ms."'";
+	# Mannschaftszeiten aktualisieren
+	$sql = "select verein, vnummer, SEC_TO_TIME(SUM(time_to_sec(zeit))) zeit from teilnehmer vtime where lid in ($rennen) and vnummer <> '' group by vnummer order by vtime asc";
+	$res = dbRequest($sql, 'SELECT');
+	
+	$i = 1;
+	if($res[1] > 0) {
+		foreach ($res[0] as $row) {
+			$sql = "update teilnehmer set vtime = '".$row['zeit']."' where vnummer = '".$row['vnummer']."'";
 			$res = dbRequest($sql, 'UPDATE');
 		}
-		
-		
+		$i++;
+	}
+
+	
+	
+
+	if($alleMannschaften) {		
 		# Mannschaftsplatzierungen aktualisieren
 		$sql2 = "select vnummer, vtime, vklasse from teilnehmer where vid = $veranstaltung and lid in ($rennen) and vtime <> '00:00:00' and vnummer <> '' group by vnummer order by vtime, vnummer";
 		$res2 = dbRequest($sql2, 'SELECT');

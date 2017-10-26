@@ -413,7 +413,7 @@ function timeline(domElement) {
         }
 
         function showTooltip (d) {
-        	        	
+			
             var x = posX < band.x + band.w / 2
                     ? posX + 10
                     : posX - 110,
@@ -429,15 +429,15 @@ function timeline(domElement) {
 				
 			$( '.stnr' + d.label ).each(function( index ) {
 				$('.stnr' + d.label).css('fill', hovercolor);
-				$('.label' + d.label).css('fill', '#FFFFFF');				
+				$('.label' + d.label).css('fill', '#FFFFFF');
 			});
         }
 
         function hideTooltip (d) {
-            tooltip.style("visibility", "hidden");			
+            //tooltip.style("visibility", "hidden");			
 			$( '.stnr' + d.label ).each(function( index ) {
 				$('.stnr' + d.label).css('fill', bgcol[d.label]);
-				$('.label' + d.label).css('fill', '');		
+				$('.label' + d.label).css('fill', '');
 			});
         }
 
@@ -520,7 +520,7 @@ function timeline(domElement) {
     	
 	    data.items.forEach(function (item){
 	    	bgcol[item.label] = orange;
-	    	if(i > 6) { numbers.shift(); }    	
+	    	if(i > 20) { numbers.shift(); }
 	    	if(numbers.indexOf(item.label) != -1) {
 				$( '.stnr' + item.label ).each(function( index ) {
 					$('.stnr' + item.label).css("fill", green);

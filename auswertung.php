@@ -232,15 +232,17 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
     }
     
 	//check if race has teamTogetherWith with another race
-	$query = "select teamTogetherWith from lauf where teamTogetherWith like '%_".$rennen."_%' and vid = $veranstaltung";
+	$query = "select teamTogetherWith from lauf where teamTogetherWith like '%\"".$rennen."\"%' and vid = $veranstaltung";
     $result = dbRequest($query, 'SELECT');
 	if($result[1] > 0) {
 		return "0 (mit anderem Rennen verbunden)";
 	}
 	
     if ($rInfo['teamTogetherWith'] != '') {
-		$rInfo['teamTogetherWith'] = preg_replace ( "/_/" , "," , $rInfo['teamTogetherWith'] );
-        $rennen = $rennen.",".$rInfo['teamTogetherWith'];
+        $teamTogetherWith = json_decode($rInfo['teamTogetherWith'], true);
+        foreach ($teamTogetherWith as $item) {
+            $rennen = $rennen.",".$item;
+        }
         
         // cleanup old results
         $query = "update teilnehmer set vnummer = '', vtime = '00:00:00', vplatz = '0' where vid = $veranstaltung and lid in ($rennen)";

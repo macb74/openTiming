@@ -147,12 +147,12 @@ function showRaceEditForm() {
 			$teamAtt          = $row['teamAtt'];
 			$teamAttVal       = $row['teamAttVal'];
 			$roc              = $row['roc'];
-			$teamTogetherWith = preg_replace ( "/_/" , "," , $row['teamTogetherWith'] );
+            $teamTogetherWith = json_decode( $row['teamTogetherWith'], true);
 			$teamDeaktivated  = $row['teamDeaktivated'];
 		}					
 	}
-	
-	$teamTogetherWith = substr($teamTogetherWith, 1, -1);
+		
+	$teamTogetherWith = implode(",", $teamTogetherWith);
 	
 	$sql = "select * from klasse order by name";
 	$result = dbRequest($sql, 'SELECT');
@@ -404,10 +404,13 @@ function saveRennen() {
         $teamDeaktivated = 1;
     }
     
-	$_POST['teamTogetherWith'] = preg_replace ( "/[^0-9]/" , "_" , $_POST['teamTogetherWith'] );
-	$_POST['teamTogetherWith'] = preg_replace ( "/_+/" , "_" , $_POST['teamTogetherWith'] );
-	$_POST['teamTogetherWith'] = "_".$_POST['teamTogetherWith']."_";
-	
+    // make json array out of sting
+	$i = 0;
+    $tgwString = preg_replace ( "/[^0-9]/" , "_" , $_POST['teamTogetherWith'] );
+	$tgwString = preg_replace ( "/_+/" , "_" , $tgwString );
+	$tgwArray = explode("_", $tgwString);
+	$_POST['teamTogetherWith'] = json_encode($tgwArray);
+		
 	$teamAnz = 0;
 	if($_POST['id'] != "new") {
 		$sql = "update lauf set vID = '".$_SESSION['vID']."',

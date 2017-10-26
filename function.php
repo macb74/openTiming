@@ -83,7 +83,7 @@ function dbRequest($sql, $action) {
 		$i = 0;
 		while ($row = $res->fetch_assoc()) {
 			foreach($row as $key => $value) {
-				$result[0][$i][$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+			    $result[0][$i][$key] = htmlspecialchars($value, ENT_NOQUOTES, 'UTF-8');
 			}
 			$i++;
 		}

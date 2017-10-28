@@ -186,7 +186,7 @@ function setKlasse(data) {
 
 
 function showHideRunden(id) {
-  console.log(id);
+  //console.log(id);
   if (id > 0) {
     $('#rundenrennen').removeClass('hidden');
   } else {

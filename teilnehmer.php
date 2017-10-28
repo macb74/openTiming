@@ -291,7 +291,7 @@ function showTeilnehmerEditForm()
         </div>
         <label for="title" class="col-sm-1 control-label">Summe:</label>
         <div class="col-sm-1">
-          <input readonly name="sumRunden" type="text" class="form-control" id="sumRunden" placeholder="" value="">
+          <input readonly name="sumRunden" type="text" class="form-control" id="sumRunden" placeholder="" value="<?php echo $manRunden + $autRunden; ?>">
         </div>
       </div>
     </div>

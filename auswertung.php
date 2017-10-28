@@ -84,7 +84,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	
 	switch($rInfo["rundenrennen"]) {
 		case 1:  $zeit = "max(zeit)"; break;   # Bei Rennen auf Zeit: Ende = letzte Runde
-		case 2:  $zeit = "zeit"; break;        # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
+		case 2:  $zeit = "z.zeit"; break;        # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
         default: $zeit = "min(zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
 	} 
 
@@ -129,7 +129,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 
 	} else {
         # Rennen auf x Runden:
-		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond".
+		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
 			"and z.zeit > '".$startZeit."' and z.del = 0 order by stnr, zeit asc";
@@ -155,13 +155,16 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 				if($i == $rInfo['rdVorgabe']) {
 					//echo $i."-";
 					$realTime = getRealTime($startZeit, $row['zeit']);
-					$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];
+					$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond'].", aut_runden = $i where id = ".$row['id'];
 					$res = dbRequest($sql, 'UPDATE');
 				}
 				$oldStnr = $row['stnr'];
 			}
 		}
-	}	
+		
+		$sql = "update teilnehmer set runden = aut_runden + man_runden where vid = $veranstaltung and lid = $rennen";
+		$res = dbRequest($sql, 'UPDATE');
+	}
 
 	// manuell eingetragene Zeiten in der Einlaufliste
 	$sql = "select t.id, t.stnr as stnr, t.manzeit ".
@@ -611,12 +614,11 @@ function updateAnzRunden($veranstaltung, $rennen, $rInfo) {
 		}
 
 		$sql2 = "update teilnehmer set aut_runden = ".$rowCount." where stnr = ".$number." and vid = $veranstaltung and lid = $rennen";
-		//echo $sql."<br>";
 		$res2 = dbRequest($sql2, 'UPDATE');		
 	}
 
 	$sql = "update teilnehmer set runden = aut_runden + man_runden where vid = $veranstaltung and lid = $rennen";
-	$res = dbRequest($sql, 'UPDATE');	
+	$res = dbRequest($sql, 'UPDATE');
 }
 
 function updateStatus($veranstaltung, $rennen) {

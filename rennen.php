@@ -408,6 +408,8 @@ function saveRennen() {
 	$i = 0;
     $tgwString = preg_replace ( "/[^0-9]/" , "_" , $_POST['teamTogetherWith'] );
 	$tgwString = preg_replace ( "/_+/" , "_" , $tgwString );
+	$tgwString = preg_replace ( "/^_/" , "" , $tgwString );
+	$tgwString = preg_replace ( "/_$/" , "" , $tgwString );
 	$tgwArray = explode("_", $tgwString);
 	$_POST['teamTogetherWith'] = json_encode($tgwArray);
 		

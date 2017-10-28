@@ -241,7 +241,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 		return "0 (mit anderem Rennen verbunden)";
 	}
 	
-    if ($rInfo['teamTogetherWith'] != '') {
+	if ($rInfo['teamTogetherWith'] != '' && $rInfo['teamTogetherWith'] != '[""]') {
         $teamTogetherWith = json_decode($rInfo['teamTogetherWith'], true);
         foreach ($teamTogetherWith as $item) {
             $rennen = $rennen.",".$item;

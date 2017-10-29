@@ -121,7 +121,6 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 		$result = dbRequest($sql, 'SELECT');
 	
 		$validRounds=1;
-		$readerRounds=1;
 		$sTime = "00:00:00";
 		$oldStnr = 0;
 		
@@ -134,13 +133,12 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 					    $validRounds++;
 						$sTime = $row['zeit'];
 					}
-					$readerRounds++;
 				} else { 
 				    $validRounds=1;
-				    $readerRounds=1;
 				}
 
-				if($validRounds == $rInfo['rdVorgabe'] && $readerRounds == $rInfo['rdVorgabe']) {
+				if($validRounds == $rInfo['rdVorgabe'] && !isset($update[$row['stnr']])) {
+				    $update[$row['stnr']] = true;
 					$realTime = getRealTime($startZeit, $row['zeit']);
 					$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond'].", aut_runden = $validRounds where id = ".$row['id'];
 					$res = dbRequest($sql, 'UPDATE');

@@ -53,7 +53,7 @@ function submitForm(form, redirect) {
   $.each(params, function(i, val) {
     formData.append(val.name, val.value);
   });
-
+    
   // wenn es ein file upload gibt
   if ($('[name="uploadFile"]').length > 0) {
     files = $(form).find('[name="uploadFile"]')[0].files;
@@ -62,7 +62,7 @@ function submitForm(form, redirect) {
       formData.append('uploadFile-' + i, file);
     });
   }
-
+  
   $.ajax({
     type: "POST",
     url: "ajaxRequest.php",
@@ -99,6 +99,10 @@ function submitForm(form, redirect) {
         window.location.href = redirect;
       }
       
+    },
+    error: function(response, status, error) {
+        $('.alert').html("Daten konnten nicht gespeichert werden");
+        $('.alert').removeClass('hidden');
     }
   })
 

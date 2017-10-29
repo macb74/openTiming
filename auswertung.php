@@ -109,23 +109,6 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 					"where t.lid = $rennen;";
 
 		$result = dbRequest($sql, 'UPDATE');
-		
-		
-// 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
-// 			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
-// 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
-// 			"and z.zeit > '".$startZeit."' and z.del = 0 ".
-// 			"group by t.stnr";
-
-// 		$result = dbRequest($sql, 'SELECT');
-
-// 		if($result[1] > 0) {
-// 			foreach ($result[0] as $row) {
-// 				$realTime = getRealTime($startZeit, $row['zeit']);			
-// 				$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond']." where id = ".$row['id'];		
-// 				$res = dbRequest($sql, 'UPDATE');
-// 			}
-// 		}
 
 	} else {
         # Rennen auf x Runden:

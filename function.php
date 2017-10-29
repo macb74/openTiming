@@ -38,9 +38,9 @@ function connectDB() {
         printf("Error: %s\n", $link->error);
     }
 	
-	//$link->query("SET GLOBAL general_log_file = 'd:/mysql_general.log';");
-	//$link->query("SET GLOBAL general_log = 'ON'");
-	//$link->query("SET GLOBAL general_log = 'OFF'");
+	//SET GLOBAL general_log_file = 'mysql_general.log';
+	//SET GLOBAL general_log = 'ON';
+	//SET GLOBAL general_log = 'OFF';
 
 	
 	/*

@@ -15,13 +15,13 @@ function doAuswertung() {
 	cleanAll($veranstaltung, $rennen);
 	setKlasse($veranstaltung,$rennen);
 	updateZeit($veranstaltung, $rennen, $rInfo);
-	if($rInfo['rundenrennen'] == 0 || $rInfo['rundenrennen'] == 2) {
-		$anzTeams = updateTeam($veranstaltung, $rennen, $rInfo);
-	}
-	
+
 	if($rInfo['rundenrennen'] == 1) {
-		updateAnzRunden($veranstaltung, $rennen, $rInfo);
+	    updateAnzRunden($veranstaltung, $rennen, $rInfo);
 	}
+
+	$anzTeams = updateTeam($veranstaltung, $rennen, $rInfo);
+
 	$anzTeilnehmer = updatePlatzierung($veranstaltung, $rennen, $rInfo);
 	updateStatus($veranstaltung, $rennen);
 	
@@ -70,7 +70,7 @@ function sec2Time($sec){
 }
 
 function cleanAll($veranstaltung, $rennen) {
-	$query = "update teilnehmer set zeit='00:00:00', platz = 0, akplatz = 0, vplatz = 0, vnummer = '', mplatz = 0, vtime = '00:00:00' where vid = $veranstaltung and lid = $rennen";
+	$query = "update teilnehmer set zeit='00:00:00', platz = 0, akplatz = 0, vplatz = 0, vnummer = '', mplatz = 0, vtime = '00:00:00', runden = 0 where vid = $veranstaltung and lid = $rennen";
 	$result = dbRequest($query, 'UPDATE');
 
 	$query = "update teilnehmer set manzeit='00:00:00' where useManTime = 0 and vid = $veranstaltung and lid = $rennen";
@@ -120,27 +120,32 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	
 		$result = dbRequest($sql, 'SELECT');
 	
-		$i=1;
+		$validRounds=1;
+		$readerRounds=1;
 		$sTime = "00:00:00";
 		$oldStnr = 0;
 		
 		if($result[1] > 0) {
 			foreach ($result[0] as $row) {
-				if($oldStnr == $row['stnr']) { 
+				
+			    if($oldStnr == $row['stnr']) { 
 					$dif = abs(getSeconds($row['zeit']) - getSeconds($sTime));
 					if( $dif > 10 ) {
-						$i++;
+					    $validRounds++;
 						$sTime = $row['zeit'];
 					}
+					$readerRounds++;
 				} else { 
-					$i=1; 
+				    $validRounds=1;
+				    $readerRounds=1;
 				}
-				if($i == $rInfo['rdVorgabe']) {
-					//echo $i."-";
+
+				if($validRounds == $rInfo['rdVorgabe'] && $readerRounds == $rInfo['rdVorgabe']) {
 					$realTime = getRealTime($startZeit, $row['zeit']);
-					$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond'].", aut_runden = $i where id = ".$row['id'];
+					$sql = "update teilnehmer set Zeit = '$realTime', millisecond = ".$row['millisecond'].", aut_runden = $validRounds where id = ".$row['id'];
 					$res = dbRequest($sql, 'UPDATE');
 				}
+				
 				$oldStnr = $row['stnr'];
 			}
 		}
@@ -314,7 +319,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 
 	if($alleMannschaften) {		
 		# Mannschaftsplatzierungen aktualisieren
-		$sql2 = "select vnummer, vtime, vklasse from teilnehmer where vid = $veranstaltung and lid in ($rennen) and vtime <> '00:00:00' and vnummer <> '' group by vnummer order by vtime, vnummer";
+		$sql2 = "select vnummer, vtime, vklasse, SUM(runden) as runden from teilnehmer where vid = $veranstaltung and lid in ($rennen) and vtime <> '00:00:00' and vnummer <> '' group by vnummer order by runden desc, vtime, vnummer";
 		$res2 = dbRequest($sql2, 'SELECT');
 		$kl = array();
 		

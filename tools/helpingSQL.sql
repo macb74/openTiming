@@ -32,3 +32,5 @@ UPDATE `zeit` set `zeit` = SEC_TO_TIME( TIME_TO_SEC(zeit) - TIME_TO_SEC('00:00:4
 -- alle zeiten der U10 löschen
 delete from zeit where nummer in (SELECT stnr from teilnehmer where (klasse = 'MU10' or klasse = 'WU10') and vid = 19) and vid = 19;
 
+-- mySQL mit datum und zeit rechnen
+select SEC_TO_TIME(to_seconds('2017-10-26 08:00:20') - to_seconds('2017-10-25 08:00:00'));

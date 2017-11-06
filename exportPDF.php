@@ -225,11 +225,8 @@ class PDF extends FPDF
 		$this->printHeader($header);
 
 		$rennen = $id;
-		if ($rd['teamTogetherWith'] != '') {
-			$rd['teamTogetherWith'] = preg_replace ( "/_/" , "," , $rd['teamTogetherWith'] );
-		    $rennen = $rennen.",".$rd['teamTogetherWith'];
-		}
-		
+		$rennen = checkTeamTogetherWith($rennen, $rd['teamTogetherWith']);
+				
 		$sql = "SELECT t.verein, t.vnummer, t.vtime, t.vplatz, t.vklasse FROM `teilnehmer` as t ".
 		"where t.vID = ".$_SESSION['vID']." ".
 			"and t.lid in ($rennen) and del= 0 and disq = 0 and vplatz > 0 ".

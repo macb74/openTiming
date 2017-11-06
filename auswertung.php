@@ -227,12 +227,9 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 		return "0 (mit anderem Rennen verbunden)";
 	}
 	
+	$rennen = checkTeamTogetherWith($rennen, $rInfo['teamTogetherWith']);
+	
 	if ($rInfo['teamTogetherWith'] != '' && $rInfo['teamTogetherWith'] != '[""]') {
-        $teamTogetherWith = json_decode($rInfo['teamTogetherWith'], true);
-        foreach ($teamTogetherWith as $item) {
-            $rennen = $rennen.",".$item;
-        }
-        
         // cleanup old results
         $query = "update teilnehmer set vnummer = '', vtime = '00:00:00', vplatz = '0' where vid = $veranstaltung and lid in ($rennen)";
         $result = dbRequest($query, 'UPDATE');   

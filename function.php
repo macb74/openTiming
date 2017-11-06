@@ -176,4 +176,14 @@ function filterParameters($array) {
  	return $array;
 	 
 }
+
+function checkTeamTogetherWith($rennen, $teamTogetherWithString) {
+	if ($teamTogetherWithString != '' && $teamTogetherWithString != '[""]') {
+		$teamTogetherWith = json_decode($teamTogetherWithString, true);
+		foreach ($teamTogetherWith as $item) {
+			$rennen = $rennen.",".$item;
+		}
+  	}
+	return $rennen;
+}
 ?>

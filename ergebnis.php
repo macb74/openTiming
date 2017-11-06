@@ -106,12 +106,7 @@ function showErgebnisseM() {
 	$_SESSION['rID'] = $rennen;
 	$_SESSION['contentFunc'] = $_GET['func'];
 	
-	if ($rInfo['teamTogetherWith'] != '' && $rInfo['teamTogetherWith'] != '[""]') {
-	    $teamTogetherWith = json_decode($rInfo['teamTogetherWith'], true);
-	    foreach ($teamTogetherWith as $item) {
-	        $rennen = $rennen.",".$item;
-	    }
-	}
+	$rennen = checkTeamTogetherWith($rennen, $rd['teamTogetherWith']);
 	
 	// keine Ergebnisse anzeigen, wenn Teamwertung deaktiviert
 	$limit = '';

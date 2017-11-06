@@ -16,10 +16,7 @@ class PDF extends FPDI
 	    
 		$oldVnummer = "";
 		$rennen = $id;
-		if ($raceData['teamTogetherWith'] != '') {
-			$raceData['teamTogetherWith'] = preg_replace ( "/_/" , "," , $raceData['teamTogetherWith'] );
-		    $rennen = $rennen.",".$raceData['teamTogetherWith'];
-		}
+		$rennen = checkTeamTogetherWith($rennen, $rd['teamTogetherWith']);
 
 		if($action == 'gesamt') {
 			$sql= "SELECT t.* from teilnehmer as t where t.vID = ".$_SESSION['vID']." and lid = $id and platz > 0 and platz <= $num order by geschlecht, platz";

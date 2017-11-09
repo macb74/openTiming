@@ -34,3 +34,10 @@ delete from zeit where nummer in (SELECT stnr from teilnehmer where (klasse = 'M
 
 -- mySQL mit datum und zeit rechnen
 select SEC_TO_TIME(to_seconds('2017-10-26 08:00:20') - to_seconds('2017-10-25 08:00:00'));
+
+-- Orte aus denen die Läufer sind
+SELECT count(o.ort), o.ort, o.lon, o.lat FROM teilnehmer t
+ LEFT JOIN verein_ort vo on t.verein = vo.verein
+ LEFT JOIN ort o on vo.ort = o.ort
+ where t.vid = 19 and o.ort is not null
+ group by o.ort;

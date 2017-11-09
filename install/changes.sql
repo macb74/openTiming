@@ -106,7 +106,7 @@ CREATE TABLE `specialReporting` (
   `uid` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `zeit` time NOT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- 09.10.2017
 CREATE TABLE IF NOT EXISTS `chat` (
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `chat` (
   `message` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- 15.10.2017
 ALTER TABLE `lauf` ADD `teamAtt` INT NOT NULL AFTER `mainReaderIp`, ADD `teamAttVal` VARCHAR(20) NOT NULL AFTER `teamAtt`;
@@ -130,3 +130,22 @@ ALTER TABLE `lauf` ADD `teamTogetherWithDeaktivated` INT(1) NOT NULL DEFAULT '0'
 
 -- 24.10.2017
 ALTER TABLE `lauf` CHANGE `teamTogetherWithDeaktivated` `teamDeaktivated` INT(1) NOT NULL DEFAULT '0';
+
+-- 09.11.2017
+CREATE TABLE `verein_ort` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `verein` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `ort` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+
+CREATE TABLE `ort` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `ort` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `plz` int(11) NOT NULL,
+  `lon` decimal(11,8) NOT NULL,
+  `lat` decimal(11,8) NOT NULL,
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `ort` (`ort`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;

@@ -12,7 +12,17 @@ $showContent = false;
 session_start();
 include "function.php";
 $link = connectDB();
-$allowedFunctions = array('veranstaltung', 'teilnehmer', 'auswertung', 'rennen', 'klasse', 'import', 'einlaufListe', 'ziel', 'reader');
+
+$allowedFunctions = array('veranstaltung', 
+		'teilnehmer', 
+		'auswertung', 
+		'rennen', 
+		'klasse', 
+		'import', 
+		'einlaufListe', 
+		'ziel', 
+		'reader', 
+		'statistic');
 
 $_GET = filterParameters($_GET);
 $_POST = filterParameters($_POST);
@@ -160,6 +170,7 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
 					<li><a href="index.php?func=reader"><i class="fa fa-cog"></i> Reader</a></li>
 					<?php getHelpMenue(); ?>
                     <li><a href="#" id="enableChat"><i class="fa fa-envelope-o"></i> Chat</a></li>
+                    <?php getStatisticMenue(); ?>
 				</ul>
 				
 <?php 

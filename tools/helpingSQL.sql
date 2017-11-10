@@ -41,3 +41,18 @@ SELECT count(o.ort), o.ort, o.lon, o.lat FROM teilnehmer t
  LEFT JOIN ort o on vo.ort = o.ort
  where t.vid = 19 and o.ort is not null
  group by o.ort;
+
+ -- Vereine ohne Ort
+ SELECT t.verein, o.ort, o.lon, o.lat FROM teilnehmer t
+ LEFT JOIN verein_ort vo on t.verein = vo.verein
+ LEFT JOIN ort o on vo.ort = o.ort
+ where t.verein is not null and t.vid not in (12, 11, 9)
+ group by t.verein;
+ 
+ -- Orte die noch keine Geodaten hinterlegt haben
+ SELECT count(t.id) cnt, vo.ort, o.ort from teilnehmer t
+ LEFT JOIN verein_ort vo on t.verein = vo.verein
+ LEFT JOIN ort o on vo.ort = o.ort
+ group by vo.ort
+ order by cnt desc
+;

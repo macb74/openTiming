@@ -20,6 +20,7 @@ include "ziel.php";
 include "reader.php";
 include "chat.php";
 include "help.php";
+include "statistic.php";
 
 function connectDB() {
 	global $config;

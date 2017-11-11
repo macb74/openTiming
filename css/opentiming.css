@@ -212,3 +212,12 @@ table {
   width: 480px;
   background-color: white !important;
 }
+
+.tab-content {
+  padding: 20px;
+}
+
+/* remove dotted line around Links */
+a, a:active, a:focus {
+outline: none;
+}

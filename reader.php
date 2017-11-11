@@ -5,7 +5,7 @@ function reader() {
 }
 
 function showReaderList() {
-	$config = getConfig();
+	$config = getConfig("Reader%");
 ?>
 
 	<script>

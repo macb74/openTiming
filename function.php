@@ -75,7 +75,7 @@ function dbRequest($sql, $action) {
 	$res = $link->query($sql);
 	if ($link->error) {
 		$result[2] = $link->error;
-		//echo htmlspecialchars($link->error)."<br>\n";
+		echo htmlspecialchars($link->error)."<br>\n";
 	}
 
 	
@@ -148,12 +148,16 @@ function setConfig() {
 }
 
 
-function getConfig() {
-	$sql    = "select * from config";
+function getConfig($string) {
+	$sql    = "select * from config where `key` like '".$string."';";
 	$result = dbRequest($sql, 'SELECT');
-	
+
 	foreach ($result[0] as $row) {
-		$config[$row['key']] = $row['value'];
+	    if($row['value'] == "") {
+	        $config[$row['key']] = $row['value_txt'];
+	    } else {
+	        $config[$row['key']] = $row['value'];
+	    }
 	}
 	
 	return $config;

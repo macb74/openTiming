@@ -139,7 +139,6 @@ CREATE TABLE `verein_ort` (
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
-
 CREATE TABLE `ort` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ort` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -149,3 +148,5 @@ CREATE TABLE `ort` (
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `ort` (`ort`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+ALTER TABLE `config` ADD `value_txt` TEXT NOT NULL AFTER `value`;

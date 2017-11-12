@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `ort` (
   `plz` int(11) NOT NULL,
   `lon` decimal(11,8) NOT NULL,
   `lat` decimal(11,8) NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=63 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=63 ;
 
 --
 -- Daten für Tabelle `ort`

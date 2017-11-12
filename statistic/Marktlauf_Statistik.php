@@ -11,12 +11,11 @@ if(isset($_GET['ajaxFunc'])) {
     if($_GET['ajaxFunc'] == 'getMapData')	           { marktlaufStatistik_getMapData(); }
     if($_GET['ajaxFunc'] == 'getSpeedData')	           { marktlaufStatistik_getSpeedData(); }
     if($_GET['ajaxFunc'] == 'getTeilnehmerCount')	   { marktlaufStatistik_getTeilnehmerCount(); }
-    
+    if($_GET['ajaxFunc'] == 'getMeldungen')	           { marktlaufStatistik_getMeldungen(); }
     
 }
 
-function Marktlauf_Statistik() {
-	
+function Marktlauf_Statistik() {	
 ?>
 
 <div>
@@ -24,8 +23,10 @@ function Marktlauf_Statistik() {
 	<script src="js/leaflet/leaflet.js"></script>
 	<script src="js/chart/Chart.min.js"></script>
 	<script src="js/chart/stacked100.js"></script>
-	<script src="js/speedChart.js"></script>
-	<script src="js/teilnehmerChart.js"></script>
+	<script src="statistic/js/speedChart.js"></script>
+	<script src="statistic/js/teilnehmerChart.js"></script>
+	<script src="statistic/js/map.js"></script>
+	<script src="statistic/js/meldungChart.js"></script>
 
 
   <!-- Nav tabs -->
@@ -60,7 +61,6 @@ function Marktlauf_Statistik() {
     <div role="tabpanel" class="tab-pane fade" id="map">
     
 		<div id="map" style="width: 100%; height: 75%;"></div>
-    	<script src="js/map.js"></script>
     	
     	<script>
     		drawMap();
@@ -68,7 +68,12 @@ function Marktlauf_Statistik() {
     	
     </div>
     
-    <div role="tabpanel" class="tab-pane fade" id="meldungen">1..</div>
+    <div role="tabpanel" class="tab-pane fade" id="meldungen">
+	    <canvas id="meldungChart" width="400" height="150"></canvas>
+		<script>
+        	drawMeldungChart();
+        </script>
+	</div>
     
   </div>
 
@@ -78,7 +83,6 @@ function Marktlauf_Statistik() {
 
 <?php
 }
-
 
 function marktlaufStatistik_getMapData() {
 	$sql = "SELECT count(o.ort) count, o.ort ort, o.lon lon, o.lat lat FROM teilnehmer t ".
@@ -182,6 +186,38 @@ function marktlaufStatistik_getTeilnehmerCount() {
     
     $out[0] = $years;
     $out[1] = $races;
+    $out[2] = $data;
+    echo json_encode($out);
+}
+
+function marktlaufStatistik_getMeldungen() {
+
+    $mlJson = getConfig("HML");
+    $mlArray = json_decode($mlJson['HML'], true);
+    
+    $labelsY = array();
+    $weeks = array();
+    $data = array();
+    
+    $years = array_reverse(array_keys($mlArray));
+    foreach($years as $year) {
+        if(isset($mlArray[$year]['voranmeldungen'])) { 
+            
+            array_push($labelsY, $year);
+            
+            $weekBefore = 0;
+            for($i = 4; $i >= 0; $i--) {
+                if(in_array("woche-$i", $weeks) === false) { array_push($weeks, "woche-$i"); }
+                if(!isset($data["woche-$i"])) { $data["woche-$i"] = array(); }
+                $diff = $mlArray[$year]['voranmeldungen']["woche-$i"] - $weekBefore;
+                $weekBefore = $mlArray[$year]['voranmeldungen']["woche-$i"];
+                array_push($data["woche-$i"], $diff);
+            }
+        }
+    }
+    
+    $out[0] = $labelsY;
+    $out[1] = $weeks;
     $out[2] = $data;
     echo json_encode($out);
 }

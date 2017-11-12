@@ -24,21 +24,17 @@ function drawMap() {
 	  id: 'mapbox.streets'
 	}).addTo(mymap);
 	*/
-	
-	/*
-	L.marker([51.5, -0.09]).addTo(mymap)
-	.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-	*/
-	
+		
 	$.getJSON( "statistic/Marktlauf_Statistik.php?ajaxFunc=getMapData", function( data ) {
 		  var items = [];
 		  $.each( data, function( key, val ) {
 		    
 	        L.circle([val['lon'], val['lat']], getCircleSize(val['count']), { 
 	        	color: 'red',
+	        	stroke: false,
 	            fillColor: '#f03',
-	            fillOpacity: 0.5,
-	            opacity: 0.5
+	            fillOpacity: 0.4,
+	            opacity: 0.4
 	            }).addTo(map).bindPopup(val['ort'] + ": " + val['count']);
 	
 	      });
@@ -56,11 +52,13 @@ function drawMap() {
 	map.on('click', onMapClick);
 	
 	function getCircleSize(count) {
-	    if(count < 3) { return 1000 }
+	    if(count < 3) { return 700 }
+		if(count < 5) { return 1100 }
 	    if(count < 10) { return 1500; }
 	    if(count < 20) { return 2000; }
-	    if(count < 50) { return 2500; }
-	    if(count > 50) { return 3500; }
+	    if(count < 30) { return 2500; }
+	    if(count < 50) { return 3000; }
+	    if(count > 50) { return 4000; }
 	}
 
 }

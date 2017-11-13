@@ -36,7 +36,7 @@ function Marktlauf_Statistik() {
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#teilnehmer" aria-controls="teilnehmer" role="tab" data-toggle="tab">Teilnehmer</a></li>
     <li role="presentation"><a href="#speed" aria-controls="speed" role="tab" data-toggle="tab">Einlaufzeiten</a></li>
-    <li role="presentation"><a href="#speedLine" id="speedLine" aria-controls="speedLine" role="tab" data-toggle="tab">Zeitleiste</a></li>
+    <li role="presentation"><a href="#speedLine" aria-controls="speedLine" role="tab" data-toggle="tab">Zeitleiste</a></li>
     <li role="presentation"><a href="#map" id="loadMapNav" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
     <li role="presentation"><a href="#meldungen" aria-controls="meldungen" role="tab" data-toggle="tab">Meldungen</a></li>
   </ul>

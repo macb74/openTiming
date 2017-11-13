@@ -12,7 +12,8 @@ if(isset($_GET['ajaxFunc'])) {
     if($_GET['ajaxFunc'] == 'getSpeedData')	           { marktlaufStatistik_getSpeedData(); }
     if($_GET['ajaxFunc'] == 'getTeilnehmerCount')	   { marktlaufStatistik_getTeilnehmerCount(); }
     if($_GET['ajaxFunc'] == 'getMeldungen')	           { marktlaufStatistik_getMeldungen(); }
-    
+    if($_GET['ajaxFunc'] == 'getSpeedLines')	       { marktlaufStatistik_getSpeedLines(); }
+
 }
 
 function Marktlauf_Statistik() {	
@@ -21,18 +22,21 @@ function Marktlauf_Statistik() {
 <div>
 	<link rel="stylesheet" href="js/leaflet/leaflet.css"></link>
 	<script src="js/leaflet/leaflet.js"></script>
+    <script src="js/chart/moment.js"></script>
 	<script src="js/chart/Chart.min.js"></script>
 	<script src="js/chart/stacked100.js"></script>
 	<script src="statistic/js/speedChart.js"></script>
+    <script src="statistic/js/speedLineChart.js"></script>
 	<script src="statistic/js/teilnehmerChart.js"></script>
 	<script src="statistic/js/map.js"></script>
 	<script src="statistic/js/meldungChart.js"></script>
 
-
+  
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#teilnehmer" aria-controls="teilnehmer" role="tab" data-toggle="tab">Teilnehmer</a></li>
     <li role="presentation"><a href="#speed" aria-controls="speed" role="tab" data-toggle="tab">Einlaufzeiten</a></li>
+    <li role="presentation"><a href="#speedLine" id="speedLine" aria-controls="speedLine" role="tab" data-toggle="tab">Zeitleiste</a></li>
     <li role="presentation"><a href="#map" id="loadMapNav" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
     <li role="presentation"><a href="#meldungen" aria-controls="meldungen" role="tab" data-toggle="tab">Meldungen</a></li>
   </ul>
@@ -54,10 +58,19 @@ function Marktlauf_Statistik() {
     	<canvas id="speedChart" width="400" height="150"></canvas>
     
         <script>
-        	drawSpeedChart();
+        	drawSpeedChart();     
         </script>
     
     </div>
+    
+     <div role="tabpanel" class="tab-pane fade" id="speedLine">   
+		<canvas id="speedLineChart" width="400" height="150"></canvas>
+		<script>
+		 drawSpeedLineChart(); 
+		</script>
+    </div> 
+    
+    
     <div role="tabpanel" class="tab-pane fade" id="map">
     
 		<div id="map" style="width: 100%; height: 75%;"></div>
@@ -221,6 +234,60 @@ function marktlaufStatistik_getMeldungen() {
     $out[2] = $data;
     echo json_encode($out);
 }
+
+
+function marktlaufStatistik_getSpeedLines() {
+	$mlJson = getConfig("HML");
+	$mlArray = json_decode($mlJson['HML'], true);
+	$mlId = marktlaufStatistik_getLaufId($mlArray, '10K');
+	
+	$sql = "SELECT ". 
+				"DATE_FORMAT(t.zeit, '%H:%i') time, ".
+    			"COUNT(*) count, ".
+    			"DATE_FORMAT(l.start, '%Y') year ".
+			"FROM ".
+				"teilnehmer t ".
+        		"LEFT JOIN ".
+        			"lauf l ON t.lid = l.id ".
+			"WHERE ".
+				"platz > 0 AND lid IN ($mlId) ".
+			"GROUP BY t.vid , time;";
+	
+	$res = dbRequest($sql, "SELECT");
+	
+	$labelsY  = array();
+	$data     = array();
+	$count    = 0;
+	$lastYear = 0;
+	
+	if($res[1] > 0) {
+		foreach($res[0] as $row) {
+			
+			if($lastYear != $row['year']) { $count = 0; }
+			
+			if(in_array($row['year'], $labelsY) === false) { array_push($labelsY, $row['year']); }
+			
+			if(!isset($data[$row['year']])) { $data[$row['year']] = array(); }
+			$line = array();
+			$count = $count + $row['count'];
+			$line['t'] = "1900-01-01 ".$row['time'].":00";
+			$line['y'] = $count;
+			
+			array_push($data[$row['year']], $line);
+			
+			$lastYear = $row['year'];
+		}
+	}
+	
+	$out[0] = $labelsY;
+	//$out[1] = $labelsT;
+	$out[2] = $data;
+	
+	if($res[1] > 0) {
+		echo json_encode($out);
+	}
+}
+
 
 function marktlaufStatistik_getLaufId($mlArray, $lauf) {
             

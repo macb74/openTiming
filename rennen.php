@@ -149,11 +149,11 @@ function showRaceEditForm() {
 			$roc              = $row['roc'];
             $teamTogetherWith = json_decode( $row['teamTogetherWith'], true);
 			$teamDeaktivated  = $row['teamDeaktivated'];
-		}					
+		}
+
+		$teamTogetherWith = implode(",", $teamTogetherWith);		
 	}
-		
-	$teamTogetherWith = implode(",", $teamTogetherWith);
-	
+			
 	$sql = "select * from klasse order by name";
 	$result = dbRequest($sql, 'SELECT');
 	$kID = 0;
@@ -459,7 +459,7 @@ function saveRennen() {
 										".$_POST['teamAtt'].",
 										'".$_POST['teamAttVal']."',
 		                                ".$_POST['roc'].",
-                                        ".$_POST['teamTogetherWith'].",
+                                        '".$_POST['teamTogetherWith']."',
                                         ".$teamDeaktivated.");";
 	}
 

@@ -84,7 +84,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	
 	switch($rInfo["rundenrennen"]) {
 		case 1:  $zeit = "max(zeit)"; break;   # Bei Rennen auf Zeit: Ende = letzte Runde
-		case 2:  $zeit = "z.zeit"; break;        # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
+		case 2:  $zeit = "z.zeit"; break;      # Bei Rennen auf x Runden: alle Runden, letzte zaehlt wenn gleich Vorgabe
         default: $zeit = "min(zeit)";          # Bei normalen Rennen: erster Zieldurchlauf zaehlt
 	} 
 
@@ -215,7 +215,7 @@ function updatePlatzierung($veranstaltung, $rennen, $rInfo) {
 }
 
 function updateTeam($veranstaltung, $rennen, $rInfo) {
-	
+
     if( $rInfo['teamDeaktivated'] == 1) {
         return "0 (deaktiviert)";
     }
@@ -234,7 +234,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
         $query = "update teilnehmer set vnummer = '', vtime = '00:00:00', vplatz = '0' where vid = $veranstaltung and lid in ($rennen)";
         $result = dbRequest($query, 'UPDATE');   
     }
-    	
+    
     $teamAnz = $rInfo['teamAnz'];
     $teamAtt = "";
     if( $rInfo['teamAtt'] == 1) {
@@ -262,17 +262,19 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 	$v 		= '';	# Verein des vorherigen Datensatzes
 	$vnr 	= 1;	# Eindeutige Mannschaftsnummer
 	$alleMannschaften = array();
+	$mannschaft = array();
+	
 	if($result[1] > 0) {
 		foreach ($result[0] as $row) {
 			if ($v != $row["verein"]."_".$row['vklasse']) { 
-				$mannschaft = "";
+				$mannschaft = array();
 			}
-
+			
 			$r = $row["ID"];
 			$mannschaft[$r]["ID"] = $r;
 			$mannschaft[$r]["vnr"] = $vnr;
 			$mannschaft[$r]["vkl"] = $row['vklasse'];
-			
+						
 			#  eine komplette Mannschaft
 			if (count($mannschaft) == $teamAnz) {
 				$mplatz = 1;
@@ -287,7 +289,7 @@ function updateTeam($veranstaltung, $rennen, $rInfo) {
 				}
 				#print_r($mannschaft);
 				$alleMannschaften[$vnr-1] = $_uVnr;
-				$mannschaft = "";
+				$mannschaft = array();
 				$vnr++;
 			}
 		

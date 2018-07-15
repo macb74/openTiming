@@ -124,6 +124,7 @@ function clearForm() {
   $('#useManTime').prop( "checked", false );
   $('#disq').prop( "checked", false );
   $('.selectpicker').selectpicker('refresh');
+  $('#id').val('new');
 }
 
 

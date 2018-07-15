@@ -186,7 +186,7 @@ function showTeilnehmerEditForm()
           submitForm('#editTeilnehmer', false);
           $(".alert").addClass('hidden');
         } else {
-        	submitForm('#editTeilnehmer', 'index.php?func=' + next);
+          submitForm('#editTeilnehmer', 'index.php?func=' + next);
         }
       } else {
         $(".alert").html(msg);
@@ -200,9 +200,9 @@ function showTeilnehmerEditForm()
 
   <form role="form" class="form-horizontal" id="editTeilnehmer" name="editTeilnehmer">
     <div class="form-group">
-      <input type="hidden" name="form" value="saveTeilnehmer">
-      <input type="hidden" name="id" value="<?php echo $id; ?>">
-      <input type="hidden" name="nextFunc" id= "nextFunc" value="<?php if (isset($_GET['nextFunc'])) { echo $_GET['nextFunc']; } ?>">
+      <input type="hidden" id="form" name="form" value="saveTeilnehmer">
+      <input type="hidden" id="id" name="id" value="<?php echo $id; ?>">
+      <input type="hidden" id= "nextFunc" name="nextFunc" value="<?php if (isset($_GET['nextFunc'])) { echo $_GET['nextFunc']; } ?>">
     </div>
 
     <div class="form-group">

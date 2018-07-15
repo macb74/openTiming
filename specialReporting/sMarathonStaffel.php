@@ -102,12 +102,6 @@ function sMarathonStaffel_showRaceList() {
 					.tooltip('show');
 				});
 			});
-
-
-			$(".btn").mouseup(function(){
-			    $(this).blur();
-			})
-
 			
 			<?php 
 

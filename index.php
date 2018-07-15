@@ -108,6 +108,10 @@ if((stristr($_SERVER["SCRIPT_NAME"], 'test') !== FALSE) || (stristr($config['dbn
     <script>
       $(document).ready(function(){
 
+          $(".btn").mouseup(function(){
+              $(this).blur();
+          })
+    	  
 		  $("#submit-chat").click(function(event){
 		      event.preventDefault();
               if( $( "#new-chat-message" ).val() != "" ) {

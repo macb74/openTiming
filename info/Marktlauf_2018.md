@@ -1,15 +1,15 @@
-### Marktlauf 2017
+### Marktlauf 2018
 
 Nummern             | Verwendung                  |               |
 :-------------------|:----------------------------|--------------
-1-72                | ROC Erwachsene              |               
-1001-1031           | ROC Kinder                  |               
-100-319 388-474     | 10 km + Schüler U10-U12     |               
-475-510 rot         | Schüler U14-U16             |               
-550-632 rot         | 10 Meilen                   |              
-320-387 700-7XX     | 10 km + Schüler U10-U12     | Nachmeldungen
-511-549 rot         | Schüler U14-U16             | Nachmeldungen
-633-699 rot         | 10 Meilen                   | Nachmeldungen
+1-80                | ROC Erwachsene              |               
+1001-1051           | ROC Kinder                  |               
+81-427              | 10 km + Schüler U10-U12     |               
+475-496 rot         | Schüler U14-U16             |               
+550-635 rot         | 10 Meilen                   |              
+428-474 700-7XX     | 10 km + Schüler U10-U12     | Nachmeldungen
+497-549 rot         | Schüler U14-U16             | Nachmeldungen
+636-699 rot         | 10 Meilen                   | Nachmeldungen
 
 
 ---
@@ -17,9 +17,10 @@ Nummern             | Verwendung                  |               |
 * alle Teilnehmer eines Marathon Teams müssen eine gleichlautendes Attribut haben
 * der Teamnname kann sich mit anderen Teams überschneiden
 
+#### Doppelte Meldungen
+Leiss, Norbert (?)<br>
+Mannweiler, Klaus (10 Meilen)<br>
+Hohmann, Holger (10 Meilen)<br>
+
 ---
 #### Statistik
-* 478 - Teilnehmer im Ziel
-* 146 - Voranmeldungen sind nicht erschienen (davon 44 ROC Gesamtmelder)
-* 100 - ROC Gesamtmelder (davon 56 gestartet)
-* 182 - Nachmeldungen

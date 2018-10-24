@@ -65,7 +65,7 @@ class PDF extends FPDI
 			$this->SetY(177);
 			$this->SetFont('Verdana','B',16);
 			//Calculate width of title and position
-			$titel = utf8_decode("12. Holzkirchner Marktlauf");
+			$titel = utf8_decode("13. Holzkirchner Marktlauf");
 			$w=$this->GetStringWidth($titel);
 			$this->SetX((210-$w)/2); // Mitte
 			$this->SetTextColor(0);
@@ -74,7 +74,7 @@ class PDF extends FPDI
 			
 			$this->SetFont('Verdana','',12);
 			//Calculate width of title and position
-			$datum = utf8_decode("am 22. Oktober 2017");
+			$datum = utf8_decode("am 28. Oktober 2018");
 			$w=$this->GetStringWidth($datum);
 			$this->SetX((210-$w)/2); // Mitte
 			$this->SetTextColor(0);

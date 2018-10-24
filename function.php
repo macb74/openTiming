@@ -74,7 +74,7 @@ function dbRequest($sql, $action) {
 	$result[2] = false;
 	$result[3] = false;
 	
-	echo htmlspecialchars($sql)."<br>";
+	//echo htmlspecialchars($sql)."<br>";
 	
 	$res = $link->query($sql);
 	if ($link->error) {

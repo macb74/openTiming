@@ -39,6 +39,10 @@ function connectDB() {
         printf("Error: %s\n", $link->error);
     }
 	
+    if (!$link->query("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));")) {
+        printf("Error: %s\n", $link->error);
+    }
+    
 	//SET GLOBAL general_log_file = 'mysql_general.log';
 	//SET GLOBAL general_log = 'ON';
 	//SET GLOBAL general_log = 'OFF';
@@ -70,7 +74,7 @@ function dbRequest($sql, $action) {
 	$result[2] = false;
 	$result[3] = false;
 	
-	//echo htmlspecialchars($sql)."<br>";
+	echo htmlspecialchars($sql)."<br>";
 	
 	$res = $link->query($sql);
 	if ($link->error) {

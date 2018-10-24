@@ -99,7 +99,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	# ohne Rundenvorgabe oder kein Rundenrennen:
 
 		$sql = "update teilnehmer t ".
-					"left join (select nummer, $zeit zeit, millisecond ".
+					"inner join (select nummer, $zeit zeit, millisecond ".
 					"from zeit ".
 					"	where del = 0 ".
 					"	and zeit > '".$startZeit."' ".
@@ -113,7 +113,7 @@ function updateZeit($veranstaltung, $rennen, $rInfo) {
 	} else {
         # Rennen auf x Runden:
 		$sql = "select t.id, t.stnr as stnr, $zeit as zeit, z.millisecond ".
-			"from teilnehmer as t left join zeit as z on t.stnr = z.nummer ".
+			"from teilnehmer as t inner join zeit as z on t.stnr = z.nummer ".
 			"where t.vid = $veranstaltung and z.vid = $veranstaltung and t.lid = $rennen ".$sql_lID.
 			"and z.zeit > '".$startZeit."' and z.del = 0 order by stnr, zeit asc";
 		//echo $sql;

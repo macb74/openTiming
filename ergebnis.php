@@ -106,7 +106,7 @@ function showErgebnisseM() {
 	$_SESSION['rID'] = $rennen;
 	$_SESSION['contentFunc'] = $_GET['func'];
 	
-	$rennen = checkTeamTogetherWith($rennen, $rd['teamTogetherWith']);
+	$rennen = checkTeamTogetherWith($rennen, $rInfo['teamTogetherWith']);
 	
 	// keine Ergebnisse anzeigen, wenn Teamwertung deaktiviert
 	$limit = '';

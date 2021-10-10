@@ -263,7 +263,7 @@ function showReaderResults() {
 ?>
 	
 	<div class="text-right modal-button">
-		<a href="#" class="btn btn-primary btn-sm" onclick="handleReaderResults('<?php echo $_POST['wsdl']; ?>', '<?php echo $_POST['file']; ?>', 'show'); return false;" role="button">refresh</a>
+		<a href="#" class="btn btn-primary btn-sm" onclick="handleReaderResults('<?php echo $_POST['url']; ?>', '<?php echo $_POST['file']; ?>', 'show'); return false;" role="button">refresh</a>
 	</div>
 	<div class="table-responsive">
 		<table class="table table-striped table-vcenter">

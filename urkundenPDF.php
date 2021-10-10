@@ -1,6 +1,9 @@
 <?php
+use setasign\Fpdi\Fpdi;
 require_once('Classes/fpdf/fpdf.php');
-require_once('Classes/fpdi/fpdi.php');
+require_once('Classes/fpdi/autoload.php');
+#require_once('Classes/fpdi/Fpdi.php');
+#require_once('Classes/fpdi/FpdfTpl.php');
 include("function.php");
 $link = connectDB();
 session_start();
@@ -35,6 +38,11 @@ class PDF extends FPDI
 		
 		$this->setMyFont();
 
+        if($raceData['template'] != '') {
+            $this->setSourceFile($raceData['template']);
+            $tplIdx = $this->importPage(1);
+        }
+
 		$i = 1;
 		if ($action != 'team') {
 			if($result[1] > 0) {
@@ -43,11 +51,7 @@ class PDF extends FPDI
 					$this->AddPage('Portrait', 'A4');
 
 					if($raceData['template'] != '') {
-						$this->setSourceFile($raceData['template']);
-						// import page 1
-						$tplIdx = $this->importPage(1);
-						// use the imported page and place it at point 10,10 with a width of 100 mm
-						$this->useTemplate($tplIdx, 0, 0, 0);
+						$this->useTemplate($tplIdx);
 					}
 					if ($action == 'gesamt') {
 						$platz = $row['platz'];
@@ -95,11 +99,7 @@ class PDF extends FPDI
 				$this->AddPage('Portrait', 'A4');
 	
 				if($raceData['template'] != '') {
-					$this->setSourceFile($raceData['template']);
-					// import page 1
-					$tplIdx = $this->importPage(1);
-					// use the imported page and place it at point 10,10 with a width of 100 mm
-					$this->useTemplate($tplIdx, 0, 0, 0);
+					$this->useTemplate($tplIdx);
 				}
 	
 				include($raceData['definition']);

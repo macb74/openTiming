@@ -1,6 +1,6 @@
 <?php
 
-require('Classes/fpdf/fpdf.php');
+require 'vendor/autoload.php';
 include("function.php");
 $link = connectDB();
 session_start();

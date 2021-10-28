@@ -1,9 +1,6 @@
 <?php
 use setasign\Fpdi\Fpdi;
-require_once('Classes/fpdf/fpdf.php');
-require_once('Classes/fpdi/autoload.php');
-#require_once('Classes/fpdi/Fpdi.php');
-#require_once('Classes/fpdi/FpdfTpl.php');
+require 'vendor/autoload.php';
 include("function.php");
 $link = connectDB();
 session_start();

@@ -289,7 +289,7 @@ function saveManZielzeit() {
 	if ($action == 'save') {
 		$sql = "update teilnehmer set usemantime = 2, manzeit = '".base64_decode($time)."' where id = $id";
 	} elseif ($action == 'del') {
-		$sql = "update teilnehmer set usemantime = 0, manzeit = '' where id = $id";
+		$sql = "update teilnehmer set usemantime = 0, manzeit = '00:00:00' where id = $id";
 	}
 	$result = dbRequest($sql, 'UPDATE');
 	echo "ok";

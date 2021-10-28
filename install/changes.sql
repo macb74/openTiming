@@ -151,3 +151,20 @@ CREATE TABLE `ort` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 ALTER TABLE `config` ADD `value_txt` TEXT NOT NULL AFTER `value`;
+
+-- 28.10.2021
+ALTER TABLE `teilnehmer` CHANGE `titel` `titel` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `nation` `nation` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `ort` `ort` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `verein` `verein` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `chip` `chip` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `platz` `platz` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `akplatz` `akplatz` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `vplatz` `vplatz` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `vnummer` `vnummer` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `mplatz` `mplatz` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `vtime` `vtime` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `vklasse` `vklasse` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `meisterschaft` `meisterschaft` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `ms_platz` `ms_platz` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `teilnehmer` CHANGE `ma_akplatz` `ma_akplatz` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;

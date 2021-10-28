@@ -1,7 +1,10 @@
 <?php
 session_start();
 
-require_once 'Classes/PHPExcel.php';
+require 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 include("function.php");
 
 $link = connectDB();
@@ -19,10 +22,9 @@ if($_GET['action'] == "startliste") {
 $link->close();
 
 function exportStartliste($filename) {
-	// Create new PHPExcel object
-	$objPHPExcel = new PHPExcel();
-	
-	$objPHPExcel->setActiveSheetIndex(0)
+
+	$spreadsheet = new Spreadsheet();
+	$spreadsheet->setActiveSheetIndex(0)
 				->setCellValue('A1', 'Stnr')
 				->setCellValue('B1', 'Nachname')
 				->setCellValue('C1', 'Vorname')
@@ -43,7 +45,7 @@ function exportStartliste($filename) {
 	foreach ($result[0] as $row) {
 	
 		// The actual data
-		$objPHPExcel->setActiveSheetIndex(0)
+		$spreadsheet->setActiveSheetIndex(0)
 					->setCellValue('A'.$i, $row['stnr'])
 					->setCellValue('B'.$i, htmlspecialchars_decode($row['nachname'], ENT_QUOTES))
 					->setCellValue('C'.$i, htmlspecialchars_decode($row['vorname'], ENT_QUOTES))
@@ -56,24 +58,23 @@ function exportStartliste($filename) {
 		$i++;
 	}
 	
-	$objPHPExcel->getActiveSheet()->setTitle('Startliste');
-	$objPHPExcel->setActiveSheetIndex(0);
+	$spreadsheet->getActiveSheet()->setTitle('Startliste');
+	$spreadsheet->setActiveSheetIndex(0);
 	
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	header('Content-Disposition: attachment;filename="'.$filename.'"');
 	header('Content-Type: content=text/html;charset=utf-8');
 	header('Cache-Control: max-age=0');
 	
-	$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-	$objWriter->save('php://output');
+	$writer = new Xlsx($spreadsheet);
+	$writer->save('php://output');
 	
 }
 
 function exportErgebnins($filename) {
-	// Create new PHPExcel object
-	$objPHPExcel = new PHPExcel();
-	
-	$objPHPExcel->setActiveSheetIndex(0)
+
+	$spreadsheet = new Spreadsheet();
+	$spreadsheet->setActiveSheetIndex(0)
 	->setCellValue('A1', 'Stnr')
 	->setCellValue('B1', 'Nachname')
 	->setCellValue('C1', 'Vorname')
@@ -101,7 +102,7 @@ function exportErgebnins($filename) {
 	foreach ($result[0] as $row) {
 
 		// The actual data
-		$objPHPExcel->setActiveSheetIndex(0)
+		$spreadsheet->setActiveSheetIndex(0)
 					->setCellValue('A'.$i, htmlspecialchars_decode($row['stnr'], ENT_QUOTES))
 					->setCellValue('B'.$i, htmlspecialchars_decode($row['nachname'], ENT_QUOTES))
 					->setCellValue('C'.$i, htmlspecialchars_decode($row['vorname'], ENT_QUOTES))
@@ -118,16 +119,16 @@ function exportErgebnins($filename) {
 		$i++;
 	}
 
-	$objPHPExcel->getActiveSheet()->setTitle('Ergebnisliste');
-	$objPHPExcel->setActiveSheetIndex(0);
+	$spreadsheet->getActiveSheet()->setTitle('Ergebnisliste');
+	$spreadsheet->setActiveSheetIndex(0);
 	
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	header('Content-Disposition: attachment;filename="'.$filename.'"');
 	header('Content-Type: content=text/html;charset=utf-8');
 	header('Cache-Control: max-age=0');
-	
-	$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-	$objWriter->save('php://output');
+
+	$writer = new Xlsx($spreadsheet);
+	$writer->save('php://output');
 
 }
 

@@ -8,3 +8,5 @@
 /test
 .project
 /bin/
+/.idea
+*.iml

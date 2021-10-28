@@ -54,8 +54,8 @@ function saveTeilnehmer()
   "where ID = $f[2]";
     } else {
         $sql = "insert into teilnehmer " .
-  "(vID, lID, nachname, vorname, jahrgang, geschlecht, ort, stnr, verein, zeit, manzeit, useManTime, disq, klasse, man_runden, vklasse, att) " .
-  "values ( $f[0], $f[1], '$f[3]', '$f[4]', $f[7], '$f[5]', '$f[6]', '$f[8]', '$f[9]', '$f[10]','$f[10]', $f[16], $f[11], '$f[15]', $f[18], '$f[19]', '$f[20]')";
+  "(vID, lID, titel, nachname, vorname, jahrgang, geschlecht, ort, stnr, verein, zeit, manzeit, useManTime, disq, klasse, man_runden, vklasse, att) " .
+  "values ( $f[0], $f[1], null, '$f[3]', '$f[4]', $f[7], '$f[5]', '$f[6]', '$f[8]', '$f[9]', '$f[10]','$f[10]', $f[16], $f[11], '$f[15]', $f[18], '$f[19]', '$f[20]')";
     }
 
     //echo $sql;

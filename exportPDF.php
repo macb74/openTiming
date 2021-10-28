@@ -62,9 +62,9 @@ class PDF extends FPDF
 					$this->Cell(11,$lineHeight,$row['stnr'],0,0,'R',$fill);
 					$this->Cell(50,$lineHeight," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
 					$this->Cell(50,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-					$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'L',$fill);
 					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,$lineHeight,$row['runden'],0,0,'R',$fill); }
-					$this->Cell(18,$lineHeight,$row['zeit'],0,0,'R',$fill);
+					$this->Cell(18,$lineHeight,$row['zeit'],0,0,'L',$fill);
 					$this->Cell(10,$lineHeight,$row['akplatz'],0,0,'R',$fill);
 					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,$lineHeight,$row['platz'],0,0,'R',$fill); }
 					if( !$roc ) { $this->Cell(12,$lineHeight,$row['att'],0,0,'R',$fill); }
@@ -102,9 +102,9 @@ class PDF extends FPDF
 					$this->SetFont('Arial','B',$fontSize);
 					$this->Cell(100,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
 					$this->SetFont('Arial','',$fontSize);
-					$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'L',$fill);
 					if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,$lineHeight,$row['runden'],0,0,'R',$fill); }
-					$this->Cell(18,$lineHeight,$row['zeit'],0,0,'R',$fill);
+					$this->Cell(18,$lineHeight,$row['zeit'],0,0,'L',$fill);
 					$this->Cell(10,$lineHeight,$row['akplatz'],0,0,'R',$fill);
 					if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,$lineHeight,$row['platz'],0,0,'R',$fill); }
 					
@@ -168,7 +168,7 @@ class PDF extends FPDF
 					$this->Cell(15,$lineHeight,$row['stnr'],0,0,'R',$fill);
 					$this->Cell(50,$lineHeight," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
 					$this->Cell(70,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-					$this->Cell(15,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					$this->Cell(15,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'L',$fill);
 					$this->Cell(10,$lineHeight,htmlspecialchars_decode(utf8_decode($row['att']), ENT_QUOTES),0,0,'L',$fill);
 					$this->Cell(20,$lineHeight,htmlspecialchars_decode(utf8_decode($row['titel']), ENT_QUOTES),0,0,'L',$fill);
 		
@@ -189,7 +189,7 @@ class PDF extends FPDF
 					$this->SetFont('Arial','B',10);
 					$this->Cell(100,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
 					$this->SetFont('Arial','',10);
-					$this->Cell(15,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+					$this->Cell(15,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'L',$fill);
 					$this->Cell(20,$lineHeight,htmlspecialchars_decode(utf8_decode($row['titel']), ENT_QUOTES),0,0,'L',$fill);
 		
 					$this->Ln();
@@ -247,7 +247,7 @@ class PDF extends FPDF
 				$vnummer = $row['vnummer'];
 				$this->Cell(15,$lineHeight,$i,0,0,'R',$fill);
 				$this->Cell(60,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-				$this->Cell(20,$lineHeight,$row['vtime'],0,0,'R',$fill);
+				$this->Cell(20,$lineHeight,$row['vtime'],0,0,'L',$fill);
 				$this->Cell(5,$lineHeight,'',0,0,'R',$fill);
 				
 				$sql2 = "SELECT nachname, vorname, zeit from teilnehmer " .
@@ -264,10 +264,10 @@ class PDF extends FPDF
 							$this->Cell(5,$lineHeight,'',0,0,'R',$fill);
 						}
 						$this->Cell(40,$lineHeight," ".htmlspecialchars_decode(utf8_decode($row2['nachname']), ENT_QUOTES).",\n ".htmlspecialchars_decode(utf8_decode($row2['vorname']), ENT_QUOTES),0,0,'L',$fill);
-						$this->Cell(20,$lineHeight,$row2['zeit'],0,0,'R',$fill);
+						$this->Cell(20,$lineHeight,$row2['zeit'],0,0,'L',$fill);
 						if($ii == 1) {
 							$this->Cell(5,$lineHeight,'',0,0,'R',$fill);
-							$this->Cell(10,$lineHeight,$row['vklasse'],0,0,'R',$fill);
+							$this->Cell(10,$lineHeight,$row['vklasse'],0,0,'L',$fill);
 							$this->Cell(10,$lineHeight,$row['vplatz'],0,0,'R',$fill);
 						} else {
 							$this->Cell(5,$lineHeight,'',0,0,'R',$fill);
@@ -353,9 +353,9 @@ class PDF extends FPDF
 						$this->Cell(11,$lineHeight,$row['stnr'],0,0,'R',$fill);
 						$this->Cell(50,$lineHeight," ".htmlspecialchars_decode(utf8_decode($row['nachname']), ENT_QUOTES).", ".htmlspecialchars_decode(utf8_decode($row['vorname']), ENT_QUOTES),0,0,'L',$fill);
 						$this->Cell(70,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
-						$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+						$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'L',$fill);
 						if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,$lineHeight,$row['runden'],0,0,'R',$fill); }
-						$this->Cell(18,$lineHeight,$row['zeit'],0,0,'R',$fill);
+						$this->Cell(18,$lineHeight,$row['zeit'],0,0,'L',$fill);
 						$this->Cell(12,$lineHeight,$row['att'],0,0,'R',$fill);
 						
 						$this->Ln();
@@ -376,9 +376,9 @@ class PDF extends FPDF
 						$this->SetFont('Arial','B',10);
 						$this->Cell(100,$lineHeight,htmlspecialchars_decode(utf8_decode($row['verein']), ENT_QUOTES),0,0,'L',$fill);
 						$this->SetFont('Arial','',10);
-						$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'R',$fill);
+						$this->Cell(12,$lineHeight,htmlspecialchars_decode(utf8_decode($row['klasse']), ENT_QUOTES),0,0,'L',$fill);
 						if( $rd['rundenrennen'] == 1 ) { $this->Cell(15,$lineHeight,$row['runden'],0,0,'R',$fill); }
-						$this->Cell(18,$lineHeight,$row['zeit'],0,0,'R',$fill);
+						$this->Cell(18,$lineHeight,$row['zeit'],0,0,'L',$fill);
 						//if( $rd['rundenrennen'] == 0 ) { $this->Cell(12,$lineHeight,$row['platz'],0,0,'R',$fill); }
 						
 						$this->Ln();
@@ -417,7 +417,7 @@ class PDF extends FPDF
 	    if($team == 0) { $this->Cell(50,5," Name",'B',0,'L',1); }
 	    if($team == 1) { $this->Cell(100,5," Name",'B',0,'L',1); }
 	    if($team == 0) { $this->Cell(70,5,"Verein",'B',0,'L',1); }
-	    $this->Cell(15,5,"Klasse",'B',0,'R',1);
+	    $this->Cell(15,5,"Klasse",'B',0,'L',1);
 	    if($team == 0) { $this->Cell(10,5,"Att",'B',0,'L',1); }
 	    $this->Cell(20,5,"Lauf",'B',0,'L',1);
 	    $this->Ln();
@@ -431,9 +431,9 @@ class PDF extends FPDF
 	    if( $team == 1) { $this->Cell(100,5," Name",'B',0,'L',1); }
 	    if( $team == 0 && !$klasse) { $this->Cell(50,5,"Verein",'B',0,'L',1); }
 	    if( $team == 0 && $klasse) { $this->Cell(70,5,"Verein",'B',0,'L',1); }
-	    $this->Cell(12,5,"Klasse",'B',0,'R',1);
+	    $this->Cell(12,5,"Klasse",'B',0,'L',1);
 	    if( $rundenrennen == 1) { $this->Cell(15,5,"Runden",'B',0,'R',1); }
-	    $this->Cell(18,5,"Zeit",'B',0,'R',1);
+	    $this->Cell(18,5,"Zeit",'B',0,'L',1);
 	    if( !$klasse) { $this->Cell(10,5,"AK-P",'B',0,'R',1); }
 	    if( $rundenrennen == 0 && !$klasse) { $this->Cell(12,5,"M/W-P",'B',0,'R',1); }
 	    if( $team == 0 && !$roc) { $this->Cell(12,5,"Att",'B',0,'R',1); }
@@ -445,12 +445,12 @@ class PDF extends FPDF
 	    $this->SetFillColor(200,200,200);
 	    $this->Cell(15,5,"Platz",'B',0,'R',1);
 	    $this->Cell(60,5,"Verein",'B',0,'L',1);
-	    $this->Cell(20,5,"Zeit",'B',0,'R',1);
+	    $this->Cell(20,5,"Zeit",'B',0,'L',1);
 	    $this->Cell(5,5,"",'B',0,'R',1);
 	    $this->Cell(40,5," Name",'B',0,'L',1);
-	    $this->Cell(20,5,"Zeit",'B',0,'R',1);
+	    $this->Cell(20,5,"Zeit",'B',0,'L',1);
 	    $this->Cell(5,5,"",'B',0,'R',1);
-	    $this->Cell(10,5,"Klasse",'B',0,'R',1);
+	    $this->Cell(10,5,"Klasse",'B',0,'L',1);
 	    $this->Cell(10,5,"AK",'B',0,'R',1);
 	    $this->Ln();
 	    $this->SetFillColor(224,235,255);
